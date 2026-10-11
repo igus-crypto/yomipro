@@ -119,7 +119,7 @@ rubyinstaller-devkit-2.6.5-1-x64.exeを実行~
 - 2021.11 処理をバッチ化してみる。
 - 2022.1 Audible定額聴き放題復活（一部コンテンツを除く）。
 - 2022.5 なろうとカクヨムに対応を始める。
-- 2026.11 githubで管理する。
+- 2026.11 [[github>https://github.com/igus-crypto/yomipro]]で管理する。
 
 ----
 [[PANSY]]
