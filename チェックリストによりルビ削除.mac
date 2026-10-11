@@ -1,0 +1,111 @@
+//チェックリストによりルビを削除.mac
+
+selectline 1;copy;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+require 'win32ole'
+require 'inifile'
+
+class String
+  def tr2
+    self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')
+  end
+end
+
+ini = IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+cbd=ClipBoard.new(__ENCODING__)
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(filename))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+ls=cbd.getText.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,""). #BOM除去
+  split("\r\n").grep(/,/).map{|e| e.gsub(/^!+/,"")}
+  .map{|e| e.match(/^([^,]+),([-]?)([+]?[^,]+)(?:,([^,]+))?/).to_a.pop(4)}
+print "ls=";p ls
+
+st=open(filename).read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"")
+
+bf=st.scan(/([\p{Han}]+|(?<=｜)[^《》]+)《([^《》]+)》/).uniq
+b2=bf.map{|e| [e[0],e[1].tr2]}
+print "bf=";p bf
+print "b2=";p b2
+hs,hh,bc={},{},[]
+ls.each{|e|
+  hs[bf[b2.index([e[0],e[2].tr2])]]=e if b2.include?([e[0],e[2].tr2])}
+#print "hs=";p hs
+bb=st.scan(/((?:[\p{Han}]+《[^《》。\n]+》){2,})/).uniq.flatten
+rb=ls.map{|e| [e[0],e[2]]}
+
+hs.each_value{|v|
+  if v[1]=="" && /\p{Han}$/=~v[0]
+    bb.each{|e|
+      if /(#{v[0]}《([^《》]+)》)([\p{Han}]+《[^《》]+》)/=~e
+        d1,d2,d3=$1,$2,$3
+        hh[d1+d3] = d1+"｜"+d3 if d2.tr2==v[2].tr2
+      end}
+  end}
+hh=hh.uniq
+print "rb=";p rb
+print "bb=";p bb
+print "bc=";p bc
+print "hs=";p hs
+print "hh=";p hh
+
+# 秀丸マクロ作成
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print "\uFEFF"
+macro.puts %|
+setcompatiblemode 0x20030;
+if( findhidemaru("#{filename}")==-1){openfile "#{filename}";}
+setactivehidemaru findhidemaru("#{filename}");
+selectall;
+colormarker 0x000000, 0xc2c79e, 11, 1;
+escape;begingroupundo;disabledraw;\n|
+hh.each{|k,v| macro.puts %Q|replaceallfast "#{k}" , "#{v}" ;|}
+#macro.puts %Q|endgroupundo;begingroupundo;|
+hs.each{|k,v|
+  if v[3]
+    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[3]}》" ;|
+  elsif v[1]==""
+    macro.puts %Q|replaceallfast "｜?#{k[0]}《#{k[1]}》" , "#{v[0]}" ,regular;|
+  else
+    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[1]+v[2]}》" ;|
+  end}
+#macro.puts %Q|endgroupundo;begingroupundo;|
+#macro.puts %Q|replaceallfast "》｜(?=[\\\\p{Han}]+《)" , "》" ,regular;|
+macro.puts %|
+endgroupundo;gofiletop;enabledraw;goupdatedown;endmacro;\n|
+
+#spawn(%Q|"#{hide}" /h /fu8 /x "#{mac}"|)
+
+__END__
+*/
+

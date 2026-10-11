@@ -1,0 +1,138 @@
+//ルビ移動
+
+//ctrl+shift+<:連続改行の次のルビ(中を=)(ルビ末尾)
+//ctrl+shift+>:連続改行の前のルビ(中を=)(ルビ末尾)
+//alt+shift+<:次のルビ(中を削除)(ルビ末尾)
+//alt+shift+>:前のルビ(中を削除)(ルビ末尾)
+//alt+ctrl+<:次のルビ(ルビ先頭)
+//alt+ctrl+>:前のルビ(ルビ先頭)
+//ctrl+<:次のルビ(ルビ先頭)
+//ctrl+>:前のルビ(ルビ先頭)
+//alt+<:次のルビ(中を削除)(ルビ末尾)
+//alt+>:前のルビ(中を削除)(ルビ末尾)
+//alt+_:連続改行の前のルビ(中を=)(ルビ末尾)
+
+disabledraw;
+#fs=0;#fc=0;#fa=0;#fm=0;#fu=0;#fr=0;
+#x=x;#y=y;
+if(iskeydown(0x10))#fs=1; //SHIFT
+if(iskeydown(0x11))#fc=1; //CTRL
+if(iskeydown(0x12))#fa=1; //ALT
+if(iskeydown(0xBC))#fm=1; //COMMA (<)
+if(iskeydown(0xBE))#fu=1; //PERIOD(>)
+if(iskeydown(0xBF))#fr=1; //SLASH (/)
+escape;
+if(imestate)imeswitch; //半角入力
+if(#fa==1 && #fs==1 && #fu==1){
+  searchdown "\n\n",regular;
+  searchdown "》";right;left;
+  deletewordfront;//insert "=";
+}else if(#fa==1 && #fs==1 && #fm==1){
+  searchup "\n\n",regular;
+  searchup "》";right;left;
+  deletewordfront;insert "=";
+}else if(#fa==1 && #fc==1 && #fu==1){
+  searchdown "》";right;left;
+  deletewordfront;
+}else if(#fa==1 && #fc==1 && #fm==1){
+  searchup "》";right;left;
+  deletewordfront;
+}else if(#fa==1 && #fr==1){
+  searchdown "\n\n",regular;
+  searchdown "》";right;left;
+  deletewordfront;insert "#";
+}else if(#fc==1 && #fs==1 && #fu==1){
+  searchdown "《";right;
+  deleteword;
+}else if(#fc==1 && #fs==1 && #fm==1){
+  searchup "《";right;
+  deleteword;
+}else if(#fa==1 && #fu==1){
+  searchdown "《";
+  //while(1){
+    //searchdown "《";
+    //if(!result){
+    //  while(code!=eof && getcolormarker(0x0002,findmarker)=="")right;
+    //  right;endmacro;}
+    //#x=x;#y=y;moveto 0,#y;
+    //if(code==33){down;}else{moveto #x,#y;break;} //先頭が「!」の行をとばす
+  //}
+  right;
+}else if(#fa==1 && #fm==1){
+  searchup "《";//message str(#x)+"/"+str(x)+"/"+str(#y)+"/"+str(y);
+  if((#x==x+2)&&(#y==y)){left;searchup "《";}
+  //while(1){
+    //searchup "《";
+    //if(!result){left;left;
+    //  while(getcolormarker(0x0002,findmarker)==""){left;if(x==0 && y==0)endmacro;}
+    //  right;endmacro;}
+    //#x=x;#y=y;moveto 0,#y;
+    //if(code==33){up;}else{moveto #x,#y;break;} //先頭が「!」の行をとばす
+  //}
+  right;
+
+}else if(#fc==1 && #fu==1){
+  searchdown "《";right;beginsel;searchdown "》";delete;
+}else if(#fc==1 && #fm==1){
+  searchup "《";right;
+}
+enabledraw;
+
+
+endmacro;
+
+//alt+n:次のルビ
+//alt+r:前のルビ
+//alt+shift+n:次のルビ(中を削除)
+//alt+shift+r:前のルビ(中を削除)
+//alt+ctrl+n:連続改行の次のルビ(中を=)
+//alt+ctrl+r:連続改行の前のルビ(中を=)
+
+if(iskeydown(0x10)){#fs=1;}else{#fs=0;} //SHIFT
+if(iskeydown(0x11)){#fc=1;}else{#fc=0;} //CTRL
+if(iskeydown(78)){#fn=1;}else{#fn=0;} //N
+if(iskeydown(82)){#fr=1;}else{#fr=0;} //R
+escape;
+
+if(imestate == 1){imeswitch};
+if(#fc==1 && #fn==1){
+  searchdown "\n\n",regular
+  searchdown "》",regular;right;left;
+  deletewordfront;insert "#";
+}else if(#fs==1 && #fn==1){
+  searchdown "》",regular;right;left;
+  deletewordfront;
+}else if(#fn==1){
+  searchdown "》",regular;right;left;
+}else if(#fc==1 && #fr==1){
+  searchup "\n\n",regular
+  searchup "》",regular;right;left;
+  deletewordfront;insert "#";
+}else if(#fs==1 && #fr==1){
+  searchup "》",regular;right;left;
+  deletewordfront;
+}else if(#fr==1){
+  left;searchup "》",regular;right;left;
+}
+endmacro;
+
+if(imestate == 1){imeswitch};
+if(#fc==1 && #fn==1){
+  searchdown "\n\n",regular
+  searchdown "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+  deletewordfront;insert "#";
+}else if(#fs==1 && #fn==1){
+  searchdown "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+  deletewordfront;
+}else if(#fn==1){
+  searchdown "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+}else if(#fc==1 && #fr==1){
+  searchup "\n\n",regular
+  searchup "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+  deletewordfront;insert "#";
+}else if(#fs==1 && #fr==1){
+  searchup "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+  deletewordfront;
+}else if(#fr==1){
+  left;searchup "》|(?<=\\w) |(?<==>)(?:.*)$",regular;right;left;
+}

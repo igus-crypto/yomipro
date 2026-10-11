@@ -1,0 +1,12 @@
+//キンドル用に変換.mac
+
+setsearch "(.*)" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+disabledraw;
+replaceallfast "≪[^≪≫]+≫","",regular;
+replaceallfast "(?<![。])([」』】〉）])$","。\\1",regular;
+replaceallfast "(?<=[ぁ-ん])([-])(?=[ぁ-ん])","’",regular;
+replaceallfast "(?<=[ァ-ヴー])([-])(?=[ァ-ヴー])","’",regular;
+replaceallfast "▓。▓。▓。","\n";
+replaceallfast "◇。◇。◇。","\n";
+//replaceallquick "$","\\n",regular;

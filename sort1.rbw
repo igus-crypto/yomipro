@@ -1,0 +1,185 @@
+# encoding: utf-8
+# sort1
+# ルビソート
+Encoding.default_external = 'UTF-8'
+
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+
+ini=IniFile.load(__dir__+"/config.ini")
+
+file=ini["grep"]["file_1"]
+unless FileTest.file?(file)
+  file=ini["grep"]["file_2"]
+  if FileTest.directory?(File.dirname(file))
+    Dir.chdir(File.dirname(file))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("#{File.dirname(file)}がありません\n"+
+      "#{__dir__}\nにtmpファイルを作成します",0,"注意",0)
+  end
+end
+
+#デバッグ用
+$stdout=open("tmp_s999.txt","w")
+$stderr=open("tmp_serr.txt","w")
+
+opt=ARGV[0].to_s.encode(Encoding::UTF_8)
+print "opt=";puts opt
+
+if %r<^tmp|選択文字変換>=~opt
+  upd,sep="",""
+else
+  upd="最終更新日："+Time.new.strftime("%Y.%m.%d")+"\n\n"
+  sep="―"*20+"\n"
+end
+
+cbd=ClipBoard.new(__ENCODING__)
+
+# macro=open("tmp.mac","w")
+class String
+  def bsize
+    self.to_s.tr("—","-").split("").map{|e| e.bytesize==1 ? 1 : 2}.sum
+    #"—"が実は３バイトという罠回避 "-"は１バイト
+  end
+end
+class Array
+  def sortq
+    ar=self.group_by{|e| e.gsub(/^(!*)([^!].*)/,'\1').size}.
+      to_a.sort_by{|e| -e[0].to_i}.transpose[1].to_a.
+      map{|e| e.partition{|f| %r|[^ ]*,y|!~f}}
+    #print "ar=";p ar
+    ar
+  end
+end
+
+arr=cbd.getText.
+  split("\r\n").grep_v(/^―*$|^最終更新日：/)
+arr=arr.uniq
+print "arr=";p arr
+
+if /【ルビチェック】/=~opt
+  #コメント１分離
+  #arr=arr.uniq
+  ar2=arr.grep(%r|^#|)
+  com1= (ar2==[] ? "" : ar2.join("\n")+"\n\n")
+  arr=arr.grep_v(%r|^#|)
+  arr=arr.sort_by{|e|
+    g=(/^([^ ]*?),/=~e ? $1 : e.chomp)
+    g.bsize}.reverse
+  #ルビチェック
+  rbc=arr.each_slice(1000).map{|f| f.join("\n")}.join("\n\n")+"\n"
+  print "uod=";p upd
+  st=upd+com1+rbc
+  #p st
+  cbd.setText(st)
+  exit
+elsif /【英数字チェック】/=~opt
+  han=arr.grep(%r|[0-9a-zA-Z]|)
+  zen=arr-han
+  st=upd+han.sort_by{|e| -e.bsize}.join("\n")+"\n\n"+
+      zen.sort_by{|e| -e.bsize}.join("\n")+"\n\n"
+  cbd.setText(st)
+  exit
+elsif "e"==opt #仕上げの英数字チェック
+  #arr=arr.grep(%r|,s =>|)-[",s =>"]
+  han=arr.grep(%r|[0-9a-zA-Z]|)
+  zen=arr-han
+  st=upd+han.sort_by{|e| -e.bsize}.join("\n")+"\n\n"+
+      zen.sort_by{|e| -e.bsize}.join("\n")+"\n\n"
+  cbd.setText(st)
+  exit
+end
+
+#重複要素
+#ar2=arr.select{|e| arr.count(e) > 1}.uniq
+#jfk= (ar2==[] ? "" : ar2.map{|e| "!"+e}.join("\n")+"\n\n")
+#arr=arr-ar2
+
+#コメント１分離
+ar2=arr.grep(%r|^#|)
+com1= (ar2==[] ? "" : ar2.join("\n")+"\n\n")
+arr=arr.grep_v(%r|^#|)
+
+arr=arr.sort_by{|e|
+  g=(/^([^ ]*?),/=~e ? $1 : e.chomp)
+  g.bsize}.reverse
+
+#b オプションを最初
+ar2=arr.grep(/[^, ]*,b/).sort
+bop= (ar2==[] ? "" : ar2.join("\n")+"\n\n")
+arr=arr.grep_v(/[^, ]*,b/)
+
+#s オプションを次に
+#ar2=arr.grep(/[^, ]*,s/).sort
+ar2=arr.grep(/[^, ]*,s/).group_by{|e| e.match(/^(.*?),/).to_s.bsize}.
+  to_a.sort_by{|e| -e[0].to_i}.transpose[1].to_a.map{|e| e.sort}.flatten
+sop= (ar2==[] ? "" : ar2.join("\n")+"\n\n")
+arr=arr.grep_v(/[^, ]*,s/)
+
+#10個ずつに分けて出力
+#コメント２分離
+ar2=arr.grep(%r|^/|).group_by{|e| e.match(/^(.*?),/).to_s.bsize}.to_a.sort_by{|e| -e[0].to_i}.
+  transpose[1].to_a.map{|e| e.sort}.flatten.each_slice(1000).to_a.map{|e| e.join("\n")}
+com2= (ar2==[] ? "" : ar2.join("\n\n")+"\n\n")
+arr=arr.grep_v(%r|^/|)
+
+#要注意分離
+#ar2=arr.grep(/^!+/).sort.sort_by{|e| e.match(/^!+/).to_s.bsize}.reverse.
+ar2=arr.grep(/^!+/).sort_by{|e| e.match(/^!+[^,]+/).to_s.bsize}.reverse.
+  each_slice(1000).to_a.map{|e| e.join("\n")}
+ex=(ar2==[] ? "" : ar2.join("\n\n")+"\n\n")
+arr=arr.grep_v(/^!/)
+
+#親文字のみ分離
+ar2=arr.grep_v(/,/)
+grp=ar2.group_by{|e| e.chomp.bsize}.to_a.transpose[1].to_a.map{|e| e.sort.reverse}.
+  map{|e| e.each_slice(1000).to_a.map{|f| f.join("\n")}.join("\n\n")}
+#oya=(ar2==[] ? "" : grp.map{|e| e.join("\n")}.join("\n")+"\n\n")
+oya=(ar2==[] ? "" : grp.join("\n")+"\n\n")
+arr=arr.grep(/,/)
+
+#pとrのオプションなし
+ar2=arr.grep_v(%r|[^, ]*,[rpy]|)
+ar3=ar2.group_by{|e| e.match(/^(.*?),/).to_s.bsize}.to_a.sort_by{|e| -e[0].to_i}.
+  transpose[1].to_a.map{|e| e.sort.reverse}
+wor=(ar2==[] ? "" : ar3.flatten.each_slice(1000).to_a.map{|f| f.join("\n")}.join("\n\n")+"\n\n")
+ar4=arr.grep(%r|[^ ]*,[rp]|)
+ar5=arr.grep(%r|[^ ]*,y|)
+
+#pとrのオプション付き
+ar4=ar4.group_by{|e| e.match(/[^, ]*,([rp][0-9.]*)/)[1]}.to_a.
+  sort_by{|e| e[0]}.sort_by{|e| e[0].scan(/[0-9.]+/)}.transpose[1].
+  to_a.map{|e| e.group_by{|v| 1.0/(v.gsub(/,.*$/,"").bsize)}.to_a.
+  transpose[1].to_a.map{|v| v.sort.reverse}}
+reg=(ar4==[] ? "" : sep+
+  ar4.map{|e| e.flatten.each_slice(1000).to_a.map{|f| f.join("\n")}.
+    join("\n\n")}.join("\n\n"+sep)+"\n\n")
+arr=arr.grep(%r|[^ ]*,y|)
+
+#yオプション付き
+ar5=ar5.group_by{|e| e.match(/[^, ]*,(y[0-9.]*)/)[1]}.to_a.
+  sort_by{|e| e[0]}.sort_by{|e| e[0].scan(/[0-9.]+/)}.transpose[1].
+  to_a.map{|e| e.group_by{|v| 1.0/(v.gsub(/,.*$/,"").bsize)}.to_a.
+  transpose[1].to_a.map{|v| v.sort.reverse}}
+yop=(ar5==[] ? "" : sep+
+  ar5.map{|e| e.flatten.each_slice(1000).to_a.map{|f| f.join("\n")}.
+    join("\n\n")}.join("\n\n"+sep)+"\n\n")
+
+st=upd+com1+bop+sop+com2+ex+oya+wor+reg+yop
+#st=st.gsub(%r|^[ ]+([^ ]*)|{$1+"\n"}
+i=0
+a1=st.split(%r|\R|).group_by{|e| e.gsub(%r|^([ ]+)(.*)|){$1}.gsub(%r|[^ ]|,"").size}.
+  to_a.transpose[1]
+print "a1=";p a1
+st=a1.map{|e| e.map{|f| f.gsub(%r|^[ ]+|,"")}.join("\n")}.join("\n\n")+"\n"
+if /選択文字変換/=~opt
+  st=st.gsub("*/","").gsub(%r|\n+|,"\n").gsub(%r|^\n|,"")+"*/\n"
+end
+p st
+cbd.setText(st)
+
+__END__
+
+ルビソート.mac

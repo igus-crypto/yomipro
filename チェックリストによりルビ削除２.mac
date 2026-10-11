@@ -1,0 +1,88 @@
+// チェックリストによりルビ削除２.mac
+// 青空文庫加工用
+
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmpa.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_d.txt","w")
+$stderr=open("tmp_ed.txt","w")
+
+class String
+  def tr2
+    self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')
+  end
+end
+
+unless FileTest.file?("a1.txt")
+  File.write("tmpa.mac","endmacro;")
+  exit
+end
+
+ls=open("a1.txt").read.split(%r|\R|).grep(%r|,|).
+  grep_v(%r|[《》]|).map{|e| e.gsub(/^!+/,"")}.
+  map{|e| e.match(/^([^,]+),([-]?)([+]?[^,]+)(?:,([^,]+))?/).to_a.pop(4)}
+#print "ls=";p ls
+
+st=open("tmp_a.txt").read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"")
+
+bf=st.scan(/([\p{Han}]+|(?<=｜)[^《》\n]+)《([^《》\n]+)》/).uniq
+#print "bf=";p bf
+b2=bf.map{|e| [e[0],e[1].tr2]}
+print "b2=";p b2
+hs,hh,bc={},{},[]
+ls.each{|e|
+  hs[bf[b2.index([e[0],e[2].tr2])]]=e if b2.include?([e[0],e[2].tr2])}
+#print "hs=";p hs
+bb=st.scan(/((?:[\p{Han}]+《[^《》。\n]+》){2,})/).uniq.flatten
+rb=ls.map{|e| [e[0],e[2]]}
+
+hs.each_value{|v|
+  if v[1]=="" && /\p{Han}$/=~v[0]
+    bb.each{|e|
+      if /(#{v[0]}《([^《》]+)》)([\p{Han}]+《[^《》]+》)/=~e
+        d1,d2,d3=$1,$2,$3
+        hh[d1+d3] = d1+"｜"+d3 if d2.tr2==v[2].tr2
+      end}
+  end}
+hh=hh.uniq
+print "rb=";p rb
+print "bb=";p bb
+print "bc=";p bc
+print "hs=";p hs
+print "hh=";p hh
+
+# 秀丸マクロ作成
+mac=File.expand_path("tmpa.mac")
+macro=open(mac,"w")
+macro.print "\uFEFF"
+macro.puts %|
+setcompatiblemode 0x20030;
+begingroupundo;disabledraw;\n|
+hh.each{|k,v| macro.puts %Q|replaceallfast "#{k}" , "#{v}" ;|}
+#macro.puts %Q|endgroupundo;begingroupundo;|
+hs.each{|k,v|
+  if v[3]
+    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[3]}》" ;|
+  elsif v[1]==""
+    macro.puts %Q|replaceallfast "｜?#{k[0]}《#{k[1]}》" , "#{v[0]}" ,regular;|
+  else
+    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[1]+v[2]}》" ;|
+  end}
+#macro.puts %Q|endgroupundo;begingroupundo;|
+#macro.puts %Q|replaceallfast "》｜(?=[\\\\p{Han}]+《)" , "》" ,regular;|
+macro.puts %|
+endgroupundo;enabledraw;endmacro;\n|
+
+#spawn(%Q|"#{hide}" /h /fu8 /x "#{mac}"|)
+
+__END__
+*/
+

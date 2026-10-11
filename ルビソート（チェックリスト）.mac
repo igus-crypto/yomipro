@@ -1,0 +1,160 @@
+//ルビソート（チェックリスト）
+
+
+begingroupundo;disabledraw;
+if(!selecting)selectall;
+cut;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;movetolineno 1,3;
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# sort3
+# チェックリストのソート
+
+Encoding.default_external = 'UTF-8'
+
+
+$stdout=open("tmp_s99.txt","w")
+$stderr=open("tmp_serr.txt","w")
+
+require 'clipboard'
+
+cbd=ClipBoard.new(__ENCODING__)
+arr=cbd.getText.split("\r\n")
+
+
+#p arr
+class String
+  def bsize
+    self.to_s.tr("—","-").split("").map{|e| e.bytesize==1 ? 1 : 2}.sum
+    #"—"が実は３バイトという罠回避 "-"は１バイト
+  end
+end
+
+class Array
+  def p10
+    sf=self.grep_v([])
+    if sf[0].is_a?(Array)
+      sf.map{|e| e.p10}
+    else
+      sf.group_by{|e| e.match(/^(.*?),/).to_s.bsize}.to_a.
+        sort_by{|e| -e[0].to_i}.transpose[1].to_a.map{|e| e.sort}.flatten.
+        each_slice(10).to_a.map{|e| e.join("\n")}.join("\n\n")
+    end
+  end
+  def rep
+    sf=self.grep_v([])
+    if sf[0].is_a?(Array)
+      sf.map{|e| e.rep}
+    else
+      arr=self
+      rep=arr.grep(/!*([^ ,]+),([^ ,]+),([^ ,]+)/)
+      arr=arr-rep
+      [arr,rep]
+    end
+  end
+  def list_sort
+    sf=self.grep_v([])
+    if sf[0].is_a?(Array)
+      sf.map{|e| e.list_sort}
+    else
+      arr,st=self,""
+      sur=arr.grep(%r|^[\/]|).sort_by{|e|
+          e.match(%r|^!+[^,]+|).to_s.bsize}.reverse;arr=arr-sur
+      ex0=arr.grep(%r|^[\!][^,]*,[^,]*,|).sort_by{|e|
+         e.match(%r|^!+[^,]+|).to_s.bsize}.reverse;arr=arr-ex0
+      ex1=arr.grep(%r|^[\!][^,]*,|).sort_by{|e|
+          e.match(%r|^!+[^,]+|).to_s.bsize}.reverse;arr=arr-ex1
+      hir=arr.grep(%r|^[^, ]+,[ぁ-んー]+$|);arr=arr-hir
+      pur=arr.grep(%r|[+]|);arr=arr-pur
+        pur=pur.group_by{|e| e=(e.match(%r|[0-9]+|) ? e.match(%r|[0-9]+|)[0] : "+")}.map{|k,v|v};
+      col=arr.grep(%r|[:]|);arr=arr-col
+      quo=arr.grep(%r|^[^, ]+,[’]|);arr=arr-quo
+      bou=arr.grep(%r|ヽ|) ;arr=arr-bou
+      ex2=arr.grep(%r|《!|);arr=arr-ex2
+      per=arr.grep(%r|《%|);arr=arr-per
+      shr=arr.grep(%r|《#|);arr=arr-shr
+      eql=arr.grep(%r<《=|=》>);arr=arr-eql
+        eql=eql.group_by{|e| e=(e.match(%r|[0-9]+|) ? e.match(%r|[0-9]+|)[0] : "=")}.map{|k,v|v};
+      mai=arr.grep(%r|《-|);arr=arr-mai
+      sur=arr.grep(%r|^[\/]|);arr=arr-sur
+      kop=arr.grep(%r|,[pr][0-9]+ =>|);arr=arr-kop
+      kaa=arr.grep(%r|^[^, ]+,[０-９]+$|);arr=arr-kaa
+      kab=arr.grep(%r|^[^, ]+,[\p{Han}]+$|);arr=arr-kab
+      kac=arr.grep(%r|^[^, ]+,[\p{Han}０-９]+$|);arr=arr-kac
+      hik=arr.grep(%r|^[^\p{Han}, ]+,|);arr=arr-hik
+      kan=arr.grep(%r|^[^, ]+,[^ ]*[\p{Han}]|);arr=arr-kan
+      kat=arr.grep(%r|^[^, ]+,[^ ]*[ァ-ヴー]|);arr=arr-kat
+      print "arr=";p arr
+      print "sur=";p sur
+      print "ex0=";p ex0
+      print "ex1=";p ex1
+      print "hir=";p hir
+      print "pur=";p pur
+      print "col=";p col
+      print "quo=";p quo
+      print "arr=";p arr
+      print "bou=";p bou
+      print "ex2=";p ex2
+      print "per=";p per
+      print "eql=";p eql
+      print "shr=";p shr
+      print "mai=";p mai
+      print "sur=";p sur
+      print "kop=";p kop
+      print "hik=";p hik
+      print "kaa=";p kaa
+      print "kab=";p kab
+      print "kac=";p kac
+      print "kan=";p kan
+      print "kat=";p kat
+      print "sur=";p sur
+      [sur,ex0,ex1,hir,pur,col,quo,arr,bou,per,ex2,kat,mai,sur,
+        hik,kan,kop,kaa,kac,kab,shr,eql].rep
+    end
+  end
+end
+
+arr=arr.grep_v(/^$|^最終更新日：/)
+st=""
+st="最終更新日：#{Time.new.strftime("%Y.%m.%d")}\n\n"
+arr=arr.uniq
+
+#重複要素のチェック
+jyu=arr.map{|e| e.gsub(/^(!+[^,]+),[+-]?([^, ]+)/,'\1,\2')}.
+  group_by{|e| e}.select{|k,v| v.size>1}.map(&:first)
+jyu.map{|e| print "e=";p e}
+print "jyu=";p jyu
+#jyu.map{|e| f=e.split(",");arr=arr.grep_v(/^[!]*#{f[0]},[+-]?#{f[1]}/)}
+#jyu=jyu.map{|e| f=e.split(",");"!!#{f[0]},+#{f[1]}"}
+
+#ルビ付き分離
+rbt=arr.grep(/《.*》/);arr=arr-rbt
+rbt=rbt.partition{|e| /=>$/=~e}[0]
+rbt=rbt.group_by{|e| e.gsub(%r|^(!+)[^!].*|,'\1').size}.
+  to_a.sort_by{|e| -e[0].to_i}.transpose[1].to_a.flatten
+print "rbt=";p rbt
+#!分離
+p arr.grep(%r|^!|).group_by{|e| e.gsub(%r|^(!+)[^!].*|,'\1').size}.to_a.sort_by{|e| -e[0].to_i}
+ext=arr.grep(%r|^!|).group_by{|e| e.gsub(%r|^(!+)[^!].*|,'\1').size}.
+  to_a.sort_by{|e| -e[0].to_i}.map{|e| e[1]}
+arr=arr-ext.flatten
+rep=arr.grep(%r|!*([^ ,]+),([^ ,]+),([^ ,]+)|)
+arr=arr-rep
+print "ext=";p ext
+st+=[jyu,ext,arr,rep].list_sort.p10.join("\n\n")+"\n\n"
+#rbt.map{|e| st+=e.list_sort.p10.join("\n\n")+"\n\n"} if rbt
+st+=rbt.list_sort.p10.join("\n\n")+"\n\n" if rbt
+st=st.gsub(%r|\n\n+|,"\n\n")
+
+cbd.setText(st)
+
+__END__
+*/
+
+
+

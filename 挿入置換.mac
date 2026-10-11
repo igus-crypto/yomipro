@@ -1,0 +1,78 @@
+//挿入置換
+setcompatiblemode 0x10000F;
+
+//selectline 1;
+golineend2;beginsel;searchup "^$",regular;down;
+$s=getselectedtext();
+openfile "/h";insert $s;saveas "tmptmp.txt";
+#hn=hidemaruhandle(0);
+setactivehidemaru 1;
+closehidemaruforced #hn;
+runsync2 "rubyw -x "+currentmacrofilename;
+delete;
+insertfile "tmptmp.mac";
+//execmacro currentmacrodirectory+"\\\\漢字選択.mac";
+
+#x=x;#y=y;#s=0;
+if(selecting){#s=1;}
+escape;if(!imestate)imeswitch;
+while(1){
+  #x=x;#y=y;
+  searchup2 "[\\p{Han}=]|^",regular;
+  //if(#x==foundendx && #s==1){
+  //  escape;golineend2;searchdown "^.",regular;golineend2;continue;}
+  if(code==61){ //"="
+    golineend2;searchdown "^.",regular;;golineend2;
+    if(code==eof)break;
+  }else if(x==0){
+    searchdown "^.",regular;golineend2;
+  }else{break;}
+  if(#x==x && #y==y)break;
+}
+//message str(code);endmacro;
+//searchup2 "[\\p{Han}]|^",regular;
+searchup2 "[^\\p{Han}]|^",regular;
+searchdown2 "[\\p{Han}]+|$",regular;
+if(code==13){
+  setsearch "[一-龯々〇]" , 0x34003810;
+  colormarkerallfound 0x000000,0x72f531,-1,0,0;escape;
+  setsearch "=>.*" , 0x34003810;
+  selectallfound;
+  //endmacro;
+  setsearch "[一-龯々〇]" , 0x34003810;
+  forceinselect 2;
+  //colormarkerallfound;escape;
+  //colormarkerallfound 0xffffff,0xb48246,1,0,0,"a";escape;
+  colormarkerallfound 0x000000,0xb48246,1,0,0,"a";escape;
+  //moveto #x,#y;endmacro;
+}
+#tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+moveto #tx,#ty;beginsel;moveto #ex,#ey;
+
+selectcolormarker "a";
+execmacro directory+@"\tmptmp.mac";
+moveto #x,#y;
+endmacro;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99h.txt","w")
+$stderr=open("tmp_errh.txt","w")
+
+st=open("tmptmp.txt").readlines.map{|e| 
+  e.gsub(%r|\R|,"").gsub(%r|([^,]+),([^,]+)|){
+    %Q|selectcolormarker "a";\nreplaceallfast "#{$1}","#{$2}",inselect2;|}}
+p st
+s1 =%Q|\uFEFF\nsetcompatiblemode 0x00100000;\ndisabledraw;begingroupundo;\n|
+#s1+=%Q|colormarker 0x000000, 0xFFE645,11,0,1,"a";\n|
+s1+=st.join("\n")
+s1+=%Q|\nenabledraw;endgroupundo;\n|
+s1+=%Q|escape;\n|
+print "s1=";p s1
+File.write("tmptmp.mac",s1)
+__END__
+*/
+
+

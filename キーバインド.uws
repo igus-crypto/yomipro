@@ -1,0 +1,109 @@
+﻿// キーバインド
+
+// ファイル操作
+
+// C-x esc：キャンセル
+// C-x C-f：ファイルを開く
+// C-x C-s：上書き保存
+// C-x C-w：名前をつけて保存
+// C-x d：フォルダを開く
+// C-x i：カーソル位置への読み込み
+// C-x h：すべてを選択
+// C-x o：ウィンドウを移動
+// C-x p：tmpファイルを閉じて削除
+
+mn=_
+"ＥＳＣ：キャンセル<#CR>"+_
+"ＣＴＬ＋Ｆ：ファイルを開く<#CR>"+_
+"ＣＴＬ＋Ｓ：上書き保存<#CR>"+_
+"ＣＴＬ＋Ｗ：名前をつけて保存<#CR>"+_
+"Ｄ：フォルダを開く<#CR>"+_
+"Ｉ：カーソル位置への読み込み<#CR>"+_
+"Ｈ：すべてを選択<#CR>"+_
+"Ｏ：ウィンドウを移動<#CR>"+_
+"Ｔ：tmpファイルを閉じて削除"
+
+dir=REPLACE(GET_UWSC_NAME,"文字列挿入.uws","")
+
+while 1
+  t1=GETTIME()
+  ans=99
+  IFB GETKEYSTATE(VK_CTRL) and GETKEYSTATE(VK_X) THEN
+    while ans=99
+      t2 = GETTIME()
+      if t2-t1>3
+        fukidasi(mn,600,200,0,15)
+        sleep(0.5)
+      endif
+      ifb GETKEYSTATE(VK_ESC) then
+        ans=0 // キャンセル
+      elseif GETKEYSTATE(VK_CTRL) and GETKEYSTATE(VK_F) then
+       ans=1 // ファイルを開く
+      elseif GETKEYSTATE(VK_CTRL) and GETKEYSTATE(VK_S) then
+       ans=2 // 上書き保存
+      elseif GETKEYSTATE(VK_CTRL) and GETKEYSTATE(VK_W) then
+       ans=3 // 名前をつけて保存
+      elseif GETKEYSTATE(VK_D) then
+       ans=4 // フォルダを開く
+      elseif GETKEYSTATE(VK_I) then
+       ans=5 // カーソル位置への読み込み
+      elseif GETKEYSTATE(VK_H) then
+       ans=6 // すべてを選択
+      elseif GETKEYSTATE(VK_O) then
+       ans=7 // ウィンドウを移動
+      elseif GETKEYSTATE(VK_T) then
+       ans=8 // tmpファイルを閉じて削除
+      endif
+    wend
+  endif
+  fukidasi()
+  EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans,true)
+wend
+
+TEXTBLOCK ruby
+
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+opt=ARGV[0].to_i
+if opt<1 #キャンセル
+  mac=%Q|endmacro;\n|
+elsif opt==1 #ファイルを開く
+  mac=%Q|openfile "*.*";\n|
+elsif opt==2 #上書き保存
+  mac=%Q|save;\n|
+elsif opt==3 #名前をつけて保存
+  mac=%Q|SAVEAS;\n|
+elsif opt==4 #フォルダを開く
+  mac=%Q|run "explorer.exe" + "\\"" + directory + "\\"";\n|
+elsif opt==5 #カーソル位置への読み込み
+  mac=%Q|INSERTFILE;\n|
+elsif opt==6 #すべてを選択
+  mac=%Q|selectall;\n|
+elsif opt==7 #ウィンドウを移動
+  mac=%Q|setactivehidemaru 1,-1;\n|
+elsif opt==8 #tmpファイルを閉じて削除
+  mac=%Q||
+  mac+=%Q|#c= hidemarucount;#i=0;#j=0;#k=0;#n=0;\n|
+  mac+=%Q|while(#i<#c){\n|
+  mac+=%Q|  if(leftstr(basename,3)=="tmp"){$files[#j]=basename;#j=#j+1;}\n|
+  mac+=%Q|  setactivehidemaru 1,-1;#i=#i+1;}\n|
+  mac+=%Q|while(#n<#c){\n|
+  mac+=%Q|  if(leftstr(basename,3)!="tmp"){break;}\n|
+  mac+=%Q|  setactivehidemaru 1,-1;#n=#n+1;}\n|
+  mac+=%Q|while(#k<#j){closehidemaruforced findhidemaru($files[#k]);#k=#k+1;}\n|
+  mac+=%Q|question "tmpファイルを削除しますか？";\n|
+  mac+=%Q|if(result==yes){runsync2 "rubyw "+currentmacrodirectory+"\\\\del_tmp.rbw";}\n|
+end
+
+print "opt=";p opt
+
+File.write("tmp.mac","\uFEFF"+mac)
+
+__END__
+ENDTEXTBLOCK
+

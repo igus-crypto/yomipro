@@ -1,0 +1,39 @@
+//パイプをソート
+
+disabledraw;begingroupundo;
+cut;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;
+
+endgroupundo;enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'romkan'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#print "st=";p st
+
+st=st.gsub(%r|\(.*?\)|){|s1| s1.gsub(%r|\[\^?\K[^\[\]]+(?=\])|){|s2|
+  #print "s2=";p s2
+  s2.scan(%r<\\p{Han}|ァ-ヴー|.\-.|.>).uniq.sort.sort_by{|e| -e.size}.join}.
+    gsub(%r<([^ -~]|\^|\$|\|)*>){|s3|
+      next if s3==""
+      #p s3.split("|").sort_by{|e| [e.size,e]}
+      s3=s3.split("|").uniq.sort_by{|e| [e.size,e]}.join("|") if /\|/=~s3 && "|"!=s3
+      print "s3=";p s3
+      s3}}
+cbd.setText(st)
+
+__END__
+*/
+

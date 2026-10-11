@@ -1,0 +1,95 @@
+﻿//文字列挿入〇〇《〇〇》
+
+setcompatiblemode 0x00100000;
+
+if(!selecting)endmacro;
+#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+disabledraw;begingroupundo;copy2;
+#op=0;
+if(iskeydown(0x12)){#op=#op+1;} //alt
+if(iskeydown(0x10)){#op=#op+2;} //shift
+
+moveto #tx,#ty;
+searchup ".|^",regular;right;left;
+beginsel;moveto #ex,#ey;copy2;escape;beginsel;moveto #tx,#ty;
+runsync2 "rubyw -x "+currentmacrofilename+" "+str(#op);
+delete;paste;left;
+if(imestate == 1){imeswitch};
+if(#op>1){imeswitch;}
+endgroupundo;enabledraw;
+
+endmacro;
+
+/*
+/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+p st
+s0,st=st[0],st[1..-1]
+opt=ARGV[0].to_i
+p opt
+s2=st+"《#{st}》"
+print "s2=";p s2
+
+if st.size>1
+  s2="｜"+s2 if (%r|[^\p{Han}]|=~st or %r|[\p{Han}]|=~s0)
+elsif %r|[\p{Han}]|=~s0
+  s2="｜"+s2 if %r|^[\p{Han}]+$|=~st
+end
+print "s2=";p s2
+if s2=="、《、》"
+  s2="、《:、》"
+elsif s2=="は《は》"
+  s2="は《は’》"      if opt==0
+  s2="は《/は》"      if opt==1
+  s2="は《は’/-は》"  if opt==2
+  s2="は《わ》"         if opt==3
+elsif opt==1
+  #s2=s2.gsub(%r|《|,"《/").gsub("《/ま》","《”ま》")
+  s2=s2.gsub(%r|《|,"《”")
+elsif opt>=2
+  if s2=="さ《さ》"
+    s2="さ《そ》"
+  elsif s2=="ひ《ひ》"
+    s2="ひ《い》"
+  elsif s2=="つ《つ》"
+    s2="つ《っ》"
+  elsif s2=="へ《へ》"
+    s2="へ《え》"
+  elsif s2=="ひ《ひ》"
+    s2="ひ《い》"
+  elsif s2=="づ《づ》"
+    s2="づ《ず》"
+  elsif s2=="ら《ら》"
+    s2="ら《ろ》"
+  elsif s2=="ひ《ひ》"
+    s2="ひ《い》"
+  elsif s2=="ふ《ふ》"
+    s2="ふ《う》"
+  elsif s2=="ほ《ほ》"
+    s2="ほ《お》"
+  elsif s2=="よ《よ》"
+    s2="よ《ょ》"
+  elsif s2=="ぢ《ぢ》"
+    s2="ぢ《じ》"
+  elsif s2=="や《や》"
+    s2="や《ゃ》"
+  elsif s2=="ゆ《ゆ》"
+    s2="ゆ《ゅ》"
+  else
+    s2=s2.gsub(%r|《[^《》]*》|,"《》")
+  end
+end
+cbd.setText(s2)
+
+__END__
+*/

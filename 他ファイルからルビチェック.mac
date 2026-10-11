@@ -1,0 +1,71 @@
+﻿//他ファイルからルビチェック
+
+runsync2 "rubyw -x "+currentmacrofilename+" a";
+execmacro directory +"\\tmp_a.mac";
+runsync2 "rubyw -x "+currentmacrofilename+" b";
+execmacro directory +"\\tmp_t.mac";
+endmacro;
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_t99t.txt","w")
+$stderr=open("tmp_errt.txt","w")
+
+opt=ARGV[0]
+if %r|^a|=~opt
+  fl,st="","\uFEFF\n"
+  if FileTest.file?("a0.txt")
+    fl=File.expand_path("a0.txt")
+  elsif FileTest.file?("../a0.txt")
+    fl=File.expand_path("../a0.txt") 
+  elsif FileTest.file?("../../a0.txt")
+    fl=File.expand_path("../../a0.txt")
+  end
+  fl=fl.gsub("/","\\\\\\")
+  if fl==""
+    #st+=%Q|$f=browsefile("","*.txt");\n|
+    st+=%Q|endmacroall;\n|
+    File.write("tmp_a.mac",st)
+    exit
+  else
+    st+=%Q|$f="#{fl}";\n|
+  end
+  st+=%Q|if($f=="")endmacroall;\n|
+  st+=%Q|#hwnd1=hidemaruhandle(0);#x=x;#y=y;$d=directory;|
+  st+=%Q|selectall;$s1=getselectedtext();escape;moveto #x,#y;\n|
+  st+=%Q|openfile "";insert $s1;\n|
+  st+=%Q|saveas "tmp_t99b.txt";#hwnd2=hidemaruhandle(0);\n|
+  st+=%Q|if(findhidemaru($f)==-1){openfile $f;\n|
+  st+=%Q|}else{setactivehidemaru findhidemaru($f);}\n|
+  st+=%Q|selectall;$s2=getselectedtext();escape;\n|
+  st+=%Q|if($s2=="")$s2=" ";\n|
+  st+=%Q|setactivehidemaru 1;\n|
+  st+=%Q|openfile "";insert $s2;saveas "tmp_t99a.txt";\n|
+  st+=%Q|#hwnd3=hidemaruhandle(0);\n|
+  st+=%Q|setactivehidemaru #hwnd1;\n|
+  st+=%Q|closehidemaruforced #hwnd2;\n|
+  st+=%Q|closehidemaruforced #hwnd3;\n|
+  st+=%Q|closehidemaruforced findhidemaru($f);\n|
+  File.write("tmp_a.mac",st)
+else
+  st ="\uFEFF\nbegingroupundo;disabledraw;selectall;\n"
+  st+="colormarker 0x000000, 0xc2c79e, 11, 1;escape;"
+  #aa=open("tmp_t99a.txt").read.split(%r|\R|).grep(%r|^[^,]*,[^,]*,[^,]*$|).uniq
+  aa=open("tmp_t99a.txt").read.split(%r|\R|).uniq
+  ab=open("tmp_t99b.txt").read.split(%r|\R|).grep(%r|^[^,]*,[^,]*$|)
+  print "aa=";p aa
+  print "ab=";p ab
+  ab.each{|b| aa.each{|a|
+    #print "a=";p a
+    #print "b=";p b
+    st+=%Q|replaceallfast "^#{b}","#{a}",regular;\n|if %r|#{b}|=~a}}
+  st+="endgroupundo;enabledraw;\n"
+File.write("tmp_t.mac",st)
+end
+__END__
+*/
+

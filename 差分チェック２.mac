@@ -1,0 +1,128 @@
+//差分チェック２
+
+//#spawn(%Q|rubyw #{__dir__}/diff4.rbw "#{File.basename(filename)}" tmp_r.txt|)
+runsync2 "rubyw -x "+currentmacrofilename+" "+basename+" tmp_r.txt";
+execmacro directory + "\\tmp.mac";
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# diff4
+# 差分チェック２
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99_d.txt","w")
+$stderr=open("tmp_err_d.txt","w")
+
+require 'diff/lcs'
+require 'inifile'
+
+ini = IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+file1=ARGV[0].encode(Encoding::UTF_8)
+file2=ARGV[1].encode(Encoding::UTF_8)
+
+p file1
+p file2
+
+# 差分の取得(BOM除去)
+ar1=open(file1,'r:BOM|UTF-8').read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"").split(/\R/)
+ar2=open(file2,'r:BOM|UTF-8').read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"").split(/\R/)
+
+print "ar1=";p ar1
+print "ar2=";p ar2
+
+
+#x:列 y:行 x0:x値保持 r:right l:文字長さ mp:文字列(+) mm:文字列(-)
+ar3,ar4,x,y,x0,r,l,mp,mm=[],[],0,0,0,0,0,"",""
+(0..ar1.size).each{|i|
+  #if ar1[i]!=ar2[i] && ar1[i] && ar2[i]
+  print "ar1[i]=";p ar1[i]
+  print "ar2[i]=";p ar2[i]
+  if ar1[i]!=ar2[i]
+    #p i;p ar1[i];p ar2[i]
+    #print i.to_s+":"
+    begin
+      sdiffs = Diff::LCS.sdiff(ar1[i],ar2[i])
+    rescue
+      print "ar1=";p ar1[i]
+      print "ar2=";p ar2[i]
+    end
+    print "sdiffs=";p sdiffs
+    sdiffs.each_with_index{|f,j|
+      if f.new_element != f.old_element
+        new=(f.new_element=="\\" ? "\\\\" : f.new_element)
+        ar3<<[i,j,f.new_position,new,f.old_element]
+      end}
+  end}
+
+ar3.each{|e|
+  #print "e=";p e
+  if e[0]==y #同一行
+    if e[1]<=x+1 #文字が連続
+      x+=1
+      #r+=1 if e[3]
+      l+=1 if e[4]
+      mp+=e[3].to_s
+      mm+=e[4].to_s
+      #x0=x0+r-l
+    else #文字が非連続
+      ar4<<[y,x0,l,mp,mm]
+      x,x0,mp,mm=e[1],e[2],e[3].to_s,e[4].to_s
+      #r+=1 if e[3]
+      l=(e[4] ? 1 :0)
+    end
+  else #行が変わると
+    ar4<<[y,x0,l,mp,mm]
+    x,y,x0,mp,mm=e[1],e[0],e[1],e[3].to_s,e[4].to_s
+    #r=(e[3] ? 1 :0)
+    l=(e[4] ? 1 :0)
+  end  }
+#ar4<<[y,x0,r,l,mp,mm]
+ar4<<[y,x0,l,mp,mm]
+ar4.map{|e| print "ar4=";p e}
+
+# 秀丸マクロ作成
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print "\uFEFF"
+macro.puts %|
+setcompatiblemode 0x20030;
+#hwnd = hidemaruhandle(0);
+#c= hidemarucount;#i=0;#flg=0;
+$file="#{file1.gsub("/","\\\\\\")}";
+while(#i<#c){
+  $fn[#i]=filename[#i];
+  if(filename[#i]==$file){#flg=1;break;}
+  #i=#i+1;
+}
+
+if(#flg==0){
+  openfile $file;
+  selectall;
+  colormarker 0x000000, 0xc2c79e, 11, 1;
+  escape;}
+setactivehidemaru findhidemaru($file);
+closehidemaruforced #hwnd;
+begingroupundo;disabledraw;\n|
+# ar4⇒[[y,x0,l,mp,mm]‥‥]
+ar4.each{|e| 
+  move=(e[1]==0 ? %Q|moveto2 0,#{e[0]+1};| : %Q|moveto2 0,#{e[0]+1};right #{e[1]}|)
+  if (e[3]=="" && e[4]!="") # 文字削除 #e[2]=>l  e[3]=>mp e[4]=>mm
+    macro.puts %Q|#{move};beginsel;right #{e[2]};delete;backspace;undo;|
+  elsif (e[3]!="" && e[4]!="") #文字変更
+    macro.puts %Q|#{move};beginsel;right #{e[2]};insert "#{e[3]}";|
+  elsif e[3]!="" #文字追加
+    macro.puts %Q|#{move};insert "#{e[3]}";|
+  end}
+macro.puts %|
+endgroupundo;gofiletop;enabledraw;goupdatedown;endmacro;\n|
+
+#spawn(%Q|"#{hide}" /h /fu8 /x "#{mac}"|)
+
+__END__
+*/
+

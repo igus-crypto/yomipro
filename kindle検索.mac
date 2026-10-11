@@ -1,0 +1,9 @@
+//kindle検索
+
+if(!selecting)endmacro;
+copy2;
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+// message $uwsc+" "+currentmacrodirectory+"\\\\kindle検索.uws";
+run $uwsc+" "+currentmacrodirectory+"\\\\kindle検索.uws";

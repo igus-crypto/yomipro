@@ -1,0 +1,22 @@
+//矩形選択
+
+//message str(linecount2);
+//message str(lineno);endmacro;
+//searchdown "^$",regular;
+//searchdown "^.",regular;
+//if(linecount2-lineno<2)moveto 21,0;
+disabledraw;
+#x=column;#y1=lineno;
+#n=46;
+#b=split($b,basename,"y");
+if(#b>1)#n=30;
+//$s ="x="+str(#x)+"\n";
+//$s =$s+"y="+str(#y)+"\n";
+//$s =$s+"y1="+str(#y1)+"\n";
+//$s =$s+"b="+str(#b)+"\n";
+//message $s;endmacro;
+moveto2 0,#y1+8;beginsel;moveto2 0,linecount2-12;fold;
+moveto2 21,#y1;
+//beginrect;gofileend;#y=y;moveto2 #n+21,#y;
+beginrect;moveto2 #n+21,linecount2-1;
+enabledraw;

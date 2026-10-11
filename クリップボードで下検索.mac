@@ -1,0 +1,3 @@
+beginclipboardread;
+$txt = getclipboard();
+searchdown $txt ,hilight;finddown;

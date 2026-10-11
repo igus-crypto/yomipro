@@ -1,0 +1,23 @@
+﻿//ファイルを閉じる
+
+list="置換リスト01【直接置換】.txt<#CR>"
+
+
+Dim list1[]="いいえ","セーブして閉じる","ソートしてセーブ","ソートしてセーブして閉じる"
+ans=SLCTBOX(SLCT_BTN or SLCT_NUM,0,1000,200,list+"<#CR>置換リストファイルを閉じますか？",list1)
+
+SELECT ans
+CASE -1
+	exit
+CASE 0
+	exit
+SELEND
+
+dir=REPLACE(GET_UWSC_NAME,"ファイルを閉じる.uws","")
+//MSGBOX(dir)
+//MSGBOX(dir+"close_file.rbw ")
+//MSGBOX(ans)
+
+//EXEC("rubyw "+dir+"close_file.rbw "+ans,false)
+EXEC("rubyw "+dir+"close_file.rbw "+ans,1)
+

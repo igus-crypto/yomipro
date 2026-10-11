@@ -1,0 +1,76 @@
+﻿//上へ移動.mac
+
+#alt=0;
+if(iskeydown(0x12)){#alt=1;}
+
+disabledraw;begingroupundo;
+if(#alt==1){
+  selectline 1;cut;
+  searchup "^$",regular;
+  if(!result){gofiletop;insert "\n";up;paste;}else{down;paste;}
+}else{
+  #x=x;#y=y;disabledraw;begingroupundo;
+  selectline 1;
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  //message str(#ty)+"/"+str(#ey);endmacro;
+  selectall;copy;
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#ty)+" "+str(#ey-1);
+  moveto #x,#y;
+  execmacro directory + "\\tmp.mac";
+}
+enabledraw;endgroupundo;
+endmacro;
+
+// #y=y;selectline 1;copy2;delete;
+// searchup "^$",regular;paste;moveto 0,#y;
+// endmacro;
+
+// copy2;delete;
+// runsync2 "rubyw -x "+currentmacrofilename;
+// paste;
+// endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp_99r.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+ar=cbd.getText.split(%r|\R|)
+
+n1,n2,s=ARGV[0].to_i,ARGV[1].to_i,""
+st="\uFEFFbegingroupundo;disabledraw;\n"
+n3=n2;
+print "n1=";p n1
+print "n2=";p n2
+p n2
+p ar[n2]
+if %r|([\p{Han}]+)|=~ar[n2]
+  s=$1
+end
+if s==""
+  st+="endmacro;"
+else
+  while n3>=0
+    if %r|#{s}|=~ar[n3]
+      n3=n3-1
+    else
+      break
+    end
+  end
+  st+=%Q|#x=x;#y=y;moveto 0,#{n1};beginsel;moveto 0,#{n2};golineend2;|
+  st+=%Q|selectline 1;cut;moveto 0,#{n3};#code=code;golineend2;|
+  st+=%Q|if(#code!=13){insert "\\n";}|
+  st+=%Q|paste;moveto #x,#y;|
+end
+File.write("tmp.mac",st)
+
+__END__
+*/
+

@@ -1,0 +1,94 @@
+//拗音変換
+
+//alt             :拗音変換
+//alt+ctrl        :「０-９・ー」を「0-9/-」に変換
+//alt+ctrl+shift  :全角を半角に変換
+
+//unicode
+//ー:12540
+//・:12539
+
+disablebreak;
+disabledraw;begingroupundo;
+#fs=0;#fc=0;#fa=0;
+if(iskeydown(0x10))#fs=1;
+if(iskeydown(0x11))#fc=1;
+if(iskeydown(0x12))#fa=1;
+
+if(selecting){copy2;}else{setclipboard "";}
+beginclipboardread;
+#fg=getclipboardinfo(1);
+if(#fg){ //矩形選択
+  if(seltopx==selendy){wordleft;}
+  #h1=hidemaruhandle(0);
+  copy2;openfile "/h";paste;
+  saveas currentmacrodirectory+"\\tmp99gm.txt";
+  #h2=hidemaruhandle(0);
+  selectall;copy2;
+  if(#fc) {runsync2 "rubyw -x "+currentmacrofilename+" z";}
+  else    {runsync2 "rubyw -x "+currentmacrofilename+" y";}
+  delete;paste;
+  setactivehidemaru #h1;cut;
+  setactivehidemaru #h2;
+  gofiletop;beginrect;gofileend;copy2;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  setactivehidemaru #h1;pasterect;
+  $s1=getclipboard;
+  beginrect;moveto x+#dx-#px,y+#dy-#py;
+  closehidemaruforced #h2;
+}else{
+  if(selecting){
+    if(seltopx==selendx){wordleft;}
+  }else{
+    if(#fc){#x=x;#y=y;beginsel;moveto 0,#y;}
+    else{beginsel;left;}}
+  cut;
+  if(#fc) {runsync2 "rubyw -x "+currentmacrofilename+" z";}
+  else    {runsync2 "rubyw -x "+currentmacrofilename+" y";}
+  //runsync2 "rubyw -x "+currentmacrofilename;
+  #x=x;#y=y;paste;$s1=getclipboard;
+  if(#fs==1){ //shiftキーが押されてたら選択
+    beginsel;moveto #x,#y;}
+}
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+if(rectselecting){escape;moveto #px,#dy;beginrect;moveto #dx,#py;}
+if(#fs==0){escape;}
+enablebreak;
+endgroupundo;enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+opt=ARGV[0]
+print "opt=";p opt
+print "st=";p st;
+if /^y/=~opt #拗音変換
+  print "st=";p st
+  st=st.tr("ぁぃぅぇぉっゃゅょあいうえおつやゆよァィゥェォッャュョアイウエオツヤユヨへはふらぢひをさづ",
+    "あいうえおつやゆよぁぃぅぇぉっゃゅょアイウエオツヤユヨァィゥェォッャュョえわうろじいおそず").
+    tr('0-9０-９','０-９0-9')
+    #tr('a-zA-Z0-9ａ-ｚＡ-Ｚ-０-９','ａ-ｚＡ-Ｚ-０-９a-zA-Z0-9')
+    #tr('\-\=－＝','－＝\-\=')
+    #tr('-+*?<>()－＋＊？＜＞（）','－＋＊？＜＞（）-+*?<>()')
+    #tr('\-\=\+\*\?\<\>\(\)\#\-\/－＝＋＊？＜＞（）＃ー・','－＝＋＊？＜＞（）＃ー・\-\=\+\*\?\<\>\(\)\#\-\/')
+  print "st=";p st
+elsif /^z/=~opt
+  st=st.tr("ー・（）？＜＝！＃０-９","-/()?<=!#0-9")
+end
+cbd.setText(st)
+
+__END__
+*/
+
+
+

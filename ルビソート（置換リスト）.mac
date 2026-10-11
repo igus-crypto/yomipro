@@ -1,0 +1,46 @@
+//ルビソート（置換リスト）
+
+begingroupundo;disabledraw;
+if(!selecting)selectall;
+cut;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;movetolineno 1,3;
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_s99.txt","w")
+$stderr=open("tmp_serr.txt","w")
+
+require 'clipboard'
+
+cbd=ClipBoard.new(__ENCODING__)
+arr=cbd.getText.gsub(%r| =>.*|,"").split(%r|\R|)
+arr=arr.grep_v(/^$|^最終更新日：/)
+a1,a2=arr.uniq.map{|e| %r|,[a-z0-9]+$|=~e ? e : e+",p0"}.partition{|e| %r|,f$|=~e}
+s1=a1.group_by{|x| x.count(",")}.map{|_,a| #ルビの除去と置き換え
+  a.sort_by{|x|
+    b=x.split(",")
+    [-b[0].length,-b[1].length,b[0]]
+  }.join("\n")
+}.join("\n\n")
+s2=a2.group_by{|x| x.split(",")[2]}.sort.map{|_,a|
+  a.sort_by{|x|
+    b=x.split(",")
+    [-b[0].length,-b[1].length,b[0]]
+  }.join("\n")
+}.join("\n\n").gsub(",p0","")
+
+st=s1+"\n\n"+s2+"\n\n"
+cbd.setText(st)
+
+__END__
+*/
+
+
+

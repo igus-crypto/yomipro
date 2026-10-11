@@ -1,0 +1,125 @@
+* 概要
+自動で読み上げさせるときに、できるだけ読み間違いがなく自然な日本語に聞こえるように秀丸マクロや ruby スクリプトを駆使してテキストを編集します。
+
+* 使用してるもの
+
+** [[yomipro.zip>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/yomipro.zip]]
+自作の秀丸マクロ、ruby、uwsc のスクリプト集~
+解凍して秀丸のマクロフォルダーに入れる~
+
+** [[秀丸>https://hide.maruo.co.jp/software/hidemaru.html]]
+Windows 上で動作するテキストエディタ
+
+** [[ruby>https://www.ruby-lang.org/ja/]]
+オブジェクト指向スクリプト言語
+
+** [[calibre>https://calibre-ebook.com/]]
+オープンソースの電子書籍管理ツール
+
+** [[UWSC>https://www.vector.co.jp/soft/winnt/util/se115105.html]]
+Windowsの作業を自動化するツール
+
+** [[Moon+ Reader Pro>https://play.google.com/store/apps/details?id=com.flyersoft.moonreaderp&hl=ja]]
+アンドロイド端末で動作する電子ブックリーダー
+
+** [[adb>https://developer.android.com/studio/command-line/adb?hl=ja]]
+コマンドライン ツール
+
+* 初期設定
+** yomipro
+- [[yomipro.zip>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/yomipro.zip]]を解凍して秀丸のマクロフォルダに入れる~,
+
+- ''config.ini''を編集~
+''秀丸''、''UWSC''、''send''、''adb'' のパスを環境に応じて編集する
+
+** ruby
+- [[rubyインストーラー>https://rubyinstaller.org/downloads/]]を使って ruby をインストール~
+rubyinstaller-devkit-2.6.5-1-x64.exeを実行~
+ファイル名はバージョンや64ビット版か32ビット版かで変わってきます。~
+
+- gem でライブラリをインストール。~
+コマンドラインから
+ gem install diff-lcs -v 1.3
+ gem install inifile
+ gem install romkan
+ gem install win32ole
+
+- [[TEXCELL Ruby用クリップボードライブラリ>https://www.texcell.co.jp/ruby/Lib/rubyClipBoard.html]]をインストール
+-- [[clipboard_v100.7z>https://www.texcell.co.jp/ruby/Lib/clipboard_v100.7z]] をダウンロード
+-- [[lhaplus>https://forest.watch.impress.co.jp/library/software/lhaplus/]]などで解凍
+-- できた clipboard.rb を C:\Ruby\lib\ruby\site_ruby\2.X.X とかにコピー
+
+
+** 秀丸
+***hmonig.dllをインストール
+-hmonig_0870.zipをダウンロードして展開しhmonig.dllなどを秀丸エディタ本体と同じ場所に置く
+-メニューの「その他」→「動作環境」→「環境」→「正規表現」→「DLLの変更」ボタンから「hmonig.dll」を指定
+
+*** マクロ登録
+- 「マクロ」-「マクロ登録」から「マクロメニュー01.mac」「マクロメニュー02.mac」「test.mac」をマクロを登録
+
+*** マクロメニュー登録
+- 「その他」-「メニュー編集」-「ユーザーメニュー」から「ﾒﾆｭｰ8：右ボタン」と「選択中右ボタン」に「マクロメニュー01.mac」と「マクロメニュー02.mac」を登録
+
+*** キー割り当て
+- 「その他」-「キー割り当て」から「test.mac」を適当なキーに登録
+-- 「文字を変換」などでマクロを連続して使いたいときのための一時的なマクロです。
+-ついでに「下の編集マーク」と「上の編集マーク」をどれかのキーに割り当てると編集箇所に跳べるようになって便利。
+
+** adb
+''Android Studo''をインストールして ''adb'' を使えるようにしておくと、読み上げチェックの際に USB接続でPCとAndroid端末のデータをやりとりする際に便利。
+
+* 作業の大体の流れ
+
+** 作業用テキストの準備
+- オリジナルのテキストを''UTF-8(BOM付き)''で保存して作業用テキストを準備する。
+
+** ルビの編集
+- ''置換リスト''を使ってルビの除去、修正、追加を行う。
+- 怪しい箇所は実際に読み上げさせて確認する。
+
+** 読み上げファイルの生成
+- 作業用テキストから読み上げ用テキストを生成する。
+
+** 聴く
+- ''Moon+ Reader Pro'' で聴く。
+- 読み間違いに気がついたらハイライトしておく。
+
+** 修正
+- ハイライトを取り込んで読み間違いを修正する。
+- 読み間違いを置換リストにフィードバックする。
+
+* 置換リスト
+- ''google tts'' 用の置換ファイル。
+- 以前は読み間違えてたはずなのに、いつの間にか直ってたりするものもあります。
+- 最初は単純置換用ひとつだった置換リストも正規表現を使えるようにしたり、ルビチェック用やら読み上げチェック用などと増えていき現在１３個。どういうのが読み間違いとなるか分かるように置いておきます。
+
+- [[置換リスト00【事前チェック】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace00.txt]]
+- [[置換リスト01【直接置換】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace01.txt]]
+- [[置換リスト02【ルビチェック】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace02.txt]]
+- [[置換リスト03【数字関連】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace03.txt]]
+- [[置換リスト04【五文字以上】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace04.txt]]
+- [[置換リスト05【四文字】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace05.txt]]
+- [[置換リスト06【三文字】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace06.txt]]
+- [[置換リスト07【二文字以下】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace07.txt]]
+- [[置換リスト08【パターン１】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace08.txt]]
+- [[置換リスト09【パターン２】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace09.txt]]
+- [[置換リスト10【チェック項目】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace10.txt]]
+- [[置換リスト11【読み上げ】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace11.txt]]
+- [[置換リスト12【最終チェック】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace12.txt]]
+- [[置換リスト13【英数字チェック】.txt>http://pansy.s1010.xrea.com/wp-content/uploads/yomi/replace13.txt]]
+
+
+*開発履歴メモ
+- 2018.8 Audible定額聴き放題からコイン制に移行。この頃からテキスト読み上げに興味を持ち talkbackとか色々試す。
+- 2019.9 読み間違いを何とかしたいと思って秀丸マクロでテキストの加工を始める。最初は全て秀丸マクロで作ってたけど途中で挫折。ややこしい処理は ruby に丸投げしたらスッキリした。
+- 2019.12 moon+ reader pro に出会う。
+- 2020.8 青空文庫作品を読み上げ用に加工してホームページにアップし始める。公開にあたっては青空文庫や著作権情報センターに問題ないかを問い合わせるなどした。
+- 2021.6 これまで作成した秀丸マクロなどを''読み上げプロジェクト''として公開。
+- 2021.11 処理をバッチ化してみる。
+- 2022.1 Audible定額聴き放題復活（一部コンテンツを除く）。
+- 2022.5 なろうとカクヨムに対応を始める。
+- 2026.11 githubで管理する。
+
+----
+[[PANSY]]

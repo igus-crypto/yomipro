@@ -1,0 +1,88 @@
+﻿//バッチ処理自動
+
+#hwnd= hidemaruhandle(0);
+$f1=filename;
+runsync2 "ruby -x "+currentmacrofilename+" c "+$f1;
+runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\aozora04【ログ削除】.bat";
+appendsave currentmacrodirectory+"\\bat\\log\\"+basename;
+runsync2 "ruby -x "+currentmacrofilename+" a";
+//runsync2 currentmacrodirectory + "\\bat\\aozora01【連続処理全体】.bat";
+$r1="ruby -x "+currentmacrodirectory + "\\bat\\青空01【UTF作成】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空02【注釈除去】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空03【直接置換】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空04【ルビ除去１】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空05【ルビ置換１】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空06【ルビ置換２】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空07【ルビ除去２】.bat"+" && ";
+$r1=$r1+"ruby -x "+currentmacrodirectory + "\\bat\\青空08【ルビ置換３】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空01【UTF作成】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空02【注釈除去】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空03【直接置換】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空04【ルビ除去１】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空05【ルビ置換１】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空06【ルビ置換２】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空07【ルビ除去２】.bat";
+//runsync2 "ruby -x "+currentmacrodirectory + "\\bat\\青空08【ルビ置換３】.bat";
+runsync2 "cmd /c "+$r1;
+runsync2 "ruby -x "+currentmacrofilename+" b "+$f1;
+execmacro currentmacrodirectory + "\\tmp.mac";
+closehidemaruforced #hwnd;
+
+//quit;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+require 'inifile'
+require 'clipboard'
+require 'win32ole'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+gfl1=ini["grep"]["file_1"]
+
+opt=ARGV[0]
+f1=ARGV[1].encode(Encoding::UTF_8).gsub("\\","/")
+
+if /a/=~opt
+  mac=open("tmp.mac","w:utf-8")
+  mac.print("\uFEFF")
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("logフォルダにコピーしました",1)
+elsif /b/=~opt
+  f1=f1.gsub(%r|.txt$|,"_u6.txt")
+  #f1=ARGV[1].encode(Encoding::UTF_8).gsub(%r|.txt$|,"_u6.txt")
+  print "f1=";puts f1
+  mac=open(__dir__+"/tmp.mac","w:utf-8")
+  f2=File.dirname(gfl1)+"/"+File.basename(f1)
+  f3=f2.gsub("/","\\\\\\")
+  f4=__dir__+"/bat/log/"+File.basename(f1)
+  f4=f4.gsub("/","\\\\\\")
+  print "f1=";p f1
+  print "f2=";p f2
+  print "f3=";p f3
+  print "f4=";p f4
+  mac.print("\uFEFF")
+  mac.puts %Q|openfile "#{f4}";saveas "#{f3}";|
+  fi=open(__dir__+"/config.ini").readlines
+  fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f2}")}
+  File.write(__dir__+"/config.ini",fi.join)
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("対象ファイルを#{f2}に設定しました",1)
+elsif /c/=~opt
+  fi=open(__dir__+"/config.ini").readlines
+  fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f1}")}
+  File.write(__dir__+"/config.ini",fi.join)
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("対象ファイルを#{f1}に設定しました",1)
+end
+__END__
+*/
+
+

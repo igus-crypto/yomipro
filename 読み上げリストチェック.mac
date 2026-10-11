@@ -1,0 +1,113 @@
+﻿//読み上げリストチェック
+
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+
+Encoding.default_external = 'UTF-8'
+
+require "nkf"
+require 'inifile'
+require 'fileutils'
+
+class String
+  def tr2
+    self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')
+  end
+end
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(file_2))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+#cbd = ClipBoard.new(__ENCODING__)
+
+file=filename=ini["grep"]["file_1"]
+unless FileTest.file?(file)
+  file=filename=ini["grep"]["file_2"]
+  Dir.chdir(File.dirname(file))
+end
+file=File.expand_path(file)
+fl=open(file).read
+
+#出力ファイル準備
+ofs,num="tmp",1
+while FileTest.file?(ofn=ofs + num.to_s + ".txt")
+  num+=1
+end
+ofn=File.expand_path(ofs+ num.to_s + ".txt")
+
+#arr=cbd.getText.split("\r\n").
+#  uniq.reject{|e| /^[#\/]|^[\s―]*$/=~e}
+arr=open(__dir__+"/置換リスト/置換リスト11【読み上げ】.txt").read.split(%r|\R|).
+  filter{|e| %r|,y|=~e}.reject{|e| %r|^#|=~e}
+  #uniq.reject{|e| /^[#\/]|^[\s―]*$/=~e}
+print "arr=";p arr
+st,oya,ruby,com,rp=[],[],[],[],[]
+arr.each_with_index{|line,i|
+   line=line.gsub(/《[^《》]*》/){|s| s.gsub(" ","_spc_")}.
+    gsub(/\[[^\[\]]*\]/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}.
+    gsub(/\{[^{}]*\}/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}
+  st[i],oya[i],ruby[i],rp[i],com[i]=
+    /^([^,]*),?([^, ]*)?(,[rpys][0-9.]*)?(.*$)?/.match(line.chomp).to_a}
+oya=oya.map{|e| e.sub(/^!+/,"")}.map{|e| e.gsub(/_spc_/," ").gsub(/_cmm_/,",")}
+ruby=ruby.map{|e| e.gsub(/_spc_/," ").gsub(/_cmm_/,",")}
+
+arr3=[]
+arr2=arr.map.with_index{|e,i|
+  s1,s2=oya[i],ruby[i]
+  s1=s1.gsub("[^","[^《》")
+  #print "s1=";p s1
+  s1=(/[\p{Han}｜)]$/=~s1 ? s1+"(?![\\p{Han}｜]*《)" : s1+"(?!《)")
+  e=s1
+  }
+arr2.each_with_index{|e,i|
+  #oya=e[0]
+  #print "e=";puts e
+  if fl.match?(%r|#{e}|)
+    arr3 << arr[i] if /[《》]/!~fl.match(/#{e}/)[0] #マッチ部に「《》」を含まない
+  end}
+#print "arr3=";p arr3
+
+arr3=arr3.map{|e| e.gsub(/\\\?/,'?')}
+st=arr3.join("\n")+"\n"
+
+File.write(ofn,st)
+
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print("\uFEFF")
+mc =%Q|openfile "#{ofn}",utf8;\n|
+mc+=%Q|selectall;cut;\n|
+mc+=%Q|runsync2 "rubyw #{__dir__}/sort5.rbw ";\n|
+mc+=%Q|paste;gofiletop;\n|
+mc+=%Q|endgroupundo;save;endmacro;\n|
+macro.puts mc
+
+macro.close
+
+
+__END__
+*/

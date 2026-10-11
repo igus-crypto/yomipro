@@ -1,0 +1,66 @@
+//上の編集箇所
+
+#shi=0;#ctr=0;#yau=0;#yad=0;#yal=0;#yar=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctr=1;}
+if(iskeydown(0x25)){#yal=1;}
+if(iskeydown(0x26)){#yau=1;}
+if(iskeydown(0x27)){#yar=1;}
+if(iskeydown(0x28)){#yad=1;}
+
+
+disabledraw;
+if(#yau){
+  if(#shi && #ctr){
+    while(1){
+      if(!lineupdated){
+        goupdateup;
+        if(!result){beep;endmacro;}
+      }
+      if(getcolormarker(0x0002)!=""){
+        while(getcolormarker(0x0002)!=""){
+        left;
+        if(code==13)break;
+        if(getcolormarker(0x0002)==""){
+          while(getcolormarker(0x0002)=="")left;
+          right;endmacro;}
+        }
+      }else{
+        while(getcolormarker(0x0002)==""){left;if(x==0 && y==0)endmacro;}
+      }
+    }
+  }else if(#shi){
+    goupdateup;
+  }
+}else if(#yad){
+  //disabledraw;
+  if(#shi && #ctr){
+    //down;
+    while(code!=eof){
+      if(!lineupdated){
+        goupdatedown;
+        if(!result){beep;endmacro;}
+      }
+      if(getcolormarker(0x0002)!=""){
+        while(getcolormarker(0x0002)!=""){
+        right;
+        if(code==13)break;
+        if(getcolormarker(0x0002)=="")endmacro;
+        }
+      }else{
+        while(getcolormarker(0x0002)==""){#x=x;#y=y;right;if(#x==x && #y==y)endmacro;}
+        //while(getcolormarker(0x0002)==""){#x=x;#y=y;right;if(#x==x && #y==y)break;}
+        //golinetop2;endmacro;
+      }
+    }
+  }else if(#shi){
+    goupdatedown;
+  }
+  //message str(code);
+}else if(#yal){
+  golinetop2;
+}else if(#yar){
+  golineend2;
+}
+enabledraw;
+

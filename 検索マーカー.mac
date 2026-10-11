@@ -1,0 +1,58 @@
+﻿//検索マーカー
+
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+ag=cbd.getText.split(%r|\R|)
+
+st=open(__dir__+"/config.ini").read
+ar=st.split(/\R/)
+#.gsub(%r|color_num=color_\d+|,"color_num=color_1")
+
+n=ar.grep(/color_num=color_(\d+)/)[0].gsub("color_num=color_","").to_i
+print "n=";p n
+col=ar.grep(%r|color_#{n}=|)[0]
+print "col=";p col
+col+=1 if col==0
+col=col.to_s.gsub(%r|color_#{n}=|,"")
+col="0x"+col
+#mac=File.expand_path(__dir__+"/tmp.mac")
+mac="tmp.mac"
+print "mac=";p mac
+mc="\uFEFF"
+ag.each{|e|
+  mc+=%Q|setsearch "#{e}" ,0x00003800;\n|
+  mc+=%Q|colormarkerallfound 0x000000,#{col},-1,0,0;escape;\n|
+  }
+mc+=%Q|endmacro;\n|
+
+#mc+=%Q|$s=gettext(seltopx,seltopy,selendx,selendy, 1);\n|
+#mc+=%Q|setsearch $s , 0x34003800;\n|
+#mc+=%Q|colormarkerallfound 0x000000,#{col},-1,0,0;escape;\n|
+#mc+=%Q|runsync2 "rubyw -x 検索マーカー.mac";\n|
+#mc+=%Q|endmacro;\n|
+
+File.write(mac,mc)
+
+n=(n.to_i+1)%15+1
+st=st.gsub(/color_num=color_(\d+)/,"color_num=color_#{n}")
+File.write(__dir__+"/config.ini",st)
+
+__END__
+*/
+
+
+
+

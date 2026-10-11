@@ -1,0 +1,36 @@
+//ファイルをバックアップ.mac
+
+#x=x;#y=y;$f=filename+"~";selectall;copy;moveto #x,#y;
+// message $f+"\nにバックアップファイルを作成しました";
+runsync2 "rubyw -x "+currentmacrofilename+ " "+filename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+ar=cbd.getText.split(%r|\R|)
+
+p ARGV[0]
+f=File.basename(ARGV[0],".txt")
+p f
+i,ofile=1,""
+while FileTest.file?(ofile=f+"_"+sprintf("%#03d",i)+".txt")
+  i=i+1
+end
+p ofile
+File.write(ofile,ar.join("\n")+"\n")
+t=open("tmp.mac","w")
+t.puts %|message "#{ofile} にバックアップファイルを作成しました";|
+__END__
+*/
+

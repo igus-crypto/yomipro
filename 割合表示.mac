@@ -1,0 +1,59 @@
+﻿//割合表示.mac
+
+//shi:文字数カウント
+//alt:ファイルにコピペ
+
+#fs=0;#fa=0;
+if(iskeydown(0x10))#fs=1;
+if(iskeydown(0x12))#fa=1;
+
+if(#fs){ //文字数カウント
+  if(selecting){copy2;}else{#x=x;#y=y;selectall;copy;moveto #x,#y;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_count.rbw";
+}else{
+  disabledraw;
+  #x=x;#y=y;
+  $c=gettext(seltopx,seltopy,selendx,selendy,1);
+  beginsel;gofiletop;
+  $a=gettext(seltopx,seltopy,selendx,selendy,1);
+  selectall;
+  $b=gettext(seltopx,seltopy,selendx,selendy,1);
+  escape;moveto #x,#y;
+  #a=strlen($a);
+  #b=strlen($b);
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#a)+" "+str(#b);
+  enabledraw;
+  if(#fa){ //ファイルにコピペ
+    $f=browsefile("","*.*");
+    if($f=="")endmacro;
+    openfile $f;begingroupundo;gofileend;insert "\n"+$c+"\n";
+    paste;insert "\n";endgroupundo;
+  }
+}
+endmacro;
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'win32ole'
+require 'clipboard'
+wsh = WIN32OLE.new('Wscript.Shell')
+cbd=ClipBoard.new(__ENCODING__)
+
+a=ARGV[0].to_f
+b=ARGV[1].to_f
+c=(a*100000/b).to_i
+p c=c/1000.0
+t=Time.new
+y=t.year.to_s.gsub(/^../,"")
+s="#{c.to_s}%　"+y+t.strftime("/%m/%d　%H:%M:%S")
+cbd.setText(s)
+wsh.Popup(c,0,'',4096)
+__END__
+*/
+

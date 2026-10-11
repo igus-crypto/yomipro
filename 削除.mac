@@ -1,0 +1,130 @@
+﻿//削除.mac
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+#fc=0;
+
+setmenudelay 50;
+mousemenu
+"&0 【半角数字を削除】",    // 1
+"&1 【半角数字を-1】",      // 2
+"&O 【オプション】",        // 3
+"&8 【大括弧】",            // 4
+"&R 【ルビ】",              // 5
+"&S 【スペース後ろ】",      // 6
+"&K 【行末まで】",          // 7
+"&F 【フォールド範囲】",    // 8
+"&N 【ルビ内】",            // 9
+"&J 【改行】",              //10
+"&T 【ファイルトップ】",    //11
+"&E 【ファイルエンド】",    //12
+"&, 【, 以後】",            //13
+"&. 【ルビ前】",            //14
+"&: 【: 以後】",            //15
+"&D 【前のルビ】",          //16
+"&B 【後ろのルビの中】",    //17
+"&C 【=> の先のコメント】", //18
+"&/ 【第二候補以下】",      //19
+"&4 【末尾まで】",          //20
+"&W 【単語】";              //21
+
+#opt=result;
+begingroupundo;disabledraw;
+if(#opt==0){endmacro;}
+if(selecting){#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;}
+else{#px=x;#py=y;#dx=x;#dy=y;}
+if(#opt<7){call sub_moji #opt;}
+else if(#opt==7){escape;moveto #px,#py;beginsel;golineend2;delete;}
+else if(#opt==8){escape;searchup "^$",regular;beginsel;searchdown "^$",regular;delete;}
+else if(#opt==9){escape;searchdown2 "》";beginsel;searchup2 "《";right;delete;}
+else if(#opt==10){replaceallfast "\n\n+","\n",regular,inselect2;}
+else if(#opt==11){escape;beginsel;gofiletop;delete;}
+else if(#opt==12){escape;beginsel;gofileend;delete;}
+else if(#opt==13){
+  if(!selecting)selectline 1;
+  begingroupundo;replaceallfast ",.*","",regular,inselect2;endgroupundo;}
+else if(#opt==14){escape;moveto #dx,#dy;searchup2 "《";delete;}
+else if(#opt==15){
+  if(!selecting)selectall;
+  begingroupundo;replaceallfast ": .*",": ",regular,inselect2;endgroupundo;}
+else if(#opt==16){escape;
+  if(iskeydown(0x11))#fc=1; //ctrlでルビの中
+  if(#fc){
+    execmacro currentmacrodirectory+"\\前のルビの中を削除.mac";
+  }else{
+    execmacro currentmacrodirectory+"\\前のルビ削除.mac";
+  }}
+else if(#opt==17){escape;searchdown2 "《";right;beginsel;searchdown2 "》";delete;}
+else if(#opt==18){replaceallfast " =>.*"," =>",regular,inselect2;endmacro;}
+else if(#opt==19){
+  if(!selecting)selectline 1;
+  replaceallfast "//.* =>","=>",regular,inselect2;
+}
+else if(#opt==20){golinetop2;beginsel;gofileend;delete;save;}
+else if(#opt==21){escape;wordright2;beginsel;wordleft2;delete;}
+//escape;moveto #px,#py;
+endgroupundo;enabledraw;endmacro;
+
+sub_moji:
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  if(selecting){cut;}
+  #fg=getclipboardinfo(1);
+  #h1=hidemaruhandle(0);
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(##1);
+  openfile "/h "+currentmacrodirectory+"\\tmp99gm.txt";
+  #hn=hidemaruhandle(0);
+  if(#fg){gofiletop;beginrect;gofileend;up;golineend;copy2;}
+  else{selectall;copy2;}
+  setactivehidemaru #h1;
+  if(#fg){pasterect;}else{paste;}
+  closehidemaruforced #hn;
+  escape;moveto #px,#py;
+  endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+opt=ARGV[0]
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText.gsub(/\R/,"\n")
+
+#st=open(__dir__+"/tmp99gm.txt").read.chomp
+print "st=";p st
+if /1/=~opt
+  st=st.gsub(/[0-9]+/,"")
+elsif /2/=~opt
+  st=st.gsub(/[0-9]+/){|s| (s.to_i-1).to_s}.gsub(/(?<![0-9])[0](?![0-9])/,"")
+elsif /3/=~opt
+  #st=st.gsub(%r|,(?=[a-zA-Z0-9])|,"").gsub(%r|[a-zA-Z0-9]|,"")
+  #st=st.gsub(%r|(?<=[\p{Han}])》 =>|,"》,p16 =>")
+  st=st.gsub(%r|,[a-zA-Z0-9]+ |,",➕ ").
+    gsub(%r|(?<=[\p{Han}])》 =>|,"》,p16 =>").
+    gsub(",➕ "," ")
+elsif /4/=~opt
+  st=st.gsub(/[【】]/,"")
+elsif /5/=~opt
+  st=st.gsub(/《[^《》]*》|｜/,"")
+elsif /6/=~opt
+  st=st.gsub(%r| .*|," ")
+end
+print "st=";p st
+
+t=open(__dir__+"/tmp99gm.txt","w")
+t.print st
+
+__END__
+*/
+
+
+
+
+
+

@@ -1,0 +1,116 @@
+﻿//マクロ評価
+
+//message str(code);endmacro;
+
+$d=directory;
+#x=x;#y=y;
+
+begingroupundo;
+setmenudelay 300;
+mousemenu
+"&/ 【マクロ実行】",            // 1
+"&C 【マクロコピー】",          // 2
+"&R 【挿入置換】",              // 3
+"&K 【漢字取り出し】",          // 4
+"&B 【バッチファイル実行】",    // 5
+"&Z 【終了】";                  // 6
+
+//message str(result);
+//0x12:alt
+#fs=0;#fc=0;#fa=0;#x=x;#y=y;
+if(iskeydown(0x12))#fa=1;
+
+if(result==0){endmacro;
+}else if(result==1){  //【/】 マクロ実行
+  if(filetype==".mac"){
+    selectall;
+    $s=getselectedtext();
+    openfile "/h";insert $s;saveas "tmptmp.mac";
+    #hn=hidemaruhandle(0);
+    setactivehidemaru 1;
+    closehidemaruforced #hn;
+    escape;
+  }
+  if(existfile(directory+@"\tmptmp.mac")){
+    execmacro directory+@"\tmptmp.mac";
+    moveto #x,#y;
+  }
+}else if(result==2){  //【C】 マクロコピー
+  selectline 1;$s=getselectedtext();
+  openfile "/h";insert $s;saveas "tmptmp.mac";
+  #hn=hidemaruhandle(0);
+  setactivehidemaru 1;
+  closehidemaruforced #hn;
+  escape;
+}else if(result==3){  //【R】 挿入置換
+  execmacro currentmacrodirectory+"\\\\挿入置換.mac";
+}else if(result==4){  //【漢字取り出し】
+  copy2;
+  openfile "/h";paste;saveas "tmpk.txt",utf8,bom;;
+  #hn=hidemaruhandle(0);
+  setactivehidemaru 1;
+  closehidemaruforced #hn;
+  runsync2 "rubyw -x "+currentmacrofilename+" k "+str(#fa);
+  escape;gofileend;insert "\n";#x=x;#y=y;
+  insertfile "tmpk2.txt";
+  moveto #x,#y;golineend2;
+  if(imestate == 0){imeswitch};
+}else if(result==5){  //【B】 バッチファイル実行
+  selectall;$s=getselectedtext();
+  openfile "/h";insert $s;saveas "tmptmp.bat";
+  #hn=hidemaruhandle(0);
+  setactivehidemaru 1;
+  closehidemaruforced #hn;
+  escape;
+  runsync2  directory+"\\tmptmp.bat";
+}else if(result==6){  //【終了】 
+  endmacro;
+}
+endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99h.txt","w")
+$stderr=open("tmp_errh.txt","w")
+
+opt=ARGV[0]
+op2=ARGV[1].to_i
+if %r|r0|=~opt #旧タイプバックアップ
+  st=open("tmptmp.txt").readlines.map{|e| 
+    e.gsub(%r|\R|,"").gsub(%r|([^,]+),([^,]+)|){
+      %Q|selectcolormarker "a";\nreplaceallfast "#{$1}","#{$2}",inselect2;|}}
+  p st
+  s1 =%Q|\uFEFF\nsetcompatiblemode 0x00100000;\ndisabledraw;begingroupundo;\n|
+  s1+=%Q|colormarker 0x000000, 0xFFE645,11,0,1,"a";\n|
+  s1+=st.join("\n")
+  s1+=%Q|\nenabledraw;endgroupundo;\n|
+  s1+=%Q|escape;\n|
+  print "s1=";p s1
+  File.write("tmptmp.mac",s1)
+elsif %r|r|=~opt
+  st=open("tmptmp.txt").readlines.map{|e| 
+    e.gsub(%r|\R|,"").gsub(%r|([^,]+),([^,]+)|){
+      %Q|selectcolormarker "a";\nreplaceallfast "#{$1}","#{$2}",inselect2;|}}
+  p st
+  s1 =%Q|\uFEFF\nsetcompatiblemode 0x00100000;\ndisabledraw;begingroupundo;\n|
+  #s1+=%Q|colormarker 0x000000, 0xFFE645,11,0,1,"a";\n|
+  s1+=st.join("\n")
+  s1+=%Q|\nenabledraw;endgroupundo;\n|
+  s1+=%Q|escape;\n|
+  print "s1=";p s1
+  File.write("tmptmp.mac",s1)
+elsif %r|k|=~opt
+  a=open("tmpk.txt").read.gsub(%r|.* =>|,"").
+    scan(%r|[\p{Han}]+|).uniq.flatten
+  a=a.sort.sort_by{|e| -1*e.bytesize} if op2==0
+  p open("tmpk.txt").read.gsub(%r|.* =>|,"")
+  p a
+  s1=%Q|\uFEFF|+a.join(",\n")+",\n"
+  File.write("tmpk2.txt",s1)
+end
+__END__
+*/
+
+

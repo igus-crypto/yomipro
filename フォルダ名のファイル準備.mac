@@ -1,0 +1,32 @@
+﻿//フォルダ名のファイル準備
+
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+
+#encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_f.txt","w")
+$stderr=open("tmp_errf.txt","w")
+
+p s=Dir.pwd.split("/")[-1].encode(Encoding::UTF_8)
+
+File.write(s+".txt","") unless FileTest.file?(s+".txt")
+a="**"+"/"
+Dir.glob(a){|e|
+  unless FileTest.file?(e+s+".txt")
+    p e
+    File.write(e+s+".txt","")
+  end
+}
+
+st=%Q|\uFEFFmessage "#{s}.txt を作成しました";|
+File.write("tmp.mac",st)
+
+__END__
+*/

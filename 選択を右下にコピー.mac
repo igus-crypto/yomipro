@@ -1,0 +1,42 @@
+//選択を右下にコピー
+
+begingroupundo;disabledraw;
+if(!selecting){searchdown " ";beginsel;wordleft;left;}
+copy2;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endgroupundo;enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+require 'clipboard'
+
+opt=ARGV[0]
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+mac=open(File.expand_path("tmp.mac"),"w:utf-8")
+st=st.chomp.gsub(%r|p15|,"p16")
+print "st=";p st
+cbd.setText(st)
+mac.print("\uFEFF")
+if /^,[a-z0-9]+$/=~st
+  mac.puts %Q|delete;golineend2;right;searchdown " =>";|
+  mac.puts %Q|beginsel;wordleft2;left;|
+  mac.puts %Q|$str = gettext(seltopx,seltopy,selendx,selendy, 1);|
+  mac.puts %Q|if(leftstr($str,1)==","){paste;}else{right;right;paste;}|
+  mac.puts %Q|if(imestate == 1){imeswitch};|
+else
+  mac.puts %Q|copy;searchdown "=>";right;right;beginsel;golineend2;|
+  mac.puts %Q|paste;searchup "#{st}";beginsel;golineend2;|
+end
+__END__
+*/

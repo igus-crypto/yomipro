@@ -1,0 +1,75 @@
+//ルビ追加
+
+begingroupundo;
+#r=selecting;
+selectline 1;wordleft;copy;
+//runsync2 "rubyw "+currentmacrodirectory+"\\\\convert.rbw rb";
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\\\tmp.mac";
+execmacro currentmacrodirectory+"\\\\ルビソート（チェックリスト）.mac";
+save;gofiletop;searchdown "《",nohilight;golinetop2;endgroupundo;
+if(#r==1)endmacro;
+execmacro currentmacrodirectory+"\\\\読み上げプラス確認.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+
+st=cbd.getText
+
+bf=st.split(%r|\R|).grep(/!*([^ ,]+),([^ ,]+)(,([^ ,]+))?/)
+print "st=";p st
+print "bf=";p bf
+ar=bf.map{|e|a,b,c="","",""
+  if /!*([^ ,]+),(.*)$/=~e
+    a,b=$1,$2
+    if /([^ ,]+),([^ ,]+)/=~b
+      b,c=$1,$2
+    end
+    print "abc=";p [a,b,c]
+    c=b if /^[\+\-]/=~b and c==""
+    c=b.gsub(/,$/,"") if /,$/=~b and c==""
+    c=c.sub(/^,/,"")
+    print "abc=";p [a,b,c]
+   st=%Q|!#{e}\\n!#{a},#{a}《#{c}》 =>\\n| if c!=""
+   st=e if c==""
+    print "st=";p st if c!=""
+  end
+  print "e=";print e
+  cbd.setText(st)
+  [e.gsub("+","\\\\\\\\+"),st]
+  }
+puts ""
+ar.map{|e|
+  print "e0=";p e[0]
+  print "e1=";p e[1]}
+#ar=ar.reverse
+#print "ar=";p ar
+
+macro=open("tmp.mac","w:utf-8")
+macro.print("\uFEFF")
+macro.puts %|
+
+begingroupundo;
+disabledraw;
+|
+ar.each{|e|
+  macro.puts %|replaceallfast "^#{e[0]}$" , "#{e[1]}" ,regular;|}
+macro.puts %|
+enabledraw;endgroupundo;endmacro;
+|
+
+__END__
+*/
+

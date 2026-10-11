@@ -1,0 +1,120 @@
+﻿//文字変換
+
+$op=getarg(0);
+//  文字を変換;
+//y :拗音変換;
+//t :読点を半角;
+//e1:半角英数（小文字→大文字）
+//e2:半角英数（大文字→小文字）
+//e3:半角数字除去
+//r1:ルビ、オプション除去;
+//r2:ルビ分離;
+//r3:空ルビ除去;
+//ri:ルビ入れ替え;
+//rc:選択範囲をルビコピー;
+//o :親文字削除;
+//c :前後を削って連続複写;
+//m :置換元抜出し;
+//j :=> 除去
+//g :=> 記号を半角
+//p :=!〇〇,〇〇 => !〇〇,+〇〇
+
+//    \x01サンドイッチ・挿入;
+//s1  :《〇〇》;
+//s2  :（〇〇）;
+//s3  :｜〇〇《》;
+//s4  :[\p{Han}];
+//s5  :[ぁ-ん];
+//s6  :[ァ-ヴー]);
+//s7  :[一二三四五六七八九十];
+//s8  :spc*120;
+//s9  :【〇〇】;
+
+setcompatiblemode 0x00100000;
+#fs=0;
+if(iskeydown(0x10)){#fs=1;}else{#fs=0;}
+begingroupundo;
+
+if ($op=="g"){
+  //記号を半角
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  begingroupundo;disabledraw;copy2;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw "+$op;
+  beginclipboardread;
+  if (#fg){delete;pasterect;beginrect;moveto #dx,#dy;enabledraw;endgroupundo;}
+  else{delete;paste;beginsel;moveto #px,#py;enabledraw;endgroupundo;}
+}else if($op=="t"){
+  cut
+  #i = 0;
+  #j = 0;
+  $a[#i] = getclipboard;
+  $s="";
+  $str="";
+  while( $a[#i] != "" ) {
+    while(#j<=wcslen($a[#i])){
+      $s=wcsmidstr($a[#i],#j,1);
+      if($s=="、"){$str=$str+",";}
+      else{$str=$str+$s;}
+      #j=#j+1;
+    }
+    #j=0;#i=#i+1;
+    $a[#i] = getclipboard;
+  }
+  insert $str;
+}else if($op=="s3"){
+  begingroupundo;
+  $a="｜";
+  $b="《》";
+  if(selecting){$c=getclipboard();cut;insert $a;paste;insert $b;setclipboard $c;}
+}else if($op=="s4"){
+  begingroupundo;
+  $a="[\\p{Han}]";
+  $b="";
+  insert $a;
+}else if($op=="s5"){
+  begingroupundo;
+  $a="[ぁ-ん]";
+  $b="";
+  insert $a;
+}else if($op=="s6"){
+  begingroupundo;
+  $a="[ァ-ヴー]";
+  $b="";
+  insert $a;
+}else if($op=="s7"){
+  begingroupundo;
+  $a="[一二三四五六七八九十]";
+  $b="";
+  insert $a;
+}else if($op=="s8"){
+  begingroupundo;
+  $a="                                                                                                                        ";
+  $b="";
+  insert $a;
+}else{
+  if ($op=="y" && #fs==1){wordleft;}
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw "+ $op;
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+}
+endgroupundo;
+
+//yomi.macに書き出し
+runsync2 "rubyw -x "+currentmacrofilename+" "+$op;
+
+endmacro;
+
+/*/
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Dir.chdir(__dir__)
+st="\uFEFF"
+#st+=%Q|selectline 1;\n|
+st+=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","#{ARGV[0]}";\n|
+File.write("yomi.mac",st) unless /^rc|^ri/=~ARGV[0]
+
+__END__
+*/

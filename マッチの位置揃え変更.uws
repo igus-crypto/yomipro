@@ -1,0 +1,40 @@
+﻿//マッチの位置揃え変更
+
+Dim list1[]="キャンセル","0:揃えない","1:前揃え","2:後ろ揃え"
+ans=SLCTBOX(SLCT_BTN or SLCT_NUM,0,1000,200,"秀丸マクロメニュー",list1)
+
+SELECT ans
+CASE -1
+	exit
+CASE 0
+	exit
+SELEND
+
+//MSGBOX(ans-1)
+EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans,true)
+
+TEXTBLOCK ruby
+
+#! ruby
+
+#$stdout=open("tmp99.txt","w")
+#$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'inifile'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+ans=ARGV[0].to_i
+
+mac =%Q|searchdown "soroe=";\n|
+mac+=%Q|begingroupundo;beginsel;right 7;\n|
+mac+=%Q|insert "soroe=#{ans-1}";\n|
+mac+=%Q|endgroupundo;save;endmacro;\n|
+
+open("tmp.mac","w"){|m| m.puts "\uFEFF#{mac}"}
+spawn(%Q|"#{hide}" /x "#{__dir__}/tmp.mac" /m3x "#{__dir__}/config.ini"|)
+__END__
+ENDTEXTBLOCK

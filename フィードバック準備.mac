@@ -1,0 +1,44 @@
+//フィードバック準備
+
+runsync2 "rubyw -x "+currentmacrodirectory+"\\\\名前をつけて保存.mac s";
+execmacro directory + "\\tmp_a.mac";
+execmacro currentmacrodirectory+"\\\\日付フォルダを作成してコピー.mac";
+disabledraw;begingroupundo;
+execmacro currentmacrodirectory+"\\「%」など削除.mac";
+replaceallfast "《[+]","《",regular;
+replaceallfast "、《、/》(.)","、\\1《/\\1》",regular;
+runsync2 "rubyw -x "+currentmacrofilename;
+gofiletop;endgroupundo;enabledraw;save;
+runsync2 "rubyw -x "+currentmacrofilename+" "+filename;
+endmacro;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'win32ole'
+require 'fileutils'
+
+opt=ARGV[0]
+if opt
+  $stdout=open("tmp99f.txt","w")
+  $stderr=open("tmp_errf.txt","w")
+  d=opt.encode(Encoding::UTF_8).gsub("\\","/").gsub(%r|/[^/]+/[^/]+/[^/]+$|,"")
+  Dir.chdir(d)
+  if FileTest.file?("cat.bat")
+    spawn "cat.bat"
+  end
+else
+  #$stdout=open("tmp99f.txt","w")
+  #$stderr=open("tmp_errf.txt","w")
+  Dir.glob(%q|../|+%q|**|+%q|/tmp*|){|f|begin;FileUtils.rm(f);rescue;next;end}
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("tmpファイルを削除しました",1)
+end
+__END__
+*/
+
+

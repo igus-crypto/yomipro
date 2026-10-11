@@ -1,0 +1,111 @@
+﻿//英数字チェック
+
+openfile "/h "+currentmacrodirectory+"\\\\config.ini";
+saveas "tmp.ini";searchdown "file_1";selectline 1;
+replaceallfast "/","\\",inselect2;selectline 1;
+replaceallfast "file_1=","",inselect2;golinetop2;beginsel;golineend2;
+save;#hwnd=hidemaruhandle(0);
+$file=getselectedtext();
+if(findhidemaru($file)==-1){
+  openfile $file;
+}else{
+  setactivehidemaru findhidemaru($file);
+}
+closehidemaruforced #hwnd;
+//message $file;
+selectall;copy;#hwnd2=hidemaruhandle(0);
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmpc.mac";
+begingroupundo;beginclipboardread;selectall;cut;
+//runsync2 "rubyw "+currentmacrodirectory+"\\sort3.rbw";
+runsync2 "rubyw "+currentmacrodirectory+"\\sort1.rbw e";
+//closehidemaru #hwnd2;
+sleep 1000;
+closehidemaruforced #hwnd2;
+paste;endgroupundo;gofiletop;save;
+//message $file+"を閉じます","message",0,1000;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# check_eiji
+
+Encoding.default_external = 'UTF-8'
+
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+$stdout=open("tmp99e.txt","w")
+$stderr=open("tmp_erre.txt","w")
+
+i=1
+while FileTest.file?(ofile="tmp_"+sprintf("%#02d",i)+".txt")
+  i+=1
+end
+
+ofile=File.expand_path(ofile)
+ofl=open(ofile,"w")
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+class String
+  def suba
+    self.gsub(/(.)(?!$)/,'\1-').gsub(/-?・-?/,"-")
+  end
+end
+
+ar1=[]
+ar2=open(__dir__+"/置換リスト/置換リスト13【英数字チェック】.txt").
+  read.split(/\R/)[1..-1].compact.delete_if(&:empty?)
+p ar2
+
+#全角英字
+#arr=st.scan(/[ａ-ｚＡ-Ｚ＆・]{2,}(?![ａ-ｚＡ-Ｚ＆・《])/).uniq.
+#  reject{|e| e.gsub("・","").size<1}.sort.sort_by{|e| -e.size}
+arr=st.scan(/[ａ-ｚＡ-Ｚ＆・]{2,}(?![ａ-ｚＡ-Ｚ＆・《])/).uniq.
+  reject{|e| e.gsub("・","").size<1}.group_by{|e| e.size}.to_a.
+  transpose[1].to_a.reverse.map{|e| e.sort}.flatten
+print "arr=";p arr
+arr.each{|e| ar1<<%Q|#{e},｜#{e}《#{e.suba}》,p6.3 =>|}
+
+#半角英字
+arr=st.scan(%r|[a-zA-Zäü .,':/-]{2,}.|).reject{|e| %r|《$|=~e}.
+  map{|e| e.chop}.reject{|e| %r|^[ :-]+$|=~e}.uniq.sort.sort_by{|e| -e.size}
+arr.each{|e| ar1<<%Q|(#{e}),｜#{e}《》,p6.4 =>|}
+
+#半角数字
+arr=st.scan(/(?<![0-9])([0-9]{2,}(?:\p{Han}+|[ァ-ヴー]+|[^\p{Han}]....))/).
+  uniq.map{|e| e[0]}.reject{|e| /[0-9][《章年月日時分秒条項)]/=~e}.
+  sort.sort_by{|e| -e.size}
+print "arr=";p arr
+arr.each{|e| ar1<<%Q|(#{e}),#{e.gsub(/([0-9])(?=[0-9])/,'\1-')},s =>|}
+
+#全角数字
+arr=st.scan(/(?<![０-９])([０-９]{2,}(?:\p{Han}+|[^\p{Han}]))/).
+  uniq.map{|e| e[0]}.reject{|e| /[０-９][《章年月日時分秒条項)]/=~e}.
+  sort.sort_by{|e| -e.size}
+print "arr=";p arr
+arr.each{|e| ar1<<%Q|(#{e}),#{e.gsub(/([０-９])(?=[０-９])/,'\1-')},s =>|}
+print "ar1=";p ar1
+ar1=ar1.map{|e| e.gsub(/\R/,"")}
+ar1.delete_if{|e| ar2.include?(e.gsub(%r|,.*|,"").gsub(%r|^\(|,"").gsub(%r|\)$|,""))}
+ofl.puts ar1.join("\n")
+
+macro=%Q|openfile "#{ofile}";|
+File.write("tmpc.mac",macro)
+
+#mac=__dir__.gsub("/","\\")+"\\チェックリストのソート.mac"
+#print "mac=";p mac
+#Process.wait spawn(%Q|"#{hide}" /x #{mac} "#{ofile}"|)
+#spawn(%Q|"#{hide}" "#{ofile}"|)
+
+
+__END__
+*/

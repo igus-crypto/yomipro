@@ -1,0 +1,13 @@
+//読み上げ置換前後
+
+//selectline 1;copy;
+if(selecting){selectline 1;}else{selectall;}copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\grep9.rbw y2 ";
+//runsync2 "rubyw -x "+currentmacrofilename+" y2";
+if(strstr(filename,"tmp")==-1){
+execmacro directory + "\\tmp_g.mac";}
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";
+//gofileend;searchup "^$",regular;down;right 12;
+gofileend;searchup "^$",regular;down;#y=y;moveto 22,#y;
+

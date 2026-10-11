@@ -1,0 +1,7 @@
+//aozora2.mac
+
+selectall;copy;
+runsync2 "ruby "+ currentmacrodirectory+"\\replace\\aozora2.rb";
+execmacro directory+"\\tmp.mac";
+endmacro;
+

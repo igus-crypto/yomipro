@@ -1,0 +1,90 @@
+//前後を削って連続複写
+
+$op="";
+if(iskeydown(0x10))$op=$op+"s";
+if(iskeydown(0x11))$op=$op+"c";
+if(iskeydown(0x12))$op=$op+"a";
+if($op=="")$op="n";
+//message $op;endmacro;
+begingroupundo;selectline 1;cut;
+runsync2 "rubyw -x "+currentmacrofilename +" "+$op;
+#x=x;#y=y;paste;beginsel;moveto #x,#y;endgroupundo;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+
+opt=ARGV[0]
+print "opt=";p opt
+arr=st.split(/\R/)
+st=""
+arr=arr.map{|e| 
+  if /@/=~e
+    "山川海陸カタカナひらがな　".split("").map{|f| e.gsub(/@/,f)}
+  else
+    e
+  end}.flatten
+arr.each{|e|
+  #if %r|^n|=~opt && %r|^([^\p{Han}]*)?([\p{Han}](?:.*[\p{Han}])*)([^\p{Han}]*)?$|=~e
+  if %r|^([^\p{Han}]*)?([\p{Han}](?:.*[\p{Han}])*)([^\p{Han}]*)?$|=~e
+    a,b,c=$1,$2,$3
+    print %Q|a=|;p a
+    print %Q|b=|;p b
+    print %Q|c=|;p c
+    if /^(\d+)([^\d]*)/=~a
+      i=$1.to_i
+      a=$2
+    elsif /([ァ-ヴー]+)$/=~a
+      i=a.size-$1.size
+    else
+      i=a.size
+    end
+    if /([^\d]*)(\d+)$/=~c
+      c=$1
+      j=$2.to_i
+    elsif /^([ァ-ヴー]+$)/=~c
+      j=0
+    elsif /^([ァ-ヴー]+)/=~c
+      j=a.size-$1.size
+    else
+      j=c.size
+    end
+    if %r|c|=~opt
+      i=i-1 if i>0
+      j=j-1 if j>0
+    end
+    #i,j=a.size,c.size
+    print "i=";p i
+    print "j=";p j
+    (i+1).times{|m| (j+1).times{|n|
+      s2=(a+b+c).split("")[m..-n-1]
+      st+=(s2 ? s2.join+"\n" : "")}}
+  elsif /^([0-9]+)?([^0-9].*[^0-9])([0-9]+)?$/=~e
+    a,b,c=$1.to_i,$2,$3.to_i
+    (a+1).times{|m| (c+1).times{|n|
+      s2=b.split("")[m..-n-1]
+      st+=(s2 ? s2.join+"\n" : "")}}
+  else
+    st+=e+"\n"
+  end}
+
+print "st=";p st
+cbd.setText(st)
+
+__END__
+*/
+
+

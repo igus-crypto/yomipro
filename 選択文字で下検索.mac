@@ -1,0 +1,4 @@
+if(selecting){
+  $sel = gettext(seltopx,seltopy,selendx,selendy);
+  searchdown $sel ,hilight,loop;}
+else{finddown;}

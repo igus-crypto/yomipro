@@ -1,0 +1,236 @@
+﻿//秀丸マクロメニュー
+
+while 1
+  //メニュー選択
+  Dim list1[]="キャンセル","リストをたたむ","ルビの置換実行","grepの修正を反映",_
+    "漢字ごとにソート","チェックリストのソート",_
+    "置換リストをgrep","置換リストの修正反映","置換リストにコピペ",_
+    "grep(読み上げ用ルビ置換前)","grep(読み上げ用ルビ置換後)",_
+    "grep(読み上げ用ルビ置換前後)","google検索","kindle検索",_
+    "置換リストファイルを操作",_
+    "選択文字で次の秀丸を検索","置換リストの重複チェック",_
+    "ルビ入れ替え","選択範囲をルビコピー",_
+    "読みをルビ化（ルビ追加）","置換のリスト作成補助","タグジャンプサーチ"
+  ans1=SLCTBOX(SLCT_BTN or SLCT_NUM,0,1140,0,"秀丸マクロメニュー",list1)
+
+  mac=""    //マクロ
+  clist=""  //置換リスト
+
+  SELECT ans1
+  CASE -1
+    exit
+  CASE 0
+    exit
+  CASE 1
+    while 1
+      Dim list2[]="キャンセル","リストを開く"
+      ans2=SLCTBOX(SLCT_BTN or SLCT_NUM,0,1140,200,"秀丸マクロメニュー",list2)
+      SELECT ans2
+      CASE -1
+        exit
+      CASE 0
+        exit
+      CASE 1
+        break
+      SELEND
+    wend
+  CASE 8
+    Dim list3[]="キャンセル","【自動分配ＢＧ処理】","【自動分配】",_
+      "【直接置換】","【ルビチェック】","  【数字関連】",_
+      "【五文字以上】","【　四文字　】","【　三文字　】",_
+      "【二文字以下】","【パターン１】","  【パターン２】",_
+      "【チェック項目】","【読み上げ】","【最終チェック】",_
+      "【英数字チェック】","リスト選択"
+    ans3=SLCTBOX(SLCT_BTN or SLCT_NUM,0,1000,200,"置換リストにコピペ",list3)
+    SELECT ans3
+    CASE -1
+      CONTINUE 1
+    CASE 0
+      CONTINUE 1
+    CASE 1
+      clist="auto1"
+    CASE 2
+      clist="auto2"
+    CASE 3
+      clist="置換リスト01【直接置換】.txt"
+    CASE 4
+      clist="置換リスト02【ルビチェック】.txt"
+    CASE 5
+      clist="置換リスト03【数字関連】.txt"
+    CASE 6
+      clist="置換リスト04【五文字以上】.txt"
+    CASE 7
+      clist="置換リスト05【四文字】.txt"
+    CASE 8
+      clist="置換リスト06【三文字】.txt"
+    CASE 9
+      clist="置換リスト07【二文字以下】.txt"
+    CASE 10
+      clist="置換リスト08【パターン１】.txt"
+    CASE 11
+      clist="置換リスト09【パターン２】.txt"
+    CASE 12
+      clist="置換リスト10【チェック項目】.txt"
+    CASE 13
+      clist="置換リスト11【読み上げ】.txt"
+    CASE 14
+      clist="置換リスト12【最終チェック】.txt"
+    CASE 15
+      clist="置換リスト13【英数字チェック】.txt"
+    CASE 16
+      clist="置換リスト*.txt"
+    SELEND
+  CASE 16
+    //ans16=MSGBOX("置換リストファイルをソートしますか？",12)
+    //SELECT ans16
+    //CASE 4
+      EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans1+" "+clist,true)
+      CONTINUE
+    //CASE 8
+    //  CONTINUE
+    //SELEND
+  SELEND
+  
+  //MSGBOX(ans1)
+  //MSGBOX(clist)
+  EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans1+" "+clist,true)
+  CONTINUE
+wend
+ACW(GETID("秀丸","Hidemaru32Class"))
+
+TEXTBLOCK ruby
+
+#! ruby
+
+$stdout=open("tmp99u.txt","w")
+$stderr=open("tmp_erru.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'fileutils'
+require 'inifile'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+uwsc=ini["path"]["uwsc"]
+uwsc=uwsc.gsub("/","\\\\\\")
+
+opt,list,rep=ARGV[0].to_i,ARGV[1],0
+list=list.encode(Encoding::UTF_8) if list
+p opt;p list
+if opt==2 #ルビの置換
+  mac=%Q|execmacro currentmacrodirectory+"\\\\ルビの置換実行.mac";|
+  rep=0
+elsif opt==3 #grepの修正を反映
+  mac=%Q|execmacro currentmacrodirectory+"\\\\grepの修正を反映.mac";|
+  rep=0
+elsif opt==4 #漢字ごとにソート
+  mac=%Q|execmacro currentmacrodirectory+"\\\\ルビソート（漢字ごと）.mac";|
+  rep=0
+elsif opt==5 #チェックリストのソート
+  mac =%Q|begingroupundo;beginclipboardread;selectall;cut;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\sort3.rbw";\n|
+  mac+=%Q|paste;endgroupundo;gofiletop;\n|
+  rep=1
+elsif opt==6 #置換リストをgrep
+  mac=%Q|execmacro currentmacrodirectory+"\\\\置換リストをgrep.mac";|
+  rep=0
+elsif opt==7 #置換リストの修正反映
+  mac=%Q|execmacro currentmacrodirectory+"\\\\置換リストの修正反映.mac";|
+  #mac =%Q|selectall;copy;\n|
+  #mac+=%Q|runsync2 "ruby "+currentmacrodirectory+"\\\\diff2.rbw "+filename;\n|
+  #mac+=%Q|execmacro directory + "\\\\tmp.mac";\n|
+  rep=0
+elsif opt==8 #置換リストにコピペ
+  if /auto/=~list #自動分配
+    mac =%Q|if(selecting){selectline 1;wordleft;copy;#sel=1;}else{#sel=0;}\n|
+    mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\sort4.rbw b";\n| if /auto1/=~list
+    mac+=%Q|run "rubyw "+currentmacrodirectory+"\\\\sort4.rbw c";\n| if /auto2/=~list
+    mac+=%Q|execmacro directory + "\\\\tmp.mac";\n|
+  else
+    mac =%Q|if(selecting){selectline 1;wordleft;copy;#sel=1;}else{#sel=0;}\n|
+    mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw b";\n|
+    mac+=%Q|$fl=currentmacrodirectory+"\\\\置換リスト\\\\#{list}";\n|
+    mac+=%Q|if(findhidemaru($fl)==-1){openfile $fl;}\n|
+    mac+=%Q|setactivehidemaru findhidemaru($fl);\n|
+    mac+=%Q|if(#sel==1){gofiletop;begingroupundo;paste;insert "\\n";endgroupundo;}\n|
+  end
+  rep=0
+elsif opt==9 #grep(読み上げ用ルビ置換前)
+  mac =%Q|selectline 1;wordleft;copy;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep9.rbw y1 ";\n|
+  mac+=%Q|if(strstr(filename,"tmp")==-1){\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";}\n|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";\n|
+  rep=0
+elsif opt==10 #grep(読み上げ用ルビ置換後)
+  mac =%Q|selectline 1;wordleft;copy;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep9.rbw y3 ";\n|
+  mac+=%Q|if(strstr(filename,"tmp")==-1){\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";}\n|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";\n|
+  rep=0
+elsif opt==11 #grep(読み上げ用ルビ置換前後)
+  mac =%Q|selectline 1;wordleft;copy;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep9.rbw y2 ";\n|
+  mac+=%Q|if(strstr(filename,"tmp")==-1){\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";}\n|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";\n|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";\n|
+  rep=0
+elsif opt==12 #google検索
+  mac =%Q|if(selecting){\n$sel=gettext(seltopx,seltopy,selendx,selendy,1);\n|
+  mac+=%Q|run "cmd /c start chrome --incognito http://www.google.co.jp/search?q="+$sel+">nul";}|
+  rep=0
+elsif opt==13 #kindle検索
+  mac =%Q|copy2;\n|
+  mac+=%Q|run "#{uwsc} "+currentmacrodirectory+"\\\\kindle検索.uws";\n|
+  rep=0
+elsif opt==14 #置換リストファイルを操作
+  mac=%Q|execmacro currentmacrodirectory+"\\\\置換ファイルを操作.mac";|
+  rep=0
+elsif opt==15 #選択文字で次の秀丸を検索
+  mac =%Q|if(selecting){\n|
+  mac+=%Q|$seltext = gettext(seltopx,seltopy,selendx,selendy);\n|
+  mac+=%Q|setactivehidemaru 1;setsearch $seltext ,0x35003800;finddown;\n|
+  mac+=%Q|colormarkerallfound;escape;}\n|
+  mac+=%Q|else{endmacro;}\n|
+  rep=1
+elsif opt==16 #置換リストの重複チェック
+  mac=%Q|execmacro currentmacrodirectory+"\\\\置換ファイルを操作.mac";|
+  rep=0
+elsif opt==17 #ルビ入れ替え
+  mac =%Q|selectline 1;wordleft;cut;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw ri";\n|
+  mac+=%Q|paste;\n|
+  p mac
+  rep=1
+elsif opt==18 #選択範囲でルビコピー
+  mac =%Q|\n;selectline 1;wordleft;\n|
+  mac+=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","rc";\n|
+  p mac
+  rep=0
+elsif opt==19 #読みをルビ化（ルビ追加）
+  mac =%Q|execmacro currentmacrodirectory+"\\\\ルビ追加.mac";\n|
+  rep=1
+elsif opt==20 #置換のリスト作成補助
+  mac =%Q|begingroupundo;beginclipboardread;selectline 1;wordleft;cut;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw l";\n|
+  mac+=%Q|paste;endgroupundo;\n|
+  rep=1
+elsif opt==21 #タグジャンプサーチ
+  mac=%Q|execmacro currentmacrodirectory+"\\\\タグジャンプサーチ.mac";|
+  rep=0
+end
+
+File.write("yomi.mac","\uFEFF"+mac) if rep==1 #繰り返し
+open("tmp.mac","w"){|m|
+  m.puts %Q|\uFEFFsetactivehidemaru 1;|
+  m.puts %Q|closehidemaruforced findhidemaru("tmp999.txt");|
+#  m.puts %Q|sleep 300;|
+  m.puts %Q|#{mac}|}
+Process.wait spawn(%Q|"#{hide}" /h /x "#{__dir__}/tmp.mac" /m3x "#{__dir__}/tmp999.txt"|)
+__END__
+ENDTEXTBLOCK

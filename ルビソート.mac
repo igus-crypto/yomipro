@@ -1,0 +1,118 @@
+﻿//ルビソート
+
+begingroupundo;disablebreak;
+setmenudelay 700;
+mousemenu
+"&S 標準",                  // 1
+"&C チェックリスト",        // 2
+"&K 漢字ごと（１）",        // 3
+"&J 漢字ごと（２）",        // 4
+"&A 選択範囲",              // 5
+"&I 色別ソート",            // 6
+"&N 修正箇所のみ残す",      // 7
+"&D 空行を詰める",          // 8
+"&X テキスト個所のみ残す",  // 9
+"&F ファイル内検索",        //10
+"&L 置換リスト",            //11
+"&G grepの修正を集める";    //12
+
+//message str(result);
+
+if(result==0){endmacro;
+}else if(result==1){  //【S】 標準
+  execmacro currentmacrodirectory+"\\\\ルビソート（標準）.mac";
+}else if(result==2){  //【C】 チェックリスト
+  execmacro currentmacrodirectory+"\\\\ルビソート（チェックリスト）.mac";
+}else if(result==3){  //【K】 漢字ごと（１）
+  execmacro currentmacrodirectory+"\\\\ルビソート（漢字ごと１）.mac";
+}else if(result==4){  //【J】 漢字ごと（２）
+  execmacro currentmacrodirectory+"\\\\ルビソート（漢字ごと２）.mac";
+}else if(result==5){  //【A】 選択範囲
+  execmacro currentmacrodirectory+"\\\\ルビソート（選択範囲）.mac";
+}else if(result==6){  //【I】 色別ソート
+  execmacro currentmacrodirectory + "\\色別ソート.mac";
+}else if(result==7){  //【N】 修正箇所のみ残す
+  execmacro currentmacrodirectory + "\\修正箇所のみ残す.mac";
+}else if(result==8){  //【D】 空行を詰める
+  //begingroupundo;#x=x;#y=y;beginsel;gofileend;
+  //replaceallfast "(?#maxlines:10)\n+","\n",regular,inselect2;
+  //moveto #x,#y;endgroupundo;
+  begingroupundo;#x=x;#y=y;escape;
+  while(1){
+    searchdown2 "^$",regular;
+    if(!result)break;
+    delete;
+  }
+  moveto #x,#y;endgroupundo;
+}else if(result==9){  //【X】 テキスト個所のみ残す
+  begingroupundo;#x=x;#y=y;golinetop2;beginsel;gofileend;
+  replaceallfast "^[^,]+,[^,]+$","",regular,inselect2;
+  moveto #x,#y;golinetop2;beginsel;gofileend;
+  replaceallfast "(?#maxlines:10)\n+","\n",regular,inselect2;
+  moveto #x,#y;endgroupundo;endmacro;
+}else if(result==10){  //【F】 ファイル内検索
+  execmacro currentmacrodirectory+"\\\\ルビソート（ファイル内検索）.mac";
+}else if(result==11){  //【L】 置換リスト
+  execmacro currentmacrodirectory+"\\\\ルビソート（置換リスト）.mac";
+}else if(result==12){  //【G】 grepの修正を集める
+  selectall;copy;escape;
+  runsync2 "rubyw -x "+currentmacrofilename;
+  gofileend;insert "\n\n";paste;
+}
+enablebreak;endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# collect
+# grepの修正を集める
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+class Array
+  def sortq
+    ar=self.group_by{|e| e.gsub(/^(!*)([^!].*)/,'\1').size}.
+      to_a.sort_by{|e| -e[0].to_i}.transpose[1].to_a.
+      map{|e| e.partition{|f| %r|[^ ]*,y|!~f}}
+    #print "ar=";p ar
+    ar
+  end
+end
+
+
+require 'clipboard'
+
+cbd=ClipBoard.new(__ENCODING__)
+
+arr=cbd.getText.split(/\R/).reject{|e| e==""}
+#arr.map{|e| print "e=";p e.encode(Encoding::UTF_8)}
+print "arr=";p arr
+
+#arr=arr.grep_v(/\(\d+\):|^\//)
+#arr=arr.grep(%r| =>|)
+arr=arr.grep(%r| =>|).reject{|e| %r|^//|=~e}
+arr=arr.compact.uniq
+ar0=arr.grep(/^!+/).sortq;arr=arr-ar0.flatten;
+ar1=arr.grep(/^[^ ]*《[#=][^#=《》]+》/).grep_v(/^[^ ]*《[^#=《》]+》/)
+ar1=arr.grep(/^[^ ]*《[^#=《》]+》/).sortq
+ar2=arr.grep_v(/^[^ ]*《[^#=《》]+》/).sortq
+print "arr=";p arr
+print "ar0=";p ar0
+print "ar1=";p ar1
+print "ar2=";p ar2
+st=[ar0,ar1,ar2].map{|e| e.map{|f| f.map{|g| g.join("\n")}.join("\n\n")}.
+  join("\n\n")}.join("\n\n")
+st=st.strip.gsub(/\n{3,}/,"\n\n")+"\n"
+
+cbd.setText(st)
+
+__END__
+*/
+
+
+
+

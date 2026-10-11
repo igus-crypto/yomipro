@@ -1,0 +1,55 @@
+//青空文庫保存.mac
+
+$d=directory;
+$f=leftstr(basename,strlen(basename)-4);
+//saveas $f+"_a.txt",utf8,bom;
+//saveas "tmp_a.txt",utf8,bom;
+execmacro currentmacrodirectory+"\\青空文庫外字変換.mac";
+execmacro currentmacrodirectory+"\\チェックリストによりルビ削除２.mac";
+save;
+begingroupundo;disabledraw;
+replaceallfast "^　　+","",regular;
+//replaceallfast "^　　+(.*)","【\\1】",regular;
+replaceallfast "^(第[一二三四五六七八九十　 ]+話)[　◆](.*)$","【\\1】　【\\2】",regular;
+replaceallfast "^(≪[^。、]+$)","【\\1】",regular;
+//replaceallfast "^([^　『「（〈〔［【─…].*)","【\\1】",regular;
+replaceallfast "^　　+([^　].*[^。、』」）〕〉］】？！─…]$)","【\\1】",regular;
+replaceallfast "^(第[0-9０-９]+話)「(.*)」$","【\\1】　【\\1】",regular;
+replaceallfast "^【＊】$","",regular;
+replaceallfast "^【】$","",regular;
+replaceallfast "(?<=[\\p{Han}ァ-ヴーぁ-んa-zａ-ｚＡ-Ｚ0-9０-９])　"+
+  "(?=[\\p{Han}ァ-ヴーぁ-んa-zａ-ｚＡ-Ｚ0-9０-９])","◇　",regular;
+enabledraw;endgroupundo;
+moveto 0,0;beginsel;golineend2;$s=getselectedtext();
+saveas $f+"_u.txt",utf8,bom;
+#hwnd= hidemaruhandle(0);
+runsync2 currentmacrodirectory + "\\bat\\aozora04【ログ削除】.bat";
+appendsave currentmacrodirectory+"\\bat\\log\\"+basename;
+runsync2 currentmacrodirectory + "\\bat\\aozora01【連続処理全体】.bat";
+openfile currentmacrodirectory+"\\bat\\log\\"+$f+"_u8.txt";
+saveas $d+"\\s.txt";
+begingroupundo;disabledraw;
+searchdown "---------------------";golinetop2;beginsel;down;
+searchdown "---------------------";golineend2;delete;
+replaceallfast "^\n(?#maxlines:20)^\n+","\n",regular;
+replaceallfast "^\n","◇。◇。◇。\n",regular;
+replaceallfast "^　*([^。、！？（）「」【】\n]+)\n","【\\1】\n",regular;
+replaceallfast "^(?![　◇（「【])","　",regular;
+enabledraw;endgroupundo;save;
+selectall;copy;
+execmacro currentmacrodirectory+"\\ルビを開く.mac";
+replaceallfast "(?<=[\\p{Han}ァ-ヴーぁ-ん０-９ａ-ｚＡ-ＺＡ-Ｚa-zA-Z])　+"+
+  "(?=[\\p{Han}ァ-ヴーぁ-ん０-９ａ-ｚＡ-Ｚa-zA-Z])","◇　",regular;
+replaceallfast "、([^、。]{1,10}):、",":、\\1、",regular;
+escape;
+//execmacro currentmacrodirectory+"\\踊り字確認.mac";
+saveas $s+".txt";
+$s2=strreplace($d+"\\s.txt","\\","/");
+closehidemaruforced #hwnd;
+openfile "/h "+currentmacrodirectory+"\\config.ini";
+#hwnd= hidemaruhandle(0);
+replaceallfast "^file_1=.*","file_1="+$s2,regular;
+save;setactivehidemaru 1;
+closehidemaruforced #hwnd;
+endmacro;
+

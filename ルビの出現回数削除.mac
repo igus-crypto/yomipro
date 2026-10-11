@@ -1,0 +1,12 @@
+//ルビの出現回数削除
+
+setcompatiblemode 0x0F;
+
+begingroupundo;
+selectline 1;
+rangeeditin;
+replaceallfast "\\s\?,\\d+$","",regular;
+rangeeditout;
+endgroupundo;
+endmacro;
+

@@ -1,0 +1,10 @@
+//読み上げ置換前
+
+if(!selecting)selectall;
+selectline 1;copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\grep9.rbw y1 ";
+if(strstr(filename,"tmp")==-1){
+execmacro directory + "\\tmp_g.mac";}
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";
+

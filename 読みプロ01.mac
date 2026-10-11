@@ -1,0 +1,1341 @@
+﻿//読みプロ01
+
+$op=getarg(0);
+if($op!=""){
+  #s=val($op);
+}else{
+
+mousemenu;
+
+$a[  0]="\x01テキスト作成";                          // #s=000
+$a[  1]="青空文庫";                                  // #s=001
+$a[  2]="　青空ルビー";                              // #s=002
+$a[  3]="　青空文庫保存";                            // #s=003
+$a[  4]="　UTF8保存";                                // #s=004
+$a[  5]="　字下げを処理";                            // #s=005
+$a[  6]="　外字変換";                                // #s=006
+$a[  7]="　注釈除去";                                // #s=007
+$a[  8]="\x01";                                      // #s=008
+$a[  9]="Calibre";                                   // #s=009
+$a[ 10]="　対象ファイルに保存";                      // #s=010
+$a[ 11]="　改行置換";                                // #s=011
+$a[ 12]="　ルビ付きファイルの変換";                  // #s=012
+$a[ 13]="　ルビ結合";                                // #s=013
+$a[ 14]="　ルビ内空白除去";                          // #s=014
+$a[ 15]="　ＲＥＦ変換";                              // #s=015
+$a[ 16]="　半角記号全角化";                          // #s=016
+$a[ 17]="　div削除";                                 // #s=017
+$a[ 18]="　空行をまとめる";                          // #s=018
+$a[ 19]="　ファイル分割";                            // #s=019
+$a[ 20]="\x01";                                      // #s=020
+$a[ 21]="なろうカクヨム";                            // #s=021
+$a[ 22]="　ファイル連結";                            // #s=022
+$a[ 23]="　ルビ候補抽出";                            // #s=023
+$a[ 24]="";#num=0;
+$a[ 25]="\x01テキスト編集";                          // #s=030
+$a[ 26]="見出し";                                    // #s=031
+$a[ 27]="章立て";                                    // #s=032
+$a[ 28]="外字変換リスト準備";                        // #s=033
+$a[ 29]="外字変換リスト準備２";                      // #s=034
+$a[ 30]="不要な「｜」除去";                          // #s=035
+$a[ 31]="挿絵除去";                                  // #s=036
+$a[ 32]="直接置換のリストチェック";                  // #s=037
+$a[ 33]="ルビ抽出（ひらがな以外）";                  // #s=038
+$a[ 34]="ルビチェック";                              // #s=039
+$a[ 35]="ルビ抽出（ひらがなカタカナのみ）";          // #s=040
+$a[ 36]="ルビ抽出（全て）";                          // #s=041
+$a[ 37]="ルビ抽出（選択文字）";                      // #s=042
+$a[ 38]="";#num=5;
+$a[ 39]="\x01置換リスト";                            // #s=050
+$a[ 40]="ファイル選択";                              // #s=051
+$a[ 41]="　対象ファイル選択";                        // #s=052
+$a[ 42]="　置換ファイル選択";                        // #s=053
+$a[ 43]="\x01";                                      // #s=054
+$a[ 44]="ルビソート";                                // #s=055
+$a[ 45]="\x01";                                      // #s=056
+$a[ 46]="\x01ルビ分離";                              // #s=057
+$a[ 47]="カタカナルビ";                              // #s=058
+$a[ 48]="拗音を含むルビ";                            // #s=059
+$a[ 49]="冒頭が // ";                                // #s=060
+$a[ 50]="冒頭が ! ";                                 // #s=061
+$a[ 51]="傍点";                                      // #s=062
+$a[ 52]="-と+と#と漢字付き";                         // #s=063
+$a[ 53]="ルビの/";                                   // #s=064
+$a[ 54]="ひらがなルビ";                              // #s=065
+$a[ 55]="コメント付き";                              // #s=066
+$a[ 56]="非漢字";                                    // #s=067
+$a[ 57]="";                                          // #s=068
+$a[ 58]="";#num=11;
+$a[ 59]="\x01ルビチェックリストから";                // #s=070
+$a[ 60]="チェックリストのソート";                    // #s=071
+$a[ 61]="マッチしないのを分離";                      // #s=072
+$a[ 62]="まとめて拗音変換";                          // #s=073
+$a[ 63]="他ファイルからルビチェック";                // #s=074
+$a[ 64]="末尾に「,+」を追加";                        // #s=075
+$a[ 65]="末尾の「,+」を除去";                        // #s=076
+$a[ 66]="「+」を追加";                               // #s=077
+$a[ 67]="grep";                                      // #s=078
+$a[ 68]="grep（拡張）";                              // #s=079
+$a[ 69]="読み上げチェック";                          // #s=080
+$a[ 70]="読み上げチェック（ルビ展開）";              // #s=081
+$a[ 71]="読み上げチェック（ルビ置換前）";            // #s=082
+$a[ 72]="";#num=11;
+$a[ 73]="\x01ルビのgrep";                            // #s=090
+$a[ 74]="スタンダード";                              // #s=091
+$a[ 75]="読み上げ用ルビ置換前";                      // #s=092
+$a[ 76]="読み上げ用ルビ置換後";                      // #s=093
+$a[ 77]="読み上げ用ルビ置換前後";                    // #s=094
+$a[ 78]="読み上げ用ルビ置換前後前";                  // #s=095
+$a[ 79]="行全体";                                    // #s=096
+$a[ 80]="正規表現をマッチ部別に";                    // #s=097
+$a[ 81]="ルビ付き・正規表現";                        // #s=098
+$a[ 82]="ルビ展開後";                                // #s=099
+$a[ 83]="\x01";                                      // #s=100
+$a[ 84]="選択範囲でgrep";                            // #s=101
+$a[ 85]="　スタンダード";                            // #s=102
+$a[ 86]="　行全体";                                  // #s=103
+$a[ 87]="　ルビ付き・正規表現";                      // #s=104
+$a[ 88]="　ルビ展開後";                              // #s=105
+$a[ 89]="\x01";                                      // #s=106
+$a[ 90]="傍点ルビを grep";                           // #s=107
+$a[ 91]="";#num=17;
+$a[ 92]="\x01grep結果の加工";                        // #s=110
+$a[ 93]="grepの修正を反映";                          // #s=111
+$a[ 94]="grepの結果を編集して置換";                  // #s=112
+$a[ 95]="grepの修正を集める";                        // #s=113
+$a[ 96]="grepの本文を集める";                        // #s=114
+$a[ 97]="grepの本文を集めて加工";                    // #s=115
+$a[ 98]="grepの本文を集めて加工（修正箇所のみ）";    // #s=116
+$a[ 99]="修正箇所のみ残す";                          // #s=117
+$a[100]="\x01";                                      // #s=118
+$a[101]="選択部を行末にコピー";                      // #s=119
+$a[102]="選択部を右下にコピー";                      // #s=120
+$a[103]="選択部を末尾にコピー";                      // #s=121
+$a[104]="選択部をtmp.txtの末尾にコピー";             // #s=122
+$a[105]="\x01";                                      // #s=123
+$a[106]="grep結果に再配色(tmp_g.mac再実行)";         // #s=124
+$a[107]="";#num=18;
+$a[108]="\x01置換リストをgrep";                      // #s=130
+$a[109]="置換リストをgrep";                          // #s=131
+$a[110]="置換リストをgrep（複数処理）";              // #s=132
+$a[111]="置換リストをgrep（複数・ルビを除く）";      // #s=133
+$a[112]="置換リストをgrep（正規表現で加工）";        // #s=134
+$a[113]="置換リストからマッチを探す";                // #s=135
+$a[114]="置換リストの修正反映";                      // #s=136
+$a[115]="\x01置換リストにコピペ";                    // #s=137
+$a[116]="【自動分配ＢＧ処理】";                      // #s=138
+$a[117]="【自動分配】";                              // #s=139
+$a[118]="置換リスト【直接置換】";                    // #s=140
+$a[119]="置換リスト【ルビチェック】";                // #s=141
+$a[120]="置換リスト【数字関連】";                    // #s=142
+$a[121]="置換リスト【五文字以上】";                  // #s=143
+$a[122]="置換リスト【四文字】";                      // #s=144
+$a[123]="置換リスト【三文字】";                      // #s=145
+$a[124]="置換リスト【二文字以下】";                  // #s=146
+$a[125]="置換リスト【パターン１】";                  // #s=147
+$a[126]="置換リスト【パターン２】";                  // #s=148
+$a[127]="置換リスト【チェック項目】";                // #s=149
+$a[128]="置換リスト【読み上げ】";                    // #s=140
+$a[129]="置換リスト【最終チェック】";                // #s=151
+$a[130]="置換リスト選択";                            // #s=152
+$a[131]="";                                          // #s=153
+$a[132]="置換リストの重複チェック";                  // #s=154
+$a[133]="";#num=22;
+$a[134]="\x01ルビの置換";                            // #s=160
+$a[135]="ルビ置換";                                  // #s=161
+$a[136]="　スタンダード";                            // #s=162
+$a[137]="　ルビ付き・単語";                          // #s=163
+$a[138]="　ルビ付き・正規表現";                      // #s=164
+$a[139]="\x01";                                      // #s=165
+$a[140]="ルビチェック用リストから";                  // #s=166
+$a[141]="　ルビを削除";                              // #s=167
+$a[142]="　拗音修正";                                // #s=168
+$a[143]="　カタカナ変換";                            // #s=169
+$a[144]="　パラルビ";                                // #s=170
+$a[145]="　パラルビ・親文字削除";                    // #s=171
+$a[146]="　パラルビ・ルビ振り";                      // #s=172
+$a[147]="\x01";                                      // #s=173
+$a[148]="傍点ルビ";                                  // #s=174
+$a[149]="　傍点ルビを削除";                          // #s=175
+$a[150]="　傍点ルビをカタカナ変換";                  // #s=176
+$a[151]="";#num=26;
+$a[152]="\x01リストの変換";                          // #s=180
+$a[153]="読みをルビ化";                              // #s=181
+$a[154]="読みをルビ化（ルビ追加）";                  // #s=182
+$a[155]="置換リストの作成補助";                      // #s=183
+$a[156]="=> を追加";                                 // #s=184
+$a[157]="拗音修正";                                  // #s=185
+$a[158]="拗音修正を戻す";                            // #s=186
+$a[159]="ルビ付きをチェック";                        // #s=187
+$a[160]="単語を正規表現に";                          // #s=188
+$a[161]="正規表現から単語に";                        // #s=189
+$a[162]="ルビから読みに";                            // #s=190
+$a[163]="ルビを振ってないところにルビ";              // #s=191
+$a[164]="置換リストから読みに";                      // #s=192
+$a[165]="変更箇所を末尾に移動";                      // #s=193
+$a[166]="変更箇所の頭に「!」";                       // #s=194
+$a[167]="「!」行を末尾にコピー";                     // #s=195
+$a[168]="ルビ入れ替え";                              // #s=196
+$a[169]="選択範囲をルビコピー";                      // #s=197
+$a[170]="選択範囲をルビソート（=分離）";             // #s=198
+$a[171]="選択範囲を漢字ごとにソート";                // #s=199
+$a[172]="選択範囲をルビソート";                      // #s=190
+$a[173]="選択範囲をルビソート（!分離）";             // #s=201
+$a[174]="置換リストを集める";                        // #s=202
+$a[175]="くの字点抽出";                              // #s=203
+$a[176]="";#num=28;
+$a[177]="\x01仕上げ";                                // #s=210
+$a[178]="\x01要注意の漢字";                          // #s=211
+$a[179]="要注意の漢字をマーク";                      // #s=212
+$a[180]="要注意の漢字検索";                          // #s=213
+$a[181]="";                                          // #s=214
+$a[182]="英数字チェック";                            // #s=215
+$a[183]="ルビの重複チェック";                        // #s=216
+$a[184]="「%」など削除";                             // #s=217
+$a[185]="「+」削除";                                 // #s=218
+$a[186]="読み上げファイル作成";                      // #s=219
+$a[187]="";#num=33;
+$a[188]="\x01文字を変換";                            // #s=230
+$a[189]="ひらがな";                                  // #s=231
+$a[190]="カタカナ";                                  // #s=232
+$a[191]="拗音変換";                                  // #s=233
+$a[192]="読点を半角";                                // #s=234
+$a[193]="半角英数（小文字→大文字）";                // #s=235
+$a[194]="半角英数（大文字→小文字）";                // #s=236
+$a[195]="半角数字除去";                              // #s=237
+$a[196]="半角数字－１";                              // #s=238
+$a[197]="ルビ、オプション除去";                      // #s=239
+$a[198]="ルビ分離";                                  // #s=240
+$a[199]="空ルビ除去";                                // #s=241
+$a[200]="ルビを削除（+以外）";                       // #s=242
+$a[201]="親文字削除";                                // #s=243
+$a[202]="数字付きを抜き出し";                        // #s=244
+$a[203]="前後を削って連続コピー";                    // #s=245
+$a[204]="置換元抜出し";                              // #s=246
+$a[205]="「 _ 」挿入・除去（位置調整）";             // #s=247
+$a[206]="「=>」 除去";                               // #s=248
+$a[207]="「=>」 の先を除去";                         // #s=249
+$a[208]="「　」 除去";                               // #s=250
+$a[209]="「。　、」 除去";                           // #s=251
+$a[210]="「@」変換";                                 // #s=252
+$a[211]="パイプをソート";                            // #s=253
+$a[212]="記号を半角";                                // #s=254
+$a[213]="コメントに変換";                            // #s=255
+$a[214]="エンコード";                                // #s=256
+$a[215]="数値計算";                                  // #s=257
+$a[216]="漢数英数変換";                              // #s=258
+$a[217]="";#num=42;
+$a[218]="\x01サンドイッチ・挿入";                    // #s=260
+$a[219]="サンドイッチ";                              // #s=261
+$a[220]="　【〇〇】";                                // #s=262
+$a[221]="　《〇〇》";                                // #s=263
+$a[222]="　（〇〇）";                                // #s=264
+$a[223]="　｜〇〇《》";                              // #s=265
+$a[224]="挿入";                                      // #s=266
+$a[225]="　[\\p{Han}]";                              // #s=267
+$a[226]="　[ぁ-ん]";                                 // #s=268
+$a[227]="　[ァ-ヴー]";                               // #s=269
+$a[228]="　[一二三四五六七八九十]";                  // #s=270
+$a[229]="　spc*120";                                 // #s=271
+$a[230]="ボックス貼り付け";                          // #s=272
+$a[231]="";#num=42;
+$a[232]="\x01バッチ処理";                            // #s=280
+$a[233]="自動";                                      // #s=281
+$a[234]="logフォルダにコピー";                       // #s=282
+$a[235]="【連続処理全体】";                          // #s=283
+$a[236]="【連続処理前半】";                          // #s=284
+$a[237]="【連続処理後半】";                          // #s=285
+$a[238]="【ログ削除】";                              // #s=286
+$a[239]="logフォルダからコピー";                     // #s=287
+$a[240]="logフォルダを開く";                         // #s=288
+$a[241]="\x01";                                      // #s=289
+$a[242]="バッチ処理（改）";                          // #s=290
+$a[243]="";#num=48;
+$a[244]="\x01ファイル操作関連";                      // #s=300
+$a[245]="アップ用の置換リストを準備";                // #s=301
+$a[246]="青空文庫まとめ読み";                        // #s=302
+$a[247]="moon+ 変換";                                // #s=303
+$a[248]="moon+ リストチェック";                      // #s=304
+$a[249]="選択を send.txt";                           // #s=305
+$a[250]="選択を send.txt（ルビ無し）";               // #s=306
+$a[251]="ファイル転送";                              // #s=307
+$a[252]="フォルダを開く";                            // #s=308
+$a[253]="置換リストファイルを操作";                  // #s=309
+$a[254]="tmpファイルを閉じて削除";                   // #s=310
+$a[255]="grep結果の編集を置換";                      // #s=311
+$a[256]="フォルダ名のファイル準備";                  // #s=312
+$a[257]="ファイル結合";                              // #s=313
+$a[258]="対象ファイル編集";                          // #s=314
+$a[259]="更新日時を操作";                            // #s=315
+$a[260]="マッチの位置揃え変更";                      // #s=316
+$a[261]="マクロ編集";                                // #s=317
+$a[262]="";#num=56;
+$a[263]="\x01その他";                                // #s=320
+$a[264]="秀丸マクロメニュー";                        // #s=321
+$a[265]="クリップボードにファイル名";                // #s=322
+$a[266]="クリップボードにフォルダ名";                // #s=323
+$a[267]="cmd";                                       // #s=324
+$a[268]="google検索";                                // #s=325
+$a[269]="\x01 マーカー";                             // #s=326
+$a[270]="検索マーカー";                              // #s=327
+$a[271]="分割マーカー";                              // #s=328
+$a[272]="拗音をマーク";                              // #s=329
+$a[273]="括弧をマーク";                              // #s=330
+$a[274]="";                                          // #s=331
+$a[275]="自動送り";                                  // #s=332
+$a[276]="棒読み文庫";                                // #s=333
+$a[277]="割合表示";                                  // #s=334
+$a[278]="文字数カウント";                            // #s=335
+$a[279]="タグジャンプサーチ";                        // #s=336
+$a[280]="選択部を次行の末尾にコピー";                // #s=337
+$a[281]="挿入して戻って下へ";                        // #s=338
+$a[282]="選択文字の上候補";                          // #s=339
+$a[283]="選択文字の下候補";                          // #s=340
+$a[284]="選択文字で次の秀丸を検索";                  // #s=341
+$a[285]="選択文字で対象ファイルを検索";              // #s=342
+$a[286]="ファイルを開いて選択文字検索";              // #s=343
+$a[287]="差分チェック";                              // #s=344
+$a[288]="読みプロ01のNoチェック";                    // #s=345
+$a[289]="青空変換（改）";                            // #s=346
+$a[290]="\x01ウィンドウ操作";                        // #s=347
+$a[291]="縦に並べて表示";                            // #s=348
+$a[292]="横に並べて表示";                            // #s=349
+$a[293]="分割";                                      // #s=350
+$a[294]="サイズ 100×30";                            // #s=351
+$a[295]="サイズ  60×20";                            // #s=352
+$a[296]="全て最小化";                                // #s=353
+$a[297]="全て 100×30";                              // #s=354
+$a[298]="";#num=57;
+
+mousemenuarray $a,296;
+#r=result-1;
+if(#r<1){endmacro;}
+else if(#r< 24) {#s=#r+ 0;}  //テキスト作成
+else if(#r< 38) {#s=#r+ 5;}  //テキスト編集
+else if(#r< 58) {#s=#r+11;}  //置換リスト
+else if(#r< 72) {#s=#r+11;}  //ルビチェックリストから
+else if(#r< 91) {#s=#r+17;}  //ルビのgrep
+else if(#r<107) {#s=#r+18;}  //grep 結果の加工
+else if(#r<133) {#s=#r+22;}  //置換リストをgrep
+else if(#r<151) {#s=#r+26;}  //ルビの置換
+else if(#r<176) {#s=#r+28;}  //リストの変換
+else if(#r<187) {#s=#r+33;}  //仕上げ
+else if(#r<217) {#s=#r+42;}  //文字を変換
+else if(#r<231) {#s=#r+42;}  //サンドイッチ
+else if(#r<243) {#s=#r+48;}  //バッチ処理
+else if(#r<262) {#s=#r+56;}  //ファイル操作関連
+else if(#r<298) {#s=#r+57;}  //その他
+}
+
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistrw($ini,"path","uwsc");
+$fl01=getinistrw($ini,"grep","file_1");
+
+#x=x;#y=y;
+
+if(#s==2){ //青空ルビー
+  execmacro currentmacrodirectory+"\\青空ルビー.mac";
+}else if(#s==3){ //青空文庫保存
+  execmacro currentmacrodirectory+"\\青空文庫保存.mac";
+}else if(#s==4){ //UTF8保存
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw u "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==5){ //字下げの処理
+  execmacro currentmacrodirectory+"\\字下げの処理.mac";
+}else if(#s==6){ //青空文庫外字変換
+  execmacro currentmacrodirectory+"\\青空文庫外字変換.mac";
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\grep8.rbw "+filename;
+}else if(#s==7){ //青空文庫注釈除去
+  selectall;copy;setsearch ".*" , 0x4003819;
+  colormarkerallfound 0x000000, 0xc2c79e, 11, 1;
+  runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw at";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==10){ //対象ファイルに保存
+  execmacro currentmacrodirectory+"\\対象ファイルに保存.mac";
+}else if(#s==11){ //Calibre 改行置換
+  execmacro currentmacrodirectory+"\\改行置換.mac";
+  //begingroupundo;disabledraw;
+  //replaceallfast"\n\n","\n",regular;endgroupundo;
+  //;endgroupundo;enabledraw;
+}else if(#s==12){ //Calibre ルビ付きファイルの変換
+  selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\calibre.rbw";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==13){ //ルビ結合
+  execmacro currentmacrodirectory+"\\ルビ結合２.mac";
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\ruby_join.rbw "+filename;
+}else if(#s==14){ //ルビ内空白除去
+  selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw r";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==15){ //ＲＥＦ変換
+  execmacro currentmacrodirectory+"\\ＲＥＦ変換.mac";
+}else if(#s==16){ //半角記号全角化
+  begingroupundo;disabledraw;
+  replaceallfast "!","！";
+  replaceallfast "?","？";
+  ;endgroupundo;enabledraw;
+}else if(#s==17){ //div削除
+  selectall;copy;setsearch ".*" , 0x4003819;
+  colormarkerallfound 0x000000, 0xc2c79e, 11, 1;
+  if(iskeydown(0x10)){ //shift
+    begingroupundo;disabledraw;
+    replaceallfast "≪div[^≪≫]+≫","≪div≫",regular;
+    replaceallfast "≪a href[^≪≫]+≫","≪href≫",regular;
+    endgroupundo;enabledraw;endmacro;
+  }else{
+    runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw d";
+    execmacro directory + "\\tmp.mac";
+  }
+}else if(#s==18){ //Calibre 空行をまとめる
+  begingroupundo;replaceallfast "^\n(?#maxlines:20)^\n+","\n",regular;endgroupundo;
+}else if(#s==19){ //ファイル分割
+  execmacro currentmacrodirectory+"\\ファイル分割.mac";
+}else if(#s==22){ //なろうカクヨム ファイル連結
+  //message "準備中";
+  runsync2 "rubyw "+currentmacrodirectory+"\\join.rbw";
+  openfile "a00.log";
+}else if(#s==23){ //なろうカクヨム ルビ候補抽出
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw n";
+  execmacro currentmacrodirectory+"\\ルビ抽出.mac","n";
+}else if(#s==31){ //見出し
+  execmacro currentmacrodirectory+"\\見出し.mac";
+}else if(#s==32){ //章立て
+  execmacro currentmacrodirectory+"\\章立て.mac";
+}else if(#s==33){//外字変換リスト準備
+  execmacro currentmacrodirectory+"\\外字変換リスト準備.mac";
+}else if(#s==34){//外字変換リスト２準備
+  execmacro currentmacrodirectory+"\\外字変換リスト準備２.mac";
+}else if(#s==35){//不要な「｜」除去
+  begingroupundo;disabledraw;
+  replaceallfast "(?<![\\p{Han}])｜([\\p{Han}]+《)","\\1",regular;
+  ;endgroupundo;enabledraw;
+}else if(#s==36){//挿絵除去
+  execmacro currentmacrodirectory+"\\挿絵除去.mac";
+}else if(#s==37){//直接置換のリストチェック
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト01【直接置換】.txt";
+  #hwnd_f= hidemaruhandle(0);
+  selectall;copy;escape;setactivehidemaru 1;
+  closehidemaruforced #hwnd_f;
+  runsync2 "rubyw "+currentmacrodirectory+"\\ruby_count.rbw s";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==38){//ルビ抽出（ひらがな以外）
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw b";
+  execmacro currentmacrodirectory+"\\ルビ抽出.mac","c";
+}else if(#s==39){ //ルビチェック（ルビチェックリストから）
+  #x=x;#y=y;selectall;copy;escape;moveto #x,#y;
+  runsync2 "rubyw "+currentmacrodirectory+"\\ruby_check.rbw ";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==40){//ルビ抽出（ひらがなカタカナのみ）
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw c";
+  execmacro currentmacrodirectory+"\\ルビ抽出.mac","c";
+}else if(#s==41){//ルビ抽出
+  //selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw a";
+  execmacro currentmacrodirectory+"\\ルビ抽出.mac","a";
+}else if(#s==42){//ルビ抽出（選択文字）
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\ruby_scan.rbw";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==52){//対象ファイル選択
+  execmacro currentmacrodirectory+"\\ルビのgrepのファイル選択.mac";
+}else if(#s==53){ //リストチェック（置換ファイル選択）
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト*.txt";
+  #hwnd_f= hidemaruhandle(0);
+  if(leftstr(basename,10)!="置換リスト"){endmacro;}
+  selectall;copy;escape;setactivehidemaru 1;
+  closehidemaruforced #hwnd_f;
+  runsync2 "rubyw "+currentmacrodirectory+"\\ruby_count.rbw s";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==55){ //ルビソート
+  begingroupundo;disabledraw;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort1.rbw "+basename;
+  paste;replaceallfast "^\n(?#maxlines:20)^\n+","\n",regular;
+  endgroupundo;gofiletop;enabledraw;
+}else if(#s==58){ //k:カタカナルビを分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw k";
+  paste;endgroupundo;gofiletop;
+}else if(#s==59){ //y:拗音を含むルビを分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw y";
+  paste;endgroupundo;gofiletop;
+}else if(#s==60){ //s:冒頭が // を分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw s";
+  paste;endgroupundo;gofiletop;
+}else if(#s==61){ //e:冒頭が ! を分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw e";
+  paste;endgroupundo;gofiletop;
+}else if(#s==62){ //b:傍点を分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw b";
+  paste;endgroupundo;gofiletop;
+}else if(#s==63){ //m:-と+と#と漢字付きを分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw m";
+  paste;endgroupundo;gofiletop;
+}else if(#s==64){ //r:ルビの/を分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw r";
+  paste;endgroupundo;gofiletop;
+}else if(#s==65){ //g:ひらがなルビ分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw g";
+  paste;endgroupundo;gofiletop;
+}else if(#s==66){ //c:コメント付き分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw c";
+  paste;endgroupundo;gofiletop;
+}else if(#s==67){ //h:非漢字分離
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort2.rbw h";
+  paste;endgroupundo;gofiletop;
+}else if(#s==71){ //j:チェックリストのソート（=>付き分離）
+  begingroupundo;beginclipboardread;selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort3.rbw";
+  paste;endgroupundo;gofiletop;
+}else if(#s==72){ //マッチしないのを分離
+  begingroupundo;selectall;cut;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\partition.rbw";
+  paste;endgroupundo;gofiletop;
+}else if(#s==73){ //まとめて拗音変換
+  execmacro currentmacrodirectory+"\\まとめて拗音変換.mac";
+}else if(#s==74){ //他ファイルからルビチェック
+  execmacro currentmacrodirectory+"\\他ファイルからルビチェック.mac";
+}else if(#s==75){ //末尾に「,」を追加
+  begingroupundo;replaceallfast ",(.*)$",",\\1,\\+",regular;endgroupundo;
+}else if(#s==76){ //末尾の「,」を除去
+  begingroupundo;replaceallfast ",\\+$","",regular;endgroupundo;
+}else if(#s==77){ //「+」を追加
+  begingroupundo;
+  replaceallfast "^([^,]*,[^,]*,)([^+][^, ]+)","\\1+\\2",regular;
+  //replaceallfast "^([^,]*,)([^+][^, ]+,)$","\\1+\\2",regular;
+  replaceallfast "^([^,]*,)([^+][^, ]+)$","\\1+\\2",regular;
+  endgroupundo;
+}else if(#s==78){ //ルビチェックリストからgrep
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep5.rbw r1 ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==79){ //ルビチェックリストからgrep（拡張）
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep5.rbw l ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==80){ //読み上げチェック
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep7.rbw n";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==81){ //読み上げチェック（ルビ展開）
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep7.rbw t";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==82){ //読み上げチェック（ルビ置換前）
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep7.rbw b";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==91){ //grep
+  if(selecting && y==selopeny){copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sg ";}
+  else{selectline 1;copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw g ";}
+  //insert " ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==92){ //読み上げ用ルビ置換前
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep9.rbw y1 ";
+  if(strstr(filename,"tmp")==-1){
+  execmacro directory + "\\tmp_g.mac";}
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==93){ //読み上げ用ルビ置換後
+  selectline 1;copy;
+  run "rubyw "+currentmacrodirectory+"\\grep9.rbw y3 ";
+  if(strstr(filename,"tmp")==-1){
+  execmacro directory + "\\tmp_g.mac";}
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==94){ //読み上げ用ルビ置換前後
+  selectline 1;copy;
+  run "rubyw "+currentmacrodirectory+"\\grep9.rbw y2 ";
+  if(strstr(filename,"tmp")==-1){
+  execmacro directory + "\\tmp_g.mac";}
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==95){ //読み上げ用ルビ置換前後前
+  selectline 1;copy;
+  run "rubyw "+currentmacrodirectory+"\\grep9.rbw y4 ";
+  if(strstr(filename,"tmp")==-1){
+  execmacro directory + "\\tmp_g.mac";}
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==96){ //行全体
+  if(selecting && y==selopeny){copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sa ";}
+  else{selectline 1;copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw a ";}
+  //selectline 1;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw a ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==97){ //正規表現をマッチ部別に
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep10.rbw";
+  if(strstr(filename,"tmp")==-1){
+  execmacro directory + "\\tmp_g.mac";}
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==98){ //ルビ付き・正規表現
+  if(selecting && y==selopeny){copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sr2 ";}
+  else{selectline 1;copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw r2 ";}
+  //selectline 1;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw r2 ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==99){ //ルビ展開後
+  if(selecting && y==selopeny){copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw st ";}
+  else{selectline 1;copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw t ";}
+  //selectline 1;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw t ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==102){ //grepスタンダード（選択範囲で）
+  copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sg ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==103){ //行全体（選択範囲で）
+  copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sa ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==104){ //ルビ付き・正規表現（選択範囲で）
+  copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sr2 ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==105){ //ルビ展開後（選択範囲で）
+  copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw st ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==107){ //傍点ルビを grep
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw b ";
+  execmacro directory + "\\tmp_g.mac";
+  execmacro directory + "\\tmp.mac";
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==111){  //grepの修正を反映
+  execmacro directory + "\\grepの修正を反映.mac";
+  run "rubyw "+currentmacrodirectory+"\\diff.rbw \""+filename+"\"";
+}else if(#s==112){  //grepの結果を編集して置換
+  execmacro directory + "\\grepの結果を編集して置換.mac";
+}else if(#s==113){  //grepの修正を集める
+  selectall;copy;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw s";
+  gofileend;insert "\n\n";paste;
+}else if(#s==114){  //grepの本文を集める
+  selectall;copy;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw h";
+  gofileend;insert "\n\n";paste;
+}else if(#s==115){  //grepの本文を集めて加工
+  selectall;copy;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw k";
+  gofileend;insert "\n\n";paste;
+}else if(#s==116){  //grepの本文を集めて加工（修正箇所のみ）
+  selectall;copy;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\diff5.rbw \""+filename+"\"";
+  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw k";
+  gofileend;insert "\n\n";paste;
+}else if(#s==117){  //修正箇所のみ残す
+  execmacro currentmacrodirectory + "\\修正箇所のみ残す.mac";
+}else if(#s==119){  //選択部を行末にコピー
+  begingroupundo;disabledraw;
+  if(selecting){copy2;}else{beginsel;wordleft;copy2;left;}
+  selectline 1;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  $sel=gettext(#px,#py,#dx,#dy,1,1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen2.rbw gm "+$sel;
+  execmacro directory + "\\tmp.mac";
+  enabledraw;endgroupundo;
+}else if(#s==120){  //選択部を右下にコピー
+  execmacro currentmacrodirectory+"\\選択を右下にコピー.mac";
+}else if(#s==121){  //選択部を末尾にコピー
+  if(selecting){#x=x;#y=y;copy;escape;
+    //runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw t";
+    runsync2 "rubyw -x "+currentmacrodirectory+"\\選択をtmp.txtの末尾にコピー.mac";
+  gofileend;insert "\n";paste;moveto #x,#y;}
+}else if(#s==122){  //選択部をtmp.txtの末尾にコピー
+  execmacro currentmacrodirectory+"\\選択をtmp.txtの末尾にコピー.mac";
+  //if(selecting){copy;
+  //  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw t";
+  //  if( basename=="tmp.txt"){gofileend;insert "\n";paste;endmacro;}
+  //  else if( findhidemaru("tmp.txt")==-1){openfile "tmp.txt";insert "\n";save;}
+  //  setactivehidemaru findhidemaru("tmp.txt");
+  //  escape;gofileend;insert "\n";paste;setactivehidemaru 1,-1;}
+}else if(#s==124){  //grep結果に再配色(tmp_g.mac再実行)
+  execmacro directory + "\\tmp_g.mac";
+}else if(#s==131){ //置換リストをgrep
+  if(selecting==0){endmacro;}else{#shi=0;}
+  if(iskeydown(0x10)){#shi=1;}
+  if(seltopy==selendy){copy;
+    run "rubyw "+currentmacrodirectory+"\\grep2.rbw h";
+  }else if(#shi==1){
+    selectline 1;copy;
+    run "rubyw "+currentmacrodirectory+"\\grep2.rbw fs";
+  }else{
+    selectline 1;copy;
+    run "rubyw "+currentmacrodirectory+"\\grep2.rbw f";}
+}else if(#s==132){ //置換リストをgrep（複数処理）
+  if(selecting==0){endmacro;}else{selectline 1;copy;#shi=0;}
+  if(iskeydown(0x10)){#shi=1;}
+  if(#shi==1){
+    run "rubyw "+currentmacrodirectory+"\\grep2.rbw fs";
+  }else{
+    run "rubyw "+currentmacrodirectory+"\\grep2.rbw f";
+  }
+}else if(#s==133){ //置換リストをgrep（複数・ルビを除く）
+  if(selecting==0){endmacro}
+  selectline 1;copy;
+  run "rubyw "+currentmacrodirectory+"\\grep2.rbw fc";
+}else if(#s==134){ //置換リストをgrep（正規表現で加工）
+  if(selecting==0){endmacro}
+  selectline 1;copy;
+  run "rubyw "+currentmacrodirectory+"\\grep2.rbw s";
+}else if(#s==135){ //置換リストからマッチを探す
+  if(selecting==0){endmacro}
+  $sel=gettext(seltopx,seltopy,selendx,selendy,1);
+  copy2;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep2.rbw m";
+  openfile currentmacrodirectory+"\\置換リスト\\";
+  paste;
+  setsearch $sel , 0x4003809;
+  hilightfound 1;
+  saveas "tmp_01.txt",utf8;
+}else if(#s==136){ //置換リストの修正反映
+  selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\diff2.rbw "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==138){ //置換リストにコピペ　自動分配ＢＧ処理
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort4.rbw b";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==139){ //置換リストにコピペ　自動分配
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  run "rubyw "+currentmacrodirectory+"\\sort4.rbw c";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==140){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト01【直接置換】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==141){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト02【ルビチェック】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==142){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト03【数字関連】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==143){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト04【五文字以上】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==144){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト05【四文字】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==145){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト06【三文字】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==146){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト07【二文字以下】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==147){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト08【パターン１】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==148){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト09【パターン２】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==149){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト10【チェック項目】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==150){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト11【読み上げ】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==151){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  $fl=currentmacrodirectory+"\\置換リスト\\置換リスト11【最終チェック】.txt";
+  if( findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==152){
+  if(selecting){selectline 1;copy;#sel=1;}else{#sel=0;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw b";
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト*.txt";
+  if(#sel==1){gofiletop;begingroupundo;paste;insert "\n";endgroupundo;}
+}else if(#s==154){ //置換リストの重複チェック
+  execmacro currentmacrodirectory+"\\\\置換ファイルを操作.mac";
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_check.rbw ";
+}else if(#s==162){ //置換実行（スタンダード）
+  //selectline 1;  copy;
+  //run "rubyw "+currentmacrodirectory+"\\replace1.rbw s";
+  execmacro currentmacrodirectory+"\\ルビの置換実行.mac";
+}else if(#s==163){ //置換実行（ルビ付き・単語）
+  selectline 1;  copy;
+  run "rubyw "+currentmacrodirectory+"\\replace1.rbw r1";
+}else if(#s==164){ //置換実行（ルビ付き・正規表現）
+  selectline 1;  copy;
+  run "rubyw "+currentmacrodirectory+"\\replace1.rbw r2";
+}else if(#s==167){ //ルビチェックリストから（ルビ削除）
+  execmacro currentmacrodirectory+"\\チェックリストによりルビ削除.mac";
+  //selectline 1;  copy;
+  //run "rubyw "+currentmacrodirectory+"\\replace3.rbw";
+}else if(#s==168){ //ルビチェックリストから（拗音修正）
+  selectline 1;  copy;
+  run "rubyw "+currentmacrodirectory+"\\replace2.rbw y";
+}else if(#s==169){ //ルビチェックリストから（カタカナ変換）
+  selectline 1;  copy;
+  run "rubyw "+currentmacrodirectory+"\\replace2.rbw k";
+}else if(#s==170){ //ルビチェックリストから（パラルビ）
+  selectline 1;  copy;
+  //run "rubyw "+currentmacrodirectory+"\\replace2.rbw p1";
+  execmacro currentmacrodirectory+"\\\\パラルビ変換２.mac","p1";
+}else if(#s==171){ //ルビチェックリストから（パラルビ・親文字削除）
+  selectline 1;  copy;
+  //run "rubyw "+currentmacrodirectory+"\\replace2.rbw p2";
+  execmacro currentmacrodirectory+"\\\\パラルビ変換２.mac","p2";
+}else if(#s==172){ //ルビチェックリストから（パラルビ・ルビ振り）
+  selectline 1;  copy;
+  //run "rubyw "+currentmacrodirectory+"\\replace2.rbw p3";
+  execmacro currentmacrodirectory+"\\\\パラルビ変換２.mac","p3";
+}else if(#s==175){ //傍点ルビ削除
+  run "rubyw "+currentmacrodirectory+"\\replace2.rbw bd";
+}else if(#s==176){ //傍点ルビカタカナ変換
+  run "rubyw "+currentmacrodirectory+"\\replace2.rbw bk";
+}else if(#s==181){ //読みをルビ化
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw ra";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==182){ //読みをルビ化（ルビ追加）
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw rb";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==183){ //置換リストの作成補助
+begingroupundo;beginclipboardread;
+  if(selecting){selectline 1;wordleft;cut;}
+  else{golinetop2;beginsel;golineend2;cut;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw l";
+  paste;endgroupundo;
+}else if(#s==184){ //=>追加
+  selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw y";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==185){ //y1:拗音修正
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw y1";
+  paste;endgroupundo;
+}else if(#s==186){ //y2:拗音修正を戻す
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw y2";
+  paste;endgroupundo;
+}else if(#s==187){ //r1:ルビ付きをチェック
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw r1";
+  paste;endgroupundo;
+}else if(#s==188){ //t :単語を正規表現に
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw t";
+  paste;endgroupundo;
+}else if(#s==189){ //s :正規表現から単語に
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw s";
+  paste;endgroupundo;
+}else if(#s==190){ //r2:ルビから読みに
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw r2";
+  paste;endgroupundo;
+}else if(#s==191){ //r3:ルビを振ってないところにルビ
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw r3";
+  paste;endgroupundo;
+}else if(#s==192){ //r4:置換リストから読みに（ルビチェックリストへ）
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_hen.rbw r4";
+  paste;endgroupundo;
+}else if(#s==193){ //変更箇所を末尾に移動
+  #x=x;#y=y;selectall;copy;moveto #x,#y; 
+  runsync2 "rubyw "+currentmacrodirectory+"\\diff6.rbw c \""+filename+"\"";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==194){ //変更箇所の頭に「!」
+  #x=x;#y=y;selectall;copy;moveto #x,#y; 
+  runsync2 "rubyw "+currentmacrodirectory+"\\diff6.rbw a \""+filename+"\"";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==195){ //「!」行を末尾にコピー
+  selectall;copy;escape;
+  runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw b";
+  gofileend;insert "\n\n";paste;
+}else if(#s==196){ //ルビ入れ替え
+  selectline 1;
+  execmacro currentmacrodirectory+"\\文字変換.mac","ri";
+}else if(#s==197){ //選択範囲をルビコピー
+  begingroupundo;disabledraw;
+  if(selecting){selectline 1;wordleft;}
+  else{golinetop2;beginsel;golineend2;}
+  #y1=seltopy;#y2=selendy;cut;
+  execmacro currentmacrodirectory+"\\\\文字変換.mac","rc";
+  moveto 0,#y1;beginsel;moveto 0,#y2;golineend2;
+  enabledraw;endgroupundo;
+}else if(#s==198){ //選択範囲をルビソート（=分離）
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw b";
+  paste;endgroupundo;
+}else if(#s==199){ //選択範囲を漢字ごとにソート
+  #shi=0;if(iskeydown(0x10)){#shi=1;}
+  begingroupundo;selectline 1;cut;
+  if(#shi==1){
+    runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw k1";
+  }else{
+    runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw k";
+  }
+  paste;endgroupundo;
+}else if(#s==200){ //選択範囲をルビソート
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s";
+  paste;endgroupundo;
+}else if(#s==201){ //選択範囲をルビソート（!分離）
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s1";
+  paste;endgroupundo;
+}else if(#s==202){ //置換リストを集める
+  begingroupundo;selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s2";
+  gofileend;paste;endgroupundo;
+}else if(#s==203){ //くの字点抽出
+  replaceallfast "^(?!.*／＼).*\n?","",regular;
+}else if(#s==212){ //要注意の漢字をマーク
+  selectall;copy
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep6.rbw m "+filename;
+  execmacro directory + "\\tmp.mac";
+  moveto #x,#y;
+}else if(#s==213){ //要注意の漢字検索
+  selectall;copy
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep6.rbw n "+filename;
+  moveto #x,#y;
+}else if(#s==215){ //英数字チェック
+  execmacro currentmacrodirectory+"\\英数字チェック.mac";
+}else if(#s==216){ //ルビの重複チェック
+  selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep3.rbw "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==217){ //「%」など削除
+  execmacro currentmacrodirectory+"\\「%」など削除.mac";
+}else if(#s==218){ //「+」削除
+  disabledraw;begingroupundo;
+  replaceallfast "《[+]","《",regular;
+  gofiletop;endgroupundo;enabledraw;endmacro;
+}else if(#s==219){ //読み上げファイル作成
+  #x=x;#y=y;selectall;copy;moveto #x,#y; 
+  runsync2 "rubyw "+currentmacrodirectory+"\\del_oya.rbw "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==231){ //文字変換ひらがな
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  #fg1=getclipboardinfo(1);
+  if (#fg && #px==#dx){wordleft;} //BOX選択
+  if(selecting){}else{beginsel;wordleft;}
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  begingroupundo;disabledraw;copy2;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen2.rbw h";
+  execmacro directory+"\\tmp.mac";
+}else if(#s==232){
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  #fg1=getclipboardinfo(1);
+  if (#fg && #px==#dx){wordleft;} //BOX選択
+  if(selecting){}else{beginsel;wordleft;}
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  begingroupundo;disabledraw;copy2;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen2.rbw k";
+  execmacro directory+"\\tmp.mac";
+}else if(#s==233){
+  execmacro currentmacrodirectory+"\\文字変換.mac","y";
+}else if(#s==234){
+  execmacro currentmacrodirectory+"\\文字変換.mac","t";
+}else if(#s==235){
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e2";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+  //execmacro currentmacrodirectory+"\\文字変換.mac","e1";
+}else if(#s==236){
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e2";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+  //execmacro currentmacrodirectory+"\\文字変換.mac","e2";
+}else if(#s==237){ //半角数字除去
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e3";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+  //execmacro currentmacrodirectory+"\\文字変換.mac","e3";
+}else if(#s==238){ //半角数字－１
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e4";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+  //execmacro currentmacrodirectory+"\\文字変換.mac","e3";
+}else if(#s==239){ //ルビ、オプション除去
+  execmacro currentmacrodirectory+"\\文字変換.mac","r1";
+}else if(#s==240){
+  execmacro currentmacrodirectory+"\\文字変換.mac","r2";
+}else if(#s==241){
+  execmacro currentmacrodirectory+"\\文字変換.mac","r3";
+}else if(#s==242){//ルビを削除（+以外）
+  execmacro currentmacrodirectory+"\\ルビを削除（＋以外）.mac";
+}else if(#s==243){
+  execmacro currentmacrodirectory+"\\文字変換.mac","o";
+}else if(#s==244){ //数字付きを抜き出し
+  if(selecting){selectline 1;copy;down;golinetop;}else{selectall;copy;gofileend;}
+  begingroupundo;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw n";
+  paste;endgroupundo;
+}else if(#s==245){ //前後を削って連続複写
+  if(selecting){begingroupundo;selectline 1;cut;}else{endmacro}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw z";
+  paste;endgroupundo;
+}else if(#s==246){ //置換元抜出し
+  execmacro currentmacrodirectory+"\\文字変換.mac","m";
+}else if(#s==247){ //「 _ 」挿入・除去（位置調整）
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw ui";
+  paste;endgroupundo;
+}else if(#s==248){ //「=>」 除去
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw j";
+  paste;endgroupundo;
+}else if(#s==249){ //「=>」 の先を除去
+  begingroupundo;selectline 1;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw j1";
+  paste;endgroupundo;
+}else if(#s==250){ //「　」除去
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw ds";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+}else if(#s==251){ //「。　、」除去
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw dk";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+}else if(#s==252){ //「@」変換
+  begingroupundo;selectline 1;cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw ra";
+  beginclipboardread;
+  if(#fg){pasterect;}
+  else{paste;};endgroupundo;
+}else if(#s==253){ //パイプをソート
+  begingroupundo;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw ps";
+  paste;endgroupundo;
+}else if(#s==254){ //記号を半角
+  execmacro currentmacrodirectory+"\\文字変換.mac","g";
+}else if(#s==255){ //コメントに変換
+  #x=x;begingroupundo;selectline 1;begingroupundo;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\com_hen.rbw "+filename;
+  paste;endgroupundo;
+}else if(#s==256){ //エンコード
+  execmacro currentmacrodirectory+"\\エンコード.mac";
+}else if(#s==257){ //数値計算
+  execmacro currentmacrodirectory+"\\数値計算.mac";
+}else if(#s==258){ //漢数英数変換
+  execmacro currentmacrodirectory+"\\漢数英数変換.mac";
+}else if(#s==262){ //【〇〇】
+  execmacro currentmacrodirectory+"\\文字変換.mac","s9";
+}else if(#s==263){ //《〇〇》
+  execmacro currentmacrodirectory+"\\文字変換.mac","s1";
+}else if(#s==264){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s2";
+}else if(#s==265){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s3";
+}else if(#s==267){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s4";
+}else if(#s==268){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s5";
+}else if(#s==269){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s6";
+}else if(#s==270){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s7";
+}else if(#s==271){
+  execmacro currentmacrodirectory+"\\文字変換.mac","s8";
+}else if(#s==272){ //ボックス貼り付け
+  #x=x;selectline 1;copy;down;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw bc "+str(#x);
+  //beginclipboardread;
+  //pasterect;
+  paste;
+}else if(#s==281){ //バッチ処理自動
+  execmacro currentmacrodirectory + "\\バッチ処理自動.mac";
+}else if(#s==282){ //logフォルダにコピー
+  runsync2 currentmacrodirectory + "\\bat\\aozora04【ログ削除】.bat";
+  saveas currentmacrodirectory+"\\bat\\log\\"+basename;
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw c "+filename;
+  //sleep 1000;
+  //execmacro directory + "\\tmp.mac";
+}else if(#s==283){ //【連続処理全体】
+  run currentmacrodirectory + "\\bat\\aozora01【連続処理全体】.bat";
+}else if(#s==284){ //【連続処理前半】
+  run currentmacrodirectory + "\\bat\\aozora02【連続処理前半】.bat";
+}else if(#s==285){ //【連続処理後半】
+  run currentmacrodirectory + "\\bat\\aozora03【連続処理後半】.bat";
+}else if(#s==286){ //ログ削除
+  run currentmacrodirectory + "\\bat\\aozora04【ログ削除】.bat";
+}else if(#s==287){ //logフォルダからコピー
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw l "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==288){ //logフォルダをひらく
+  run "explorer.exe " + currentmacrodirectory + "\\bat\\log";
+}else if(#s==290){ //バッチ処理（改）
+  execmacro currentmacrodirectory + "\\バッチ処理（改）.mac";
+}else if(#s==301){ //アップ用の置換リストを準備
+  execmacro currentmacrodirectory + "\\アップ用の置換リストを準備.mac";
+  //run "rubyw "+currentmacrodirectory+"\\copy_list.rbw";
+}else if(#s==302){ //青空文庫まとめ読み
+  execmacro currentmacrodirectory + "\\青空文庫まとめ読み.mac";
+}else if(#s==303){ //moon+変換
+  selectall;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw "+filename;
+}else if(#s==304){ //moon+リストチェック
+  if(selecting){selectline 1;copy;}
+  else{selectall;copy;}
+  setactivehidemaru 1;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw l "+filename;
+  execmacro directory + "\\tmp.mac";
+}else if(#s==305){ //選択を send.txt
+  if(selecting){copy2;}else{selectline 1;copy;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw s";
+}else if(#s==306){ //選択を send.txt（ルビ無し）
+  if(selecting){copy2;}else{selectline 1;copy;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw n";
+}else if(#s==307){ //ファイル転送
+  if(selecting){copy2;}else{selectline 1;copy;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw f "+filename;
+}else if(#s==308){ //フォルダを開く
+  run "explorer.exe" + " \"" + directory + "\"";
+}else if(#s==309){ //置換リストファイルを操作
+  execmacro currentmacrodirectory + "\\置換ファイルを操作.mac";
+}else if(#s==310){ //tmpファイルを閉じて削除
+  #c= hidemarucount;#i=0;#j=0;#k=0;#n=0;
+  while(#i<#c){
+    //message str(#i)+"："+basename;
+    if(leftstr(basename,3)=="tmp"){$files[#j]=basename;#j=#j+1;}
+    setactivehidemaru 1,-1;#i=#i+1;}
+  while(#n<#c){
+    if(leftstr(basename,3)!="tmp"){break;}
+    setactivehidemaru 1,-1;#n=#n+1;}
+  while(#k<#j){closehidemaruforced findhidemaru($files[#k]);#k=#k+1;}
+  question "tmpファイルを削除しますか？";
+  if(result==yes){runsync2 "rubyw "+currentmacrodirectory+"\\del_tmp.rbw";}
+}else if(#s==311){ //grep結果の編集を置換
+  selectall;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\replace4.rbw "+ filename ; //標準速度
+  runsync2 "rubyw "+currentmacrodirectory+"\\replace4.rbw "+ filename +" k"; //高速
+  execmacro directory + "\\tmp.mac";
+}else if(#s==312){ //フォルダ名のファイル準備
+  execmacro currentmacrodirectory + "\\フォルダ名のファイル準備.mac";
+}else if(#s==313){ //ファイル結合
+  execmacro currentmacrodirectory + "\\ファイル結合.mac";
+}else if(#s==314){ //対象ファイル編集
+  runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw e";
+  execmacro directory + "\\tmp.mac";
+}else if(#s==315){ //更新日時を操作
+  execmacro currentmacrodirectory + "\\更新日時を操作.mac";
+}else if(#s==316){ //マッチの位置揃え変更
+  run $uwsc+" "+currentmacrodirectory+"\\マッチの位置揃え変更.uws";
+}else if(#s==317){ //マクロ編集
+  $fl=currentmacrodirectory+"\\読みプロ01.mac";
+  if(findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+}else if(#s==321){ //秀丸マクロメニュー
+  run $uwsc+" "+currentmacrodirectory+"\\秀丸マクロメニュー.uws";
+  //run $uwsc+" "+currentmacrodirectory+"\\キーバインド.uws";
+}else if(#s==322){ //クリップボードにファイル名
+  setclipboard filename;
+}else if(#s==323){ //クリップボードにフォルダ名
+  setclipboard directory;
+}else if(#s==324){ //cmd
+  run "cmd.exe /k chcp 65001";
+}else if(#s==325){ //google検索
+  if(selecting){
+    $sel=gettext(seltopx,seltopy,selendx,selendy,1);
+    run "cmd /c start chrome --incognito http://www.google.co.jp/search?q="+$sel+">nul";}
+}else if(#s==327){ //検索マーカー
+  $s=gettext(seltopx,seltopy,selendx,selendy, 1);
+  setsearch $s , 0x34003800;
+  colormarkerallfound;escape;
+}else if(#s==328){ //分割マーカー
+  colormarker 0x000000, 0xc2c79e, 11, 1;
+  escape;
+}else if(#s==329){ //拗音をマーク
+  setsearch "(?<=[ぁ-んァ-ヴ])[ゃャ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[ゅュ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[ょョ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[っッ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[ぁぃぅぇぉァィゥェォ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[やゆよつヤユヨツ]" , 0x4003819;colormarkerallfound;
+  setsearch "(?<=[ぁ-んァ-ヴ])[あいうえおアイウエオ]" , 0x4003819;colormarkerallfound;
+}else if(#s==330){ //括弧をマーク
+  execmacro currentmacrodirectory + "\\括弧をマーク.mac";
+}else if(#s==332){ //自動送り
+  execmacro currentmacrodirectory+"\\自動送り.mac";
+}else if(#s==333){ //棒読み文庫
+  execmacro currentmacrodirectory+"\\棒読み文庫.mac";
+}else if(#s==334){ //割合表示
+  execmacro currentmacrodirectory+"\\割合表示.mac";
+}else if(#s==335){ //文字数カウント
+  if(selecting){copy2;}else{#x=x;#y=y;selectall;copy;moveto #x,#y;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_count.rbw";
+}else if(#s==336){ //タグジャンプサーチ
+  if(selecting){copy2;}else{beginsel;right;copy2;left;}
+  tagjump;beginclipboardread;$c=getclipboard;searchdown $c ,hilight;
+  right;left;
+}else if(#s==337){ //選択部を次行の末尾にコピー
+  copy;down;golineend;paste;
+}else if(#s==338){ //挿入して戻る
+  #x=x;#y=y;paste;moveto #x,#y;
+}else if(#s==339){ //選択文字で上候補
+  if(selecting){
+    $seltext = gettext(seltopx,seltopy,selendx,selendy);
+    searchup $seltext ,hilight;findup;}
+  else{findup;}
+}else if(#s==340){ //選択文字で下候補
+  if(selecting){
+    $seltext = gettext(seltopx,seltopy,selendx,selendy);
+    searchdown $seltext ,hilight;finddown;}
+  else{finddown;}
+}else if(#s==341){ //選択文字で次の秀丸を検索
+  if(selecting){
+    $seltext = gettext(seltopx,seltopy,selendx,selendy);
+    setactivehidemaru 1;setsearch $seltext ,0x35003800;finddown;
+    colormarkerallfound;escape;}
+  else{endmacro;}
+}else if(#s==342){ //選択文字で対象ファイルを検索
+  if(selecting){
+    copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw g";
+    execmacro directory + "\\tmp.mac";}
+  else{endmacro;}
+}else if(#s==343){ //ファイルを開いて選択文字検索
+  execmacro currentmacrodirectory+"\\ファイルを開いて選択文字検索.mac";
+}else if(#s==344){ //差分チェック
+  #hwnd_f0 = hidemaruhandle(0);
+  //message "ファイルを選択してください", "ファイル選択", 0x03;
+  readonlyopenfile "/h /r .\\*.txt";
+  #hwnd_f1 = hidemaruhandle(0);
+  $f1=filename;
+  if ($f1==""){
+    setactivehidemaru 1;
+    closehidemaruforced #hwnd_f1;
+    endmacro;}
+  //message "比較するファイルを選択してください", "ファイル選択", 0x03;
+  readonlyopenfile "/h /r .\\*.txt";
+  #hwnd_f2 = hidemaruhandle(0);
+  $f2=filename;
+  if ($f2==""){
+    setactivehidemaru 1;
+    closehidemaruforced #hwnd_f2;
+    endmacro;}
+  setactivehidemaru #hwnd_f0;
+  closehidemaruforced #hwnd_f1;
+  closehidemaruforced #hwnd_f2;
+  //message 
+  runsync2 "rubyw "+currentmacrodirectory+"\\diff7.rbw "+$f1+" "+$f2;
+}else if(#s==345){ //読みプロ01のNoチェックNoチェック
+  #x=x;#y=y;selectall;copy;moveto #x,#y;down;
+  runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw m";
+}else if(#s==346){ //青空変換（改）
+  execmacro currentmacrodirectory + "\\青空変換（改）.mac";
+}else if(#s==348){ //縦に並べて表示
+  #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
+  iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowvert;
+  setwindowsize 100, 14;setwindowpos 80, 0;
+  setactivehidemaru #hwnd_f1;setwindowsize 100, 14;setwindowpos 80, 360;
+}else if(#s==349){ //横に並べて表示
+  #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
+  iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowhorz;
+  setwindowsize 48, 34;setwindowpos 80, 0;
+  setactivehidemaru #hwnd_f1;setwindowsize 48, 34;setwindowpos 600, 0;
+}else if(#s==350){ //ウィンドウ分割
+  split;
+}else if(#s==351){ //ウィンドウサイズ
+  setwindowsize 100, 30;
+}else if(#s==352){ //ウィンドウサイズ
+  setwindowsize 60, 20;
+}else if(#s==353){ //すべて最小化
+  iconall;
+}else if(#s==354){ //すべて 100×30
+  $file=filename;setwindowsize 100, 30;nexthidemaru;#i=1;
+  while(filename!=$file){//message str(80+50*#i);
+    setwindowsize 100, 30;
+    setwindowpos 40+25*#i, -20+25*#i;nexthidemaru;#i=#i+1;}
+  setwindowpos 40+25*#i, -20+25*#i;
+}
+
+endmacro;
+

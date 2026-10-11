@@ -1,0 +1,58 @@
+﻿//エンコード
+
+//0x10:shift
+#shi=0;
+if(iskeydown(0x10))#shi=1;
+
+disabledraw;begingroupundo;
+if(!selecting)selectline 1;
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+moveto #px,#py;beginsel;moveto #dx,#dy;
+copy2;
+if(#shi==1){runsync2 "rubyw -x "+currentmacrofilename+" d";}
+else{runsync2 "rubyw -x "+currentmacrofilename+" e";}
+execmacro directory + "\\tmp.mac";
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'uri'
+
+cbd = ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+
+ar=cbd.getText.split(/\R/).reject{|e| e==""}.reverse
+st="\uFEFFbegingroupundo;disabledraw;\n"
+print "opt=";p opt
+print "ar=";p ar
+
+if /e/=~opt
+  ar=ar.each{|e|
+    begin
+      a=URI.encode_www_form_component(e)
+      st+=%Q|replaceup "#{e}","#{e}=>#{a}";\ngolineend2;\n|
+    rescue
+      st+=%Q|replaceup "#{e}","#{e}=>error";\ngolineend2;\n|
+    end}
+else
+  ar=ar.each{|e|
+    begin
+      a=URI.decode_www_form_component(e)
+      st+=%Q|replaceup "#{e}","#{e}=>#{a}";\ngolineend2;\n|
+    rescue
+      st+=%Q|replaceup "#{e}","#{e}=>error";\ngolineend2;\n|
+    end}
+end
+st+="enabledraw;endgroupundo;\n"
+st+="escape"
+
+print "st=";p st
+File.write("tmp.mac",st)
+__END__
+*/

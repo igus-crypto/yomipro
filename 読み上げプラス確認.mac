@@ -1,0 +1,55 @@
+//読み上げプラス確認
+
+#x0=x;#y0=y;
+escape;moveto 0,y;beginsel;gofileend;copy;moveto 0,#y0;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmpp.mac";
+execmacro currentmacrodirectory+"\\\\grepスタンダード.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stderr=open("tmp_errp.txt","w")
+$stdout=open("tmp99p.txt","w")
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(%r|\R|)
+print "ar=";p ar
+i,s1,s2,st=0,"","","\uFEFFdisabledraw;beginsel;\n"
+ar.each{|e|
+  if e==""
+    i+=1
+    break if i==2
+  else
+    i=0
+  end
+  if %r|(,[\p{Han}ぁ-んァ-ヴー]{2,}《)|=~e
+    s1=e
+  end
+  if %r|(,[\p{Han}ぁ-んァ-ヴー]《)|=~e
+    break if s1!=""
+    s2=e
+  end}
+
+print "s1=";p s1
+print "s2=";p s2
+s2=s2.to_s
+if s1!=""
+  st+=%Q|searchdown "#{s1}";golineend2;\n|
+elsif s2!=""
+  st+=%Q|searchdown "#{s2}";golineend2;\n|
+else
+  st+="endmacro;"
+end
+
+File.write("tmpp.mac",st)
+
+__END__
+*/

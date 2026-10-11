@@ -1,0 +1,82 @@
+﻿//ルビのgrep
+//ファイル選択
+
+setcompatiblemode 0x20020;
+
+$inifile=currentmacrodirectory + "\\config.ini";
+
+runsync2 "rubyw -x "+currentmacrofilename+" b "+filename;
+
+endmacro;
+
+//標準  :ファイル選択
+//shift :編集中のファイルを対象にする
+
+#fs=0;
+if(iskeydown(0x10))#fs=1;
+
+if(#fs){
+  runsync2 "rubyw -x "+currentmacrofilename+" b "+filename;
+}else{
+  openfile "/h /r .\\*.txt";
+  #hwnd_f1 = hidemaruhandle(0);
+  $f1=filename;
+  if ($f1==""){
+    setactivehidemaru 1;
+    closehidemaruforced #hwnd_f1;
+    runsync2 "rubyw -x "+currentmacrofilename+ " msg";
+    beginclipboardread;$f1=getclipboard();
+    message "対象ファイルは　"+$f1+"　です";
+    endmacro;
+  }
+  
+  beginclipboardread;setclipboard $f1;
+  runsync2 "rubyw -x "+currentmacrofilename+" a";
+  $f1=getclipboard();
+  
+  openfile $inifile;
+  closehidemaruforced #hwnd_f1;
+  begingroupundo;
+  searchdown "file_1=";
+  golineend2;deletebefore;
+  insert "file_1="+$f1;
+  golinetop;endgroupundo;save;
+}
+endmacro;
+
+/*
+#/*
+#! ruby
+Encoding.default_external = 'UTF-8'
+$stdout=open("tmp99a.txt","w")
+$stderr=open("tmpee.txt","w")
+
+require 'clipboard'
+require 'inifile'
+require 'win32ole'
+
+cbd=ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+
+if /msg/=~opt
+  ini=IniFile.load(__dir__+"/config.ini")
+  file=ini["grep"]["file_1"]
+  p file
+  cbd.setText(file)
+elsif /a/=~opt
+  st=cbd.getText
+  print "st=";p st
+  st=st.gsub(/\R/,"").gsub("\\","/")
+  print "st=";p st
+  cbd.setText(st)
+elsif /b/=~opt
+  f1=ARGV[1].encode(Encoding::UTF_8).gsub("\\","/")
+  print "f1=";p f1
+  fi=open(__dir__+"/config.ini").readlines
+  fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f1}")}
+  File.write(__dir__+"/config.ini",fi.join)
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("対象ファイルを#{f1}に設定しました",1)
+end
+__END__
+*/

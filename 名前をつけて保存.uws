@@ -1,0 +1,7 @@
+//名前をつけて保存
+
+ACW(GETID("秀丸","Hidemaru32Class"))
+KBD(VK_ALT,DOWN,100)
+KBD(VK_ALT,UP,100)
+KBD(VK_F,CLICK,100)
+KBD(VK_A,CLICK,100)

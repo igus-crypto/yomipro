@@ -1,0 +1,179 @@
+﻿//カーソル移動
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+//0x25:←
+//0x26:↑
+//0x27:→
+//0x28:↓
+//message(str(code));// //\
+
+//setcompatiblemode 0x10F;
+
+#shi=0;#ctr=0;#alt=0;#yal=0;#yau=0;#yar=0;#yad=0;
+
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctr=1;}
+if(iskeydown(0x12)){#alt=1;}
+if(iskeydown(0x25)){#yal=1;}
+if(iskeydown(0x26)){#yau=1;}
+if(iskeydown(0x27)){#yar=1;}
+if(iskeydown(0x28)){#yad=1;}
+
+#x0=x;#y0=y;#x=x;#y=y;
+if(#alt==1 && rectselecting){
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  if(#yal==1){
+    disabledraw;escape;moveto #tx-2,#ty;
+    beginrect;moveto #ex-2,#ey;endmacro}
+  if(#yar==1){
+    disabledraw;escape;moveto #tx+2,#ty;
+    beginrect;moveto #ex+2,#ey;endmacro}
+  if(#yad==1){
+    disabledraw;escape;moveto #tx+2,#ty;
+    beginrect;moveto #ex-2,#ey;endmacro}
+  if(#yau==1){
+    disabledraw;escape;moveto #tx-2,#ty;
+    beginrect;moveto #ex+2,#ey;endmacro}
+}
+
+if(#ctr && #alt && #shi && #yau){escape;searchup "^$",regular;endmacro;}
+else if(#ctr && #alt && #shi && #yad){escape;searchdown "^$",regular;endmacro;}
+else if(rectselecting){#x=x;#y=y;}
+else if(selecting){#x=x;#y=y;}
+else if(#alt && #ctr){beginrect;}
+//else if(#alt){beginsel;}
+#ox=selopenx;#oy=selopeny;
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+if(#ctr && #alt && #shi && #yau){gofiletop;}
+else if(#ctr && #alt && #shi && #yad){moveto #px,#py;beginsel;gofileend;
+  #px=seltopx;#py=seltopy;escape;beginsel;moveto #px,#py;}
+else if(#ctr && #alt && #shi && #yar){beginsel;golineend2;}
+else if(#ctr && #alt && #shi && #yal){beginsel;golinetop2;}
+else if(#ctr && #alt && #yau){
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;up;#x=x;#y=y;
+  moveto #dx,#dy;beginsel;moveto #x,#y;}
+else if(#ctr && #alt && #yad){
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;down;#x=x;#y=y;
+  moveto #dx,#dy;beginsel;moveto #x,#y;}
+else if(#alt && #shi && #yal){beginsel;searchup ">|$",regular;right;endmacro;}
+else if(#ctr && #shi && #yau){gofiletop;}
+else if(#ctr && #shi && #yad){gofileend;}
+else if(#alt && #shi && #yad){
+  #x=x;#f=0;
+  if(!selecting){beginsel;}
+  while(1){
+    #y=y;down;
+    if(#y==y){break;}
+    #f=#f+1;
+    if(#x-x>3 && #f>1){up;break;}
+    else if(#x-x>3){
+      while(1){
+        #y=y;down;
+        if(#y==y){break;}
+        if(#x-x<=3){#f=#f+1;break;}}}
+  }}
+else if(#alt && #yau){up;golineend2;searchup ",",word,nohilight;left;right;endmacro;}
+else if(#alt && #yad){down;golineend2;endmacro;}
+else if(#alt && #yal){
+  if(selecting)escape;
+  wordleft2;left;if(unicode==45){wordleft2;wordleft2;}else{right;}}
+else if(#alt && #yar){
+  if(!selecting)beginsel;
+  wordright2;right;if(unicode==45){wordright2;wordright2;}else{left;}}
+else if(#ctr && #yal){
+  escape;left;searchup "《";#r=result;right;
+  if((y!=#y0)||(#r==0)){moveto #x0,#y0;searchup "^",regular;}
+  
+  if(x==0){
+    moveto #x,#y;#ix=#x;
+    while(1){
+      if(x==0)break;
+      $c=getcolormarker(0x0002,findmarker);
+      if($c!="" && #f==0){endmacro;}
+      #ix=x;left;
+    }
+  }
+  endmacro;}
+else if(#ctr && #yar){
+  escape;searchdown "《";#r=result;right;
+  if((y!=#y0)||(#r==0)){moveto #x0,#y0;searchdown "$",regular;}
+  if(code==13){
+    moveto #x,#y;#ix=#x;
+    while(1){
+      if(code==13)break;
+      $c=getcolormarker(0x0002,findmarker);
+      if($c!="" && #f==0){right;endmacro;}
+      #ix=x;right;
+    }
+  }
+  endmacro;}
+else if(#alt && #shi && #yau){
+  escape;#x1=x;#y1=y;
+  while(1){
+    #y2=y;up;#y3=y;#x3=x;
+    if(#y2==#y3){moveto #x1,#y1;break;}
+    if(#x1-#x3<=1){break;}
+    }}
+else if(#alt && #shi && #yad){
+  escape;#x1=x;#y1=y;
+  while(1){
+    #y2=y;down;#y3=y;#x3=x;
+    if(#y2==#y3){moveto #x1,#y1;break;}
+    if(#x1-#x3<=1){break;}
+    }}
+else if(#ctr && #yau){
+  escape;#ty=screentopy;
+  disabledraw;enabledraw linenotoy(0,y-100);
+  if(#ty==screentopy){moveto #x0,#y0-windowheight/4;}}
+//  if(!selecting)beginsel;
+//  #x1=x;#y1=y;
+//  while(1){
+//    #y2=y;up;#y3=y;#x3=x;
+//    if(#y2==#y3){moveto #x1,#y1;break;}
+//    if(#x1-#x3<=1){break;}
+//    }}
+else if(#ctr && #yad){
+  escape;#ty=screentopy;
+  disabledraw;enabledraw linenotoy(0,y);
+//  if(#ty==screentopy){beginsel;down 10;fold;}}
+  if(#ty==screentopy){moveto #x0,#y0+windowheight/4;}}
+//  if(!selecting)beginsel;
+//  #x1=x;#y1=y;
+//  while(1){
+//    #y2=y;down;#y3=y;#x3=x;
+//    if(#y2==#y3){moveto #x1,#y1;break;}
+//    if(#x1-#x3<=1){break;}
+//    }}
+
+//disabledraw;
+//moveto2 0,#a;
+//enabledraw linenotoy(0,#a);
+//endmacro;
+
+
+
+#x=x;#y=y;
+if(#y0==#y){}else{moveto #x0,#y;}
+
+
+endmacro;
+#x0=x;#y0=y;
+if(selecting){}
+else if(iskeydown(0x12)&&iskeydown(0x11)){beginrect;}
+else if(iskeydown(0x12)){beginsel;}
+else{escape;}
+
+if(iskeydown(0x10)&&iskeydown(0x11)&&iskeydown(0x26)){gofiletop;}
+else if(iskeydown(0x10)&&iskeydown(0x11)&&iskeydown(0x28)){gofileend;}
+else if(iskeydown(0x11)&&iskeydown(0x26)){halfprevpage;}
+else if(iskeydown(0x11)&&iskeydown(0x28)){halfnextpage;}
+else if(iskeydown(0x11)&&iskeydown(0x25)){wordleft2;}
+else if(iskeydown(0x11)&&iskeydown(0x27)){wordright2;}
+
+#x=x;#y=y;
+if(#y0==#y){}else{moveto #x0,#y;}
+
+
+

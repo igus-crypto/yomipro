@@ -1,0 +1,48 @@
+﻿//見出し.mac
+
+selectall;copy;setsearch ".*" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;
+//runsync2 "rubyw "+currentmacrodirectory+"\\convert.rbw m "+filename;
+runsync2 "rubyw -x "+currentmacrofilename+" "+filename;
+endgroupundo;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# 見出し
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+
+file=ARGV[0].encode(Encoding::UTF_8).gsub("\\","/")
+
+arr=st.split(/\R/)
+File.write("tmp_b.txt",arr.join("\n"))
+arr=arr.map{|e| e.gsub(%r|^　　+(.*)|){"【#{$1}】"}.
+  gsub(%r|^(第[一二三四五六七八九十　 ]+話)[　◆](.*)$|){"【#{$1}】　【#{$2}】"}.
+  gsub(%r|^(≪[^。、]+$)|){"【#{$1}】"}.
+  #gsub(%r|^([^。、『』「」（）〈〉【】［］？！─]+$)|){"【#{$1}】"}.
+  #gsub(%r|^([^　『「（〈【─…].*[^。、』」）〉】？！─…]$)|){"【#{$1}】"}.
+  gsub(%r|^([^　『「（〈〔［【─…].*)|){"【#{$1}】"}.
+  gsub(%r|^　　+([^　].*[^。、』」）〕〉］】？！─…]$)|){"【#{$1}】"}.
+  gsub(%r|^(第[0-9０-９]+話)「(.*)」$|){"【#{$1}】　【#{$2}】"}.
+  gsub(%r|^【＊】$|,"").gsub(%r|^【】$|,"")}
+File.write("tmp_r.txt",arr.join("\n"))
+dir=File.dirname(file)
+spw=spawn(%Q|rubyw #{__dir__}/diff4.rbw "#{File.basename(file)}" "#{dir}/"tmp_r.txt|)
+Process.wait spw
+exit
+
+__END__
+*/
+
+

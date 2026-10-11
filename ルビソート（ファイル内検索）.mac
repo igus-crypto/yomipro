@@ -1,0 +1,10 @@
+//ルビソート（ファイル内検索）
+
+begingroupundo;disabledraw;
+if(!selecting)endmacro;
+$f=leftstr(basename,strlen(basename)-strlen(filetype));
+$st=getselectedtext();
+localgrep $st;
+replaceallfast "^[^:]*: ","",regular;
+saveas $f+"g.txt";
+execmacro directory + "\\tmp_g.mac";

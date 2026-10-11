@@ -1,0 +1,58 @@
+﻿//読みプロ02
+
+$op=getarg(0);
+if($op==""){
+
+mousemenu;
+$a[0]="秀丸マクロメニュー";
+$a[1]="置換リストをgrep（ファイル名付き）";
+$a[2]="置換リストの修正反映";
+$a[3]="タグジャンプサーチ";
+$a[4]="挿入して戻って下へ";
+$a[5]="カンマ＋リターン挿入";
+$a[6]="選択を send.txt";
+$a[7]="選択を send.txt（ルビ無し）";
+$a[8]="選択部を末尾にコピー";
+
+mousemenuarray $a,9;
+  #r=result-1;
+}else{
+  #r=val($op);
+}
+
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+//message str(#r);
+if(#r<0){
+  endmacro;
+}else if(#r==0){
+  run $uwsc+" "+currentmacrodirectory+"\\秀丸マクロメニュー.uws";
+}else if(#r==1){
+  //execmacro currentmacrodirectory+"\\置換リストをgrep.mac";
+  $sel=gettext(seltopx,seltopy,selendx,selendy,1);
+  grep $sel, "置換リスト*.txt",currentmacrodirectory+"\\置換リスト";
+  saveas "tmp_01.txt";
+}else if(#r==2){
+  execmacro currentmacrodirectory+"\\置換リストの修正反映.mac";
+}else if(#r==3){
+  execmacro currentmacrodirectory+"\\タグジャンプサーチ.mac";
+}else if(#r==4){
+  #x=x;#y=y;paste;moveto #x,#y;down;
+}else if(#r==5){
+  insert ",\n";
+}else if(#r==6){
+  if(selecting){copy2;}else{selectline 1;copy;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw s";
+}else if(#r==7){
+  if(selecting){copy2;}else{selectline 1;copy;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw n";
+}else if(#r==8){
+  execmacro currentmacrodirectory+"\\選択をtmp.txtの末尾にコピー.mac";
+  //if(selecting){#x=x;#y=y;copy;escape;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw t";
+  //gofileend;insert "\n";paste;moveto #x,#y;}
+}
+endmacro;
+

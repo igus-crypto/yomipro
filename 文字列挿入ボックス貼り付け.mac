@@ -1,0 +1,5 @@
+﻿//文字列挿入ボックス貼り付け
+
+#x=x;selectline 1;copy;down;
+runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw bc "+str(#x);
+paste;

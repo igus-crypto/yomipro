@@ -1,0 +1,62 @@
+//タグジャンプサーチ
+
+disabledraw;
+if(selecting){copy2;}else{beginsel;right;copy2;left;}
+#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+golinetop2;searchdown ":";searchdown "[0-9]+",regular;
+$n=gettext(foundtopx,foundtopy,foundendx,foundendy);
+moveto #tx,#ty;beginsel;moveto #ex,#ey;
+enabledraw;
+tagjump;
+#r=result;
+runsync2 "rubyw -x "+currentmacrofilename+" "+str(#r)+" "+$n;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99ta.txt","w")
+$stderr=open("tmp_errta.txt","w")
+
+require 'inifile'
+require 'clipboard'
+
+ini=IniFile.load(__dir__+"/config.ini")
+file=ini["grep"]["file_1"].gsub("/","\\\\\\")
+cbd=ClipBoard.new(__ENCODING__)
+sc=cbd.getText
+
+opt=ARGV[0]
+n=ARGV[1]
+print "n=";p n
+n=ARGV[1].to_s.gsub(%r|[()]|,"").to_i
+n=1 if n==0;
+print "opt=";p opt
+
+st="\uFEFFdisabledraw;\n"
+m=__FILE__.encode(Encoding::UTF_8).gsub("/","\\\\\\")
+if opt=="0"
+  st+=%Q|if(findhidemaru("#{file}")!=-1){\n|
+  st+=%Q|  setactivehidemaru findhidemaru("#{file}");\n|
+  st+=%Q|  if(updated!=0)endmacroall;\n|
+  st+=%Q|  setactivehidemaru 1;\n|
+  st+=%Q|  closehidemaru findhidemaru("#{file}");\n|
+  st+=%Q|  };\n|
+  st+=%Q|if(selecting){copy2;}else{beginsel;right;copy2;left;}\n|
+  st+=%Q|tagjump;\n|
+  st+=%Q|openfile "#{file}";\n|
+  st+=%Q|movetolineno 1, #{n};\n|
+end
+
+st+=%Q|#x=x;#y=y;selectall;|
+st+=%Q|colormarker 0x000000, 0xC2C79E, 11, 1;|
+st+=%Q|escape;moveto #x,#y;|
+st+=%Q|beginclipboardread;$c=getclipboard;searchdown $c ,hilight;|
+st+=%Q|right;left;getcliphist 1;disabledraw;enabledraw y - windowheight / 2;|
+
+File.write("tmp.mac",st)
+__END__
+*/

@@ -1,0 +1,54 @@
+﻿//差分チェック
+
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+$dir=getarg(0);
+$op=getarg(1);
+//message $dir;
+//message $op;
+if($op=="a"){
+	#hwnd1 = hidemaruhandle(0);selectall;copy;
+	runsync2 $uwsc+" "+currentmacrodirectory+"\\差分チェック.uws "+$dir+" a";
+}else{
+	#hwnd2 = hidemaruhandle(0);selectall;copy;
+	runsync2 $uwsc+" "+currentmacrodirectory+"\\差分チェック.uws "+$dir;
+	if(existfile($dir+"\\tmp_diff1.txt")){
+		setactivehidemaru #hwnd1;begingroupundo;selectall;delete;paste;save;endgroupundo;}}
+
+
+
+/*
+//クリップボードで先頭の空行が跳ばされる問題防止対策
+gofiletop;insert "a";selectall;copy;escape;undo;#hwnd1=hidemaruhandle(0);
+//tmp_d1.txtに書き出し
+runsync2 "rubyw -x "+currentmacrofilename+" tmp_d1.txt";
+
+setactivehidemaru 1;gofiletop;insert "a";selectall;
+copy;escape;undo;#hwnd2=hidemaruhandle(0);setactivehidemaru 1;
+//tmp_d2.txtに書き出し
+runsync2 "rubyw -x "+currentmacrofilename+" tmp_d2.txt";
+
+runsync2 "rubyw "+currentmacrodirectory+"\\diff3.rbw "+str(#hwnd1)+" "+str(#hwnd2)+" "+directory;
+execmacro directory+"\\tmp.mac";
+//execmacro "tmp.mac";
+
+endmacro;
+
+/*
+#! ruby
+
+require 'win32/clipboard'
+require 'win32ole' 
+
+st=Win32::Clipboard.data(Win32::Clipboard::UNICODETEXT).gsub("\r\n","\n")
+File.write(ARGV[0],st)
+#wsh = WIN32OLE.new('WScript.Shell')
+#wsh.Popup(st)
+__END__
+
+
+
+diff3.rbw
+
+*/

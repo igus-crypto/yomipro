@@ -1,0 +1,171 @@
+﻿//選択を行末にコピー
+
+//標準            :ルビチェック用
+//alt             :＋に括弧
+//ctrl            :そのまま
+//shift           :ひらがな
+//ctrl+shift      :漢字+カタカナ
+
+//begingroupundo;disabledraw;
+if((!selecting) && (code==44)){
+  #x=x;#y=y;golinetop;insert "!";moveto #x+1,#y;endmacro;}
+#ty=screentopy;
+disabledraw;begingroupundo;
+if(!imestate)imeswitch; //全角入力
+#fc=0;#fs=0;#fa=0;
+if(iskeydown(0x12))#fa=1;
+if(iskeydown(0x11))#fc=1;
+if(iskeydown(0x10))#fs=1;
+if(x==0)selectline 1;
+
+//if(#fs && code==13){selectline 1;#fs=0;}
+if(x==0){#fs=1;}
+if(code==13){selectline 1;#fs=0;}
+
+if(#fc && #fs){
+  if(!selecting){gowordtop2;beginsel;gowordend2;}
+  call copyfile;
+  runsync2 "rubyw -x "+currentmacrofilename+" ga";
+}else if(#fa){
+  call copyfile;
+  runsync2 "rubyw -x "+currentmacrofilename+" gk";
+}else if(#fc){
+  if(!selecting){gowordtop2;beginsel;gowordend2;}
+  call copyfile;
+  runsync2 "rubyw -x "+currentmacrofilename+" gc";
+}else if(#fs){
+  if(!selecting){gowordtop2;beginsel;gowordend2;}
+  call copyfile;
+  runsync2 "rubyw -x "+currentmacrofilename+" gs";
+}else{
+  //if(!selecting){beginsel;wordleft;}
+  if(!selecting){golineend2;insert ",+";endmacro;}
+  call copyfile;
+  runsync2 "rubyw -x "+currentmacrofilename+" gm";
+}
+execmacro directory + "\\tmp.mac";
+#x=x;#y=y;
+//message str(#ty)+"/"+str(screentopy);
+if(#ty!=screentopy){gofileend;moveto #x,#y;}
+endgroupundo;enabledraw;endmacro;
+
+copyfile:
+disabledraw;
+#x=x;#y=y;#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+if(#x==#px && #y==#py){escape;moveto #px,#py;beginsel;moveto #dx,#dy;}
+copy2;selectline 1;
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+$sel=gettext(#px,#py,#dx,#dy,1,1);
+openfile "/h";
+insert $sel;
+saveas currentmacrodirectory+"\\tmp99gm.txt";
+#hwnd=hidemaruhandle(0);
+setactivehidemaru 1;closehidemaruforced #hwnd;
+return;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# 文字変換
+# moji_hen2
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+
+p ARGV
+opt=ARGV[0]
+#gm  :選択部を行末にコピー
+#ga  :選択部を行末にコピー（＋に括弧）
+#gc  :選択部を行末にコピー（そのまま）
+#gs  :選択部を行末にコピー（ひらがな）
+#gk  :選択部を行末にコピー（カタカナ+漢字）
+
+print "opt=";p opt
+st2="\uFEFFbegingroupundo;disabledraw;\n"
+
+ar1=st.split(/\R/).reject{|e| e==""}.reverse
+ar2=open(__dir__+"/tmp99gm.txt").read.split(%r|\R|).reverse.reject{|e| e==""}
+print "ar1=";p ar1
+print "ar2=";p ar2
+if /^gm/=~opt
+  ar1=ar1.each_with_index{|e,i|
+    ar=e.split(",")
+    f=(ar.size==1 ? ar[0] : ar[1])
+    f=f.tr('あ-ん','ア-ン') if /^[ぁ-ん]+$/=~f
+    if e=~/,[ａ-ｚＡ-Ｚ]+$/
+      f=",+#{ar[1]}（#{ar[0]}）"
+    elsif f=~/^\+/
+      f=","+ar[1]+"（"+ar[0]+"）"
+    elsif ar2[i].split(",").size<=2
+      f=",+"+f
+    end
+    f=ar2[i]+f
+    print "f=";p f
+    st2+=%Q|replaceup "#{ar2[i]}","#{f}";\ngolineend2;\n|}
+elsif /^gc/=~opt
+  ar1=ar1.each_with_index{|e,i|
+    ar=e.split(",")
+    e=(ar.size==1 ? ar[0] : ar[1])
+    #e=ar[0]
+    e=ar[0] if /《/=~e
+    e=ar2[i]+e
+    print "e=";p e
+    st2+=%Q|replaceup "#{ar2[i]}","#{e}";\ngolineend2;\n|}
+#elsif /^gs/=~opt
+#  ar1=ar1.each_with_index{|e,i|
+#    ar=e.split(",")
+#    f=(ar.size==1 ? ar[0] : ar[1])
+#    f=f.tr('あ-ん','ア-ン') if /^[ぁ-ん]+$/=~f
+#    if e=~/,[ａ-ｚＡ-Ｚ]+$/
+#      f=",+#{ar[1]}（#{ar[0]}）"
+#    elsif f=~/^\+/
+#      f=","+ar[1]+"（"+ar[0]+"）"
+#    elsif ar2[i].split(",").size<=2
+#      f=",+"+f
+#    end
+#    f=ar2[i]+f
+#    print "f=";p f
+#    st2+=%Q|replaceup "#{ar2[i]}","#{f}";\ngolineend2;\n|}
+elsif /^gs/=~opt
+  ar1=ar1.each_with_index{|e,i|
+    ar=e.split(",")
+    print "ar=";p ar
+    e=(ar.size==1 ? ar[0] : ar[1])
+    #e=ar[0]
+    e=ar2[i]+",+"+e
+    print "e=";p e
+    st2+=%Q|replaceup "#{ar2[i]}","#{e}";\ngolineend2;\n|}
+elsif /^ga/=~opt
+  ar1=ar1.each_with_index{|e,i|
+    ar=e.split(",")
+    print "ar=";p ar
+    e=ar[0]
+    f=ar2[i]+",+#{ar[1]}（#{ar[0]}）"
+    st2+=%Q|replaceup "#{ar2[i]}","#{f}";\ngolineend2;\n|}
+elsif /^gk/=~opt
+  ar1=ar1.each_with_index{|e,i|
+    ar=e.split(",")
+    print "ar=";p ar
+    e=ar[0]
+    f=ar2[i]+",+#{ar[1].tr('あ-ん','ア-ン')}#{ar[0]}"
+    st2+=%Q|replaceup "#{ar2[i]}","#{f}";\ngolineend2;\n|}
+end
+st2+="enabledraw;endgroupundo;\n"
+print "st2=";p st2
+
+File.write("tmp.mac",st2)
+
+__END__
+
+*/
+
+

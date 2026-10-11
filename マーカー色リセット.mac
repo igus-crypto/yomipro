@@ -1,0 +1,27 @@
+﻿//マーカー色リセット
+
+runsync2 "rubyw -x "+currentmacrofilename;
+endmacro;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'win32ole'
+
+st=open(__dir__+"/config.ini").read.gsub(%r|color_num=color_\d+|,"color_num=color_1")
+File.write(__dir__+"/config.ini",st)
+wsh = WIN32OLE.new('WScript.Shell')
+wsh.Popup("マーカー色をリセットしました",1)
+
+
+__END__
+*/
+
+

@@ -1,0 +1,35 @@
+//一時マーカー
+
+setcompatiblemode 0x100000;
+
+$a=getarg(0);
+if($a=="1")#c=0x72F531;
+if($a=="2")#c=0x29FF77;
+if($a=="3")#c=0xFF82E6;
+
+disabledraw;#x=x;#y=y;
+//if(multiselecting){
+//  #i=multiselectcount;#j=0;
+//  while(#j<#i){
+//    #tx[#j]=seltopx[#j];
+//    #ty[#j]=seltopy[#j];
+//    #ex[#j]=selendx[#j];
+//    #ey[#j]=selendy[#j];
+//    #j=#j+1;
+//  }
+//  escape;
+//  #j=0;
+//  while(#j<#i){
+//    moveto #tx[#j],#ty[#j];beginsel;
+//    moveto #ex[#j],#ey[#j];
+//    colormarker 0x000000, #c, 11, 1;
+//    escape;#j=#j+1;
+//  }
+//  moveto #x,#y;enabledraw;
+//  endmacro;
+//}
+if(!selecting)selectline 1;
+colormarker 0x000000, #c, 11, 0;
+escape;moveto #x,#y;enabledraw;
+endmacro;
+

@@ -1,0 +1,30 @@
+//置換リストをセーブして終了.mac
+
+#c= hidemarucount;#i=0;#j=0;#k=0;#n=0;
+
+if(leftstr(basename[0],10)!="置換リスト")$fa=filename[0];
+while(#i<#c){
+  if(leftstr(basename[#i],10)=="置換リスト"){
+    $fs[#j]=filename[#i];
+    //message "fs="+$fs[#j];
+    #j=#j+1;
+  }else{
+    //message filename[#i];
+    //if($fa=="")$fa=filename[#i];
+    $fa[#n]=filename[#i];
+    #n=#n+1;
+  }
+  #i=#i+1;
+}
+//message $fa[0];
+if($fa[0]=="")#k=1;
+while(#k<#j){
+  setactivehidemaru findhidemaru($fs[#k]);
+  save;setactivehidemaru 1,-1;
+  closehidemaruforced findhidemaru($fs[#k]);
+  #k=#k+1;
+}
+if($fa[0]!="")setactivehidemaru findhidemaru($fa[0]);
+#hwnd=hidemaruhandle(0);save;setactivehidemaru 1,-1;
+if(basename[#hwnd]=="tmp.txt")endmacro;
+closehidemaru #hwnd;

@@ -1,0 +1,207 @@
+//選択をsend
+
+//altのみ         :標準
+//alt+ctrl        :ルビなし
+//alt+shift       :第一要素
+//alt+ctrl+shift  :カーソル行以下全て（標準）
+//ctrl            :置換前後
+//ctrl+shift      :tmp.txt
+
+//$s="";
+//if(iskeydown(0x10)){$s=$s+"シフト";}
+//if(iskeydown(0x11)){$s=$s+"コントロール";}
+//if(iskeydown(0x12)){$s=$s+"アルト";}
+//message $s;
+//endmacro;
+
+disablebreak;
+disabledraw;
+#fs=0;#fc=0;#fa=0;#fl=0;#x=x;#y=y;
+if(selecting){#fl=1;}
+if(iskeydown(0x10)){#fs=1;}
+if(iskeydown(0x11)){#fc=1;}
+if(iskeydown(0x12)){#fa=1;}
+
+//save;
+if(#fa && #fs && #fc){
+  //selectline 1;
+  //selectline 1;
+  if(selecting){#x=seltopx;#y=seltopy;moveto #x,#y;}
+  else{#x=x;#y=y;}
+  beginsel;gofileend;copy;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw s";
+  runsync2 "rubyw -x "+currentmacrofilename+" asc";
+  moveto #x,#y;escape;enabledraw;
+}else if(#fa && #fs){
+  begingroupundo;
+  setmenudelay 300;
+  mousemenu
+  "&T 第一要素",            // 1
+  "&2 第ニ要素",            // 2
+  "&3 第三要素";            // 3
+  //message str(result);
+  if(result==0){endmacro;}
+  else if(result==1){  //【T】 第一要素
+    if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+    else{beginsel;golineend2;copy;moveto #x,#y;}
+    runsync2 "rubyw -x "+currentmacrofilename+" 1";
+  }else if(result==2){  //【2】 第ニ要素
+    if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+    else{beginsel;golineend2;copy;moveto #x,#y;}
+    runsync2 "rubyw -x "+currentmacrofilename+" 2";
+  }else if(result==3){  //【3】 第三要素
+    if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+    else{beginsel;golineend2;copy;moveto #x,#y;}
+    runsync2 "rubyw -x "+currentmacrofilename+" 3";
+  }
+}else if(#fa && #fc){
+  if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+  else{beginsel;golineend2;copy;moveto #x,#y;}
+  //runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw n";
+  runsync2 "rubyw -x "+currentmacrofilename+" n";
+}else if(#fa){
+  //if(selecting){colormarker 0x000000, 0xA8A8F9, 11, 1;copy;}
+  //if(selecting){copy2;searchdown ".*",regular,inselect2,incolormarker,nohilight}
+  if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+  //else{beginsel;golineend2;copy;moveto #x,#y;}
+  else{
+    searchup "[❢!?。]|(?<=:、)》|^",regular;
+    if(column>0)right;
+    beginsel;gofileend;copy;moveto #x,#y;}
+  //runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw s";
+  runsync2 "rubyw -x "+currentmacrofilename+" s";
+}else if(#fs && #fc){
+  if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+  else{selectline 1;copy;moveto #x,#y;}
+  runsync2 "rubyw -x "+currentmacrofilename+" t";
+  if( basename=="tmp.txt"){gofileend;insert "\n";paste;endmacro;}
+  else if( findhidemaru("tmp.txt")==-1){openfile "tmp.txt";insert "\n";save;}
+  setactivehidemaru findhidemaru("tmp.txt");
+  escape;gofileend;insert "\n";paste;setactivehidemaru 1;
+}else if(#fc){
+  if(selecting){#x=seltopx;#y=seltopy;copy;moveto #x,#y;}
+  else{
+    searchup "[❢!?。]|(?<=:、)》|^",regular;
+    if(column>0)right;
+    #x0=x;#y0=y;beginsel;gofiletop;
+    colormarker 0x000000, 0xA8A8F9, 11, 1;
+    escape;moveto #x0,#y0;
+    beginsel;gofileend;copy;moveto #x,#y;}
+  runsync2 "rubyw -x "+currentmacrofilename+" w";
+}
+if(#fl==0)save;
+unfoldall;
+enablebreak;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# 選択を送信ファイルに
+
+Encoding.default_external = 'UTF-8'
+require 'inifile'
+require 'clipboard'
+require 'win32ole'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+#s:標準
+#n:ルビ無し
+#1:第一要素
+#2:第ニ要素
+#w:置換前後
+opt=ARGV[0]
+opt="s" unless opt
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+send=ini["path"]["send"]
+adb=ini["path"]["adb"]
+#adb2=ini["path"]["adb2"]
+gfl1=ini["grep"]["file_1"]
+
+class String
+  def del_oya
+    st=self.gsub(/｜([^《》]+)《[=#][^《》]*》/,'\1').gsub(/｜[^《》]+《[+%~]?([^《》]*)》/,'\1').
+      gsub(/《[+%!~]([^《》]*)》/,'《\1》').gsub(/([\p{Han}])(《[=#][^《》]*》)/,'\1').
+      gsub(/([^\p{Han}])《[=#]([^《》]*)》/,'\1').gsub(/[\p{Han}]+《([^《》]*)》/,'\1').
+      gsub(/.《([^《》]*)》/,'\1').gsub(/^《?([^《》]*)》/,'\1').gsub(/《[^《》]*$/,"").
+      gsub("’’","’")
+  end
+end
+
+class Array
+  def to_e
+    ar=self.map{|e|
+      if e.is_a?(Array)
+        e.to_e
+      else
+        e.gsub(%r|《\+|,"《").del_oya.gsub(%r|《[^》]*$|,"").
+          gsub(%r|.*:?\(?\d*\):|,"").gsub(%r| =>.*|,"").gsub("=","").
+          gsub(%r|,?[srp]\d+|,"").gsub(" //"," ,").gsub(/\([^\(\)]+\)/,"").
+          gsub(%r|[a-z0-9._]*t::|,"").gsub(%r|^([ 　])*[+%!#~]|){$1.to_s+" "}.
+          gsub("｜","").gsub(",+",",").gsub(%r|[/]$|,"").gsub("◇","▓")
+      end
+    }
+  end
+end
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText.gsub(%r|《([^《》=]*)=》|,"《=\\1》")
+#st=st.del_oya
+#print "st=";p st
+
+if /[nt]/=~opt
+  ar=st.split(/\R/).map{|e| e.gsub(%r|《(?![=#])|,"《=")}.uniq.reject{|e| e==""}
+elsif /asc/=~opt
+  ar=st.split(/\R/).reject{|e| e==""}
+elsif /s/=~opt
+  ar=st.split(/\R/).uniq.reject{|e| e==""}
+elsif /1/=~opt
+  ar=st.split(/\R/).map{|e| e.gsub(%r|,.*|,"").gsub(%r|\([^()]*\)|,"").
+    gsub(%r|[^:]*: |,"")}.uniq.reject{|e| e==""}
+elsif /2/=~opt
+  ar=st.split(/\R/).map{|e| e.gsub(%r|^[^:]*: |,"").split(%r|[, ]|)[1]}.compact
+  #print "ar=";p ar
+elsif /3/=~opt
+  ar=st.split(/\R/).map{|e| e.gsub(%r|^[^:]*: |,"").split(%r|[, ]|)[2]}.compact
+  #print "ar=";p ar
+elsif /w/=~opt
+  st=st.gsub(%r|(?<![▓◇])。|,"。\r\n").gsub(%r|([❢!?])|,"\\1\r\n")
+  ar=st.split(/\R/).
+    map{|e| [e.gsub(%r|,.*|,"").gsub(%r|\([^()]*\)|,""),e.gsub(%r|《(?![=#])|,"《=")]}
+  #print "ar=";p ar
+  ar=ar.to_e.map{|e| e.uniq}
+  #print "ar=";p ar
+  ar=ar.map{|e| e << "◇"}
+  #print "ar=";p ar
+  ar=ar.flatten.reject{|e| e==""}
+  #print "ar=";p ar
+end
+
+#ar=ar.map{|e| e.gsub(%r|《\+|,"《").del_oya.gsub(%r|《[^》]*$|,"").
+#  gsub(%r|.*:?\(?\d*\):|,"").gsub(%r| =>.*|,"").gsub("=","").
+#  gsub(%r|,?[srp]\d+|,"").gsub(" //"," ,").gsub(/\([^\(\)]+\)/,"").
+#  gsub(%r|[a-z0-9._]*t::|,"").gsub(%r|^([ 　])*[+%!#~]|){$1.to_s+" "}.
+#  gsub("｜","").gsub(",+",",").gsub(%r|[/]$|,"").gsub("◇","▓")}
+ar=ar.to_e
+print "ar=";p ar
+
+if /t/=~opt
+  cbd.setText(ar.join("\n")+"\n")
+  exit
+end
+
+sleep 0.1
+File.write(send,ar.join("\n")+"\n")
+wsh = WIN32OLE.new('WScript.Shell')
+wsh.run("adb push #{send} #{adb}")
+#wsh.run("adb push #{send} #{adb2}")
+wsh.Popup("#{send} に出力しました",1)
+
+__END__
+*/
+

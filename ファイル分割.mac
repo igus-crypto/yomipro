@@ -1,0 +1,120 @@
+﻿//ファイル分割.mac
+
+setmenudelay 50;
+mousemenu
+"&1 【１時間】",              // 1
+"&2 【２時間】",              // 2
+"&3 【分割位置検討】",        // 3
+"&- 【======】";              // 4
+
+if(result==0){endmacro;}
+else{#r=result;}
+
+#x=x;#y=y;
+if(#r==3){
+  $s=getselectedtext();
+  selectall;copy;moveto #x,#y;escape;
+  runsync2 "rubyw -x "+currentmacrofilename+" "+filename +" 3 "+$s;
+  openfile "tmp_b.txt";
+}else{
+  selectall;copy;moveto #x,#y;
+  runsync2 "rubyw -x "+currentmacrofilename+" "+filename +" "+str(#r);
+  runsync2 directory+"\\touch.bat";
+  runsync2 directory+"\\filesize.bat";
+}
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+require 'fileutils'
+
+cbd = ClipBoard.new(__ENCODING__)
+s0=cbd.getText
+ar,i,st,d=s0.split(/\R/),1,"","00"
+f=File.basename(ARGV[0])
+r=ARGV[1].to_i
+s=ARGV[2]
+
+#p f
+#p sprintf("%02d",i)
+
+if r==3
+  s="章】　─" unless s
+  a0=s0.split(s).map{|e| e.size}
+  print "a0=";p a0
+  a0[1]=a0[0]+a0[1]
+  a0=a0[1..-1]
+  print "a0=";p a0
+  t=""
+  a0.each_with_index{|e,i| t+=sprintf("%03d",i+1)+":"+sprintf("%07d",e)+"\n"}
+  t+="\n合計:"+sprintf("%07d",a0.sum)+"\n"
+  File.write("tmp_b.txt",t)
+elsif r==4
+  ar.each{|e|
+    if %r|^======|=~e
+      d=sprintf("%02d",i)
+      FileUtils.mkdir(d) unless FileTest.directory?(d)
+      #File.mkdir(d)
+      File.write(d+"/"+f,st)
+      i,st=i+1,""
+    else
+      st=st+e+"\n"
+    end
+  }
+else
+  ar.each{|e|
+    #p e if %r|^[。◇ 　]*$|=~e
+    #p (st+e).size
+    if %r|^[。◇ 　]*$|=~e and (st+e).size>36300*r
+      d=sprintf("%02d",i)
+      FileUtils.mkdir(d) unless FileTest.directory?(d)
+      #File.mkdir(d)
+      File.write(d+"/"+f,st)
+      i,st=i+1,""
+    end
+    st=st+e+"\n"
+  }
+end
+d=sprintf("%02d",i)
+FileUtils.mkdir(d) unless FileTest.directory?(d)
+File.write(d+"/"+f,st)
+
+st1= <<EOS
+REM filesize.bat
+chcp 65001
+
+ruby -x "%~f0"
+start size.txt
+goto end
+
+#!ruby
+#encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("size.txt","w")
+$stderr=open("tmp_z.log","w")
+Dir.glob(%Q|[0-9][0-9]/|+%Q|s.txt|){|f|
+  z=File.size(f)
+  h=(z/1652.0)/60
+  m=(z/1652.0)%60
+  puts f+":"+sprintf("%6d",z.to_i)+
+    ":"+sprintf("%2d",h.to_i)+"h"+sprintf("%2d",m.to_i)+"m"
+}
+__END__
+:end
+EOS
+
+File.write("filesize.bat",st1)
+
+__END__
+*/
+
+

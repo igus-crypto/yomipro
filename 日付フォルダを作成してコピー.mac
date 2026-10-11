@@ -1,0 +1,45 @@
+﻿//日付フォルダを作成してコピー
+
+runsync2 "rubyw -x "+currentmacrofilename+" "+filename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+t=Time.new
+m=t.strftime("%y%m%d")
+p m
+f,s1,s2="","","";
+Dir.mkdir(m) unless FileTest.directory?(m)
+Dir.glob("*.txt"){|e|
+  if /^[^0-9a-zA-Z]/=~e
+    f=e
+    break
+  end}
+s1=open(f).read unless f==""
+#f1=filename.encode(Encoding::UTF_8).gsub("\\","/")
+f0=ARGV[0].encode(Encoding::UTF_8).gsub("\\","/")
+f1=File.dirname(f0)+"/#{m}/"+File.basename(f0)
+f2=f1.gsub("/","\\\\\\")
+fi=open(__dir__+"/config.ini").readlines
+fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f1}")}
+File.write(__dir__+"/config.ini",fi.join)
+print "f2=";p f2
+s2 =%Q|saveas "#{f2}";\n;|
+s2+=%Q|message "対象ファイルを#{f1}に設定しました","対象ファイル名",0,1000;|
+File.write(m+"/"+f,s1) unless f==""
+File.write("tmp.mac",s2)
+
+__END__
+*/
+
+
+
+

@@ -1,0 +1,11 @@
+//先頭にスペース
+
+#x=x;#y=y;
+if(selecting){
+  #tx=seltopx;#ex=selendx;#ty=seltopy;#ey=selendy;
+  if(#x==0 && #ty!=#ey){escape;moveto 0,#ty;beginsel;moveto 0,#ey-1;}
+  selectline 1;replaceallfast "^"," ",regular,inselect2;
+}else{
+  moveto 0,#y;insert " ";
+}
+moveto #x+1,#y;

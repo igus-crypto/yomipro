@@ -1,0 +1,17 @@
+//前のルビの中を削除
+
+//0x10:shift
+#fs=0;
+if(iskeydown(0x10))#fs=1;
+
+if(#fs==1){
+  replaceup "([^亜-黑])[亜-黑]+《([^《》]+)》","\\1\\2",regular;right;
+}else{
+  //message str(code);
+  if(imestate == 1){imeswitch};
+  if(code==38829){
+    beginsel;searchdown "》";delete;
+  }else{
+    replaceup "(?<=《)[^《》]*(?=》)","",regular;
+  }
+}

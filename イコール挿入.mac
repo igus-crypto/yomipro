@@ -1,0 +1,11 @@
+begingroupundo;disabledraw;
+if(y==selopeny){
+  insert "=";
+}else{
+  #x=x;#ty=seltopy;#ey=selendy;#i=#ty;delete;
+  //message str(#ty)+"/"+str(#ey);
+  while(#i<=#ey){
+    moveto #x,#i;insert "=";#i=#i+1;
+  }
+}
+enabledraw;endgroupundo;

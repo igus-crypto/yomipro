@@ -1,0 +1,15 @@
+//対象をファイルに保存
+
+selectall;copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw s";
+execmacro currentmacrodirectory + "\\tmp.mac";
+execmacro currentmacrodirectory+"\\改行置換.mac";
+selectall;copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\calibre.rbw";
+execmacro directory + "\\tmp.mac";
+save;selectall;copy;
+execmacro currentmacrodirectory+"\\ルビ結合２.mac";
+//runsync2 "rubyw "+currentmacrodirectory+"\\ruby_join.rbw "+filename;
+execmacro currentmacrodirectory+"\\バッチ作成.mac";
+endmacro;
+

@@ -1,0 +1,18 @@
+﻿//挿絵除去
+
+begingroupundo;disabledraw;
+setmenudelay 300;
+mousemenu
+"&0 行を詰める",      // 1
+"&1 一行あける";      // 2
+#r=result;
+
+if(result==0){endmacro;
+}else if(#r==1){  //【T】 行を詰める
+  //replaceallfast "\n【≪龠\\d+≫】\n\n","",regular;
+  replaceallfast "\n【≪龠\\d+≫】\n","\n",regular;
+}else if(#r==2){  //【A】 一行あける
+  //replaceallfast "【≪龠\\d+≫】\n\n","",regular;
+  replaceallfast "\n【≪龠\\d+≫】\n","\n\n",regular;
+}
+endgroupundo;enabledraw;

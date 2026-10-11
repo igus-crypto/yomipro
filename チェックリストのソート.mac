@@ -1,0 +1,5 @@
+﻿//チェックリストのソート
+
+begingroupundo;beginclipboardread;selectall;cut;
+runsync2 "rubyw "+currentmacrodirectory+"\\sort3.rbw";
+paste;endgroupundo;gofiletop;save;

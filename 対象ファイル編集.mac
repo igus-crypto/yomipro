@@ -1,0 +1,45 @@
+﻿//対象ファイル編集.mac
+
+//標準:対象ファイル編集
+//ctrl:tmp.txt編集
+
+#fc=0;
+if(iskeydown(0x11))#fc=1;
+
+if(#fc){  //ctrl時はtmp.txt編集
+  if(findhidemaru("tmp.txt")){setactivehidemaru findhidemaru("tmp.txt");}
+}else{
+  runsync2 "rubyw -x "+currentmacrofilename;
+  execmacro directory + "\\tmp.mac";
+}
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+Encoding.default_external = 'UTF-8'
+require 'inifile'
+
+ini=IniFile.load(__dir__+"/config.ini")
+gfl1=ini["grep"]["file_1"]
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+mac=open("tmp.mac","w:utf-8")
+mac.print("\uFEFF")
+gfl1=gfl1.gsub("/","\\\\\\")
+mac.puts %Q|if(filename=="#{gfl1}"){endmacro;}|
+mac.puts %Q|if(findhidemaru("#{gfl1}")==-1){openfile "#{gfl1}";}|
+mac.puts %Q|setactivehidemaru findhidemaru("#{gfl1}");|
+
+__END__
+*/
+
+

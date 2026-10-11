@@ -1,0 +1,112 @@
+//読み上げファイル作成
+
+#x=x;#y=y;selectall;copy;moveto #x,#y; 
+runsync2 "rubyw -x "+currentmacrofilename+" "+filename;
+//runsync2 "rubyw "+currentmacrodirectory+"\\del_oya.rbw "+filename;
+execmacro directory + "\\tmp.mac";
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+require 'open3'
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+fname=(ARGV[0]? ARGV[0].encode(Encoding::UTF_8) : "tmp.txt")
+fnr=fname.sub(/(_\w)?.txt$/,"_r.txt")
+fny=fname.sub(/(_\w)?.txt$/,"_y.txt")
+
+cbd=ClipBoard.new(__ENCODING__)
+ls=cbd.getText
+
+# 処理対象
+# １  /｜[^《。｜》]+《[=#]([^》]*)》/       ⇒ルビの頭に[=#]（ルビを削除）の「｜」付き
+# ２  /([\p{Han}]+)《[=#]([^》]*)》/         ⇒ルビの頭に[=#]（ルビを削除）漢字
+# ３  /([^\p{Han}])《([=#][^》]*)》/         ⇒ルビの頭に[=#]（ルビを削除）漢字以外
+# ４  /(｜[^《》]*)《([^》]*)》/             ⇒$1に漢字以外を含む文字列 [^《\p{Han}》]
+# ５  /([^\p{Han}])《([^》]*)》/             ⇒漢字以外にルビ
+# ６  /([\p{Han}]+)《([^》]*)》/             ⇒ルビより親文字が長い
+# ７  /｜[^《。｜》]+《([^》]{11,})》/       ⇒ルビが11文字以上の「｜」付き
+# ８  /([\p{Han}]+)《([^》]{11,})》/         ⇒ルビが11文字以上
+
+ls2=ls.gsub(%r|《([^《》=]*)=》|,"《=\\1》").gsub(/《[+%!~]/,"《")
+kk1 =ls2.scan(/(｜(([^《。｜》]+))《[=#][^》]*》)/).uniq
+kk2 =ls2.scan(/((([\p{Han}]+)《[=#]([^》]*)》))/).uniq
+kk3 =ls2.scan(/((([^\p{Han}]))《[=#][^》]*》)/).uniq
+kk4 =ls2.scan(/((?:｜([^《》。｜]*))《([^》]*)》)/).uniq.filter{|e| /[^\p{Han}]/=~e[1]}
+kk5 =ls2.scan(/(([^\p{Han}])《([^》]*)》)/).uniq
+kk6 =ls2.scan(/((｜?[一-龠]+)《([^#》]+)》)/).uniq.
+  filter{|e| e[1].size>e[2].size}.sort_by{|e| -e[1].size}
+kk7 =ls2.scan(/(｜([^《。｜》]+)《([^》]{11,})》)/).uniq
+kk8=ls2.scan(/(([\p{Han}]+)《([^》]{11,})》)/).uniq.sort_by{|e| -e[1].size}
+p kk1;p kk2;p kk3;p kk4;p kk5;p kk6;p kk7;p kk8
+kk=kk1+kk2+kk3+kk4+kk5+kk6+kk7+kk8
+File.write(fnr,"\uFEFF"+ls.gsub("\r\n","\n"))
+
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print("\uFEFF")
+macro.puts %|
+#hwnd=hidemaruhandle(0);
+openfile "#{fnr.gsub(/\\/){'\\\\'}}";
+closehidemaruforced #hwnd;
+begingroupundo;
+//マーカー設定
+setsearch "(.*)" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+disabledraw;
+replaceallfast "《([^《》=]*)=》","《=\\\\1》", regular;
+replaceallfast "《[%+!~]","《", regular;
+replaceallfast "｜。」《」》","」";
+|
+
+i=0
+kk.each{|e|
+  macro.puts %|replaceallfast "#{e[0]}","#{e[2]}";|
+}
+
+macro.puts %|gofiletop;enabledraw;endgroupundo;save;|
+macro.puts %|#hwnd=hidemaruhandle(0);selectall;copy;|
+macro.puts %|openfile "";paste;closehidemaruforced #hwnd;|
+macro.puts %|setsearch ".*" , 0x4003819;|
+macro.puts %|colormarkerallfound 0x000000, 0xc2c79e, 11, 1;|
+macro.puts %|begingroupundo;|
+macro.puts %|saveas "#{fny.gsub("\\","/")}",bom;|
+macro.puts %|replaceallfast "｜[^《》｜]+《([^》]*)》","\\\\1", regular;|
+macro.puts %|replaceallfast "[\\\\p{Han}]+《([^》]*)》","\\\\1", regular;|
+macro.puts %|replaceallfast ".《([^》]*)》","\\\\1", regular;|
+macro.puts %|replaceallfast "(?<=[　。「」『』（）【】─※◇・、])-","", regular;|
+macro.puts %|replaceallfast "/$","", regular;|
+macro.puts %|replaceallfast "’’","’";|
+macro.puts %|replaceallfast "、/(?=[ぁ-ん])","、", regular;|
+macro.puts %|replaceallfast "、ジ","、◇ジ";|
+macro.puts %|replaceallfast "ジ、","ジ◇、";|
+macro.puts %|replaceallfast "、彼","、◇彼";|
+macro.puts %|replaceallfast "れ、/彼","れ、◇彼";|
+macro.puts %|replaceallfast "’、","、";|
+macro.puts %|replaceallfast "([^。　:\\n]{75})、([^。　:\\n]{75})","\\\\1:、\\\\2",regular;|
+macro.puts %|replaceallfast "([^。:\\n]{75})◇　([^。:\\n]{75})","\\\\1◇:　、\\\\2",regular;|
+macro.puts %|replaceallfast "◇+","◇",regular;|
+macro.puts %|replaceallfast "◇","▓";|
+macro.puts %|endgroupundo;gofiletop;save;|
+macro.puts %|endmacro;|
+macro.close
+
+#spawn(%Q|"#{hide}" /fu8 /x "#{mac}" "#{fnr}"|)
+#Process.wait spawn(%Q|"#{hide}" /fu8 /x "#{mac}" "#{fnr}"|)
+#spawn(%Q|"#{hide}" /fu8 "#{fnr}"|)
+
+__END__
+*/
+

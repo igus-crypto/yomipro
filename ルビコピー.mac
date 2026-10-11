@@ -1,0 +1,172 @@
+﻿//ルビコピー
+
+//nomal :上から下へコピー
+//ctrl  :下から上へコピー
+//shift :コメント無し変換無し
+
+begingroupundo;disabledraw;
+#fc=0;if(iskeydown(0x11))#fc=1;
+#fs=0;if(iskeydown(0x10))#fs=1;
+
+if(selecting){#x=x;#y=y;#ox=selopenx;#oy=selopeny;
+  //message str(#oy<#y);
+  if(#oy>#y){escape;beginsel;moveto #ox,#oy;}
+  else if(#oy==#y && #ox>#x){escape;beginsel;moveto #ox,#oy;}
+  selectline 1;wordleft;}
+else{golinetop2;beginsel;golineend2;}
+#y1=seltoplineno;#y2=selendlineno;cut;
+cut;#fg=getclipboardinfo(1);
+if(#fc){$opt=" c";}else{$opt=" n";}
+if(#fs){$opt=$opt+"s";}
+runsync2 "rubyw -x "+currentmacrofilename+$opt;
+beginclipboardread;if(#fg){pasterect;}else{paste;}
+moveto2 1,#y1;golineend2;
+enabledraw;endgroupundo;
+endmacro;
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'romkan'
+
+opt=ARGV[0]
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+p opt
+
+class String
+  def del_oya
+    st=self.gsub(%r|｜([^《》]+)《[=#][^《》]*》|,'\1').gsub(%r|｜[^《》]+《([^《》]*)》|,'\1').
+      gsub(%r|《[+%!]([^《》]*)》|,'《\1》').gsub(%r|([\p{Han}])(《[=#][^《》]*》)|,'\1').
+      gsub(%r|([^\p{Han}])《[=#]([^《》]*)》|,'\1').gsub(%r|[\p{Han}]+《([^《》]*)》|,'\1').
+      gsub(%r|.《([^《》]*)》|,'\1').gsub(%r|^《?([^《》]*)》|,'\1').gsub(%r|《[^《》]*$|,"")
+  end
+end
+
+arr=st.split("\r\n")
+arr=arr.reverse if /c/=~opt
+flg,k1,c=true,"",[]
+#c1=arr.find{|e| %r|(《[^《》]*》)|=~e}.scan(%r|(《[^《》]*》)|).flatten
+arr=arr.map{|e|
+  if /((?:｜[^｜]*)?[\p{Han}]+|[^\p{Han}])(《[^《》]*》)/=~e
+    k2=$1
+    print "k2=";p k2
+    print "e=";p e
+    if flg or k1!=k2
+      c=e.scan(%r|(《[^《》]*》)|).flatten
+      flg=false
+      k1=k2
+    end
+    #e=e.scan(%r|([^《》]*)(《[^《》]*》)([^《》]*)|).
+    e=e.scan(%r|(.*?)(《[^《》]*》)([^《》]*)|).
+      map.with_index{|f,i| c[i]=c[i-1] unless c[i];f[0]+c[i]+f[2]}.join
+  end
+  print "e=";p e
+  e=e.gsub(%r|(《[^《》]*)\/-([^《》]*》)|,"\\1/=\\2") unless /s/=~opt
+  print "e=";p e
+  if /=>$/=~e
+    if /s/=~opt
+      c2=""
+    else
+      c2=e.gsub(%r|《[^《》]*》|){|f| f.gsub(",","‰‰")}.split(%r([, ]|\/\/))
+      c1=c2[0]
+      print "c2=";p c2
+      #c2=e.split(%r([, ]|\/\/)).grep(%r|[《/][=#]|)[0].to_s
+      c2=c2.grep(%r|[《/][=#]|)[0].to_s
+      print "c2=";p c2
+      c2=c2.gsub(%r|《[=#][^\/]*\/([^《》]*)》|,"《\\1》").
+        gsub(%r|《[^\/]*\/([=#][^《》]*)》|,"《\\1》")
+      print "c2=";p c2
+      c2=c2.gsub(%r|(?<=《)[^《》]*(?=》)|){|s|s.gsub(%r|.*\/\=|,"")}
+      print "c2=";p c2
+      #puts "hoge"
+      p c2.to_s.gsub(%r|《[=#]|,"《").del_oya
+      c2=c2.to_s.gsub(%r|《[=#]|,"《").del_oya.gsub(%r|^[\/。、　「」─『』【】‥]+|,"").
+        gsub(%r|[。、　「」『』【】‥─]$|,"").tr('ァ-ン','ぁ-ん')
+      print "c2=";p c2
+      if %r|[A-Za-z‰]+|=~c2
+        c3=c2.scan(%r|[A-Za-z‰]+|).map{|f| f.split("‰‰")}
+        c4=c2.scan(%r|([^A-Za-z‰]*)[A-Za-z‰]+([^A-Za-z‰]*)|).flatten
+        print "c3=";p c3
+        print "c4=";p c4
+        c3=c3.map.with_index{|f,i|
+          if f.size==1
+            c4[i*2]+f[0]+c4[i*2+1]
+          else
+            f.map{|a| c4[i*2]+a+c4[i*2+1]}
+          end}
+        print "c3=";p c3
+        print "c3.is_a?(Array)=";p c3[0].is_a?(Array)
+        if c3[0].is_a?(Array)
+          c2=c3.map{|f| f.join(",")}.join.tr('A-Z','a-z').to_kana
+        else
+          c2=c3.join.tr('A-Z','a-z').to_kana
+        end
+        #c2=c3.map{|e| c4[0]+e+c4[1]}.join(",").tr('A-Z','a-z').to_kana
+      else
+        c2=c2.tr('A-Z','a-z').to_kana.gsub("‰‰",",")
+      end
+      print "c2=";p c2
+      c2=c1 if c2==""
+      print "e=";p e;
+      #e=e.gsub(%r|[=#][^《》]*\/|,"").gsub(%r|\/[=#][^《》]*|,"")+c2
+      e=e.gsub(%r|\/[=#][^《》]*|,"")+c2
+      e=e.gsub("=>=>","=>")
+      print "e=";p e;
+    end
+  else
+     e=e.gsub(%r|[=#][^《》]*\/|,"").gsub(%r|\/[=#][^《》]*|,"")
+     e=e.gsub("=>=>","=>")
+  end
+  flg=true if %r|^[ ]*$|=~e
+  print "e=";p e;
+  e}
+print "arr=";p arr
+st=arr.join("\n")
+print "st=";p st
+unless /s/=~opt
+  st=st.gsub(%r|(《[-=#]?)([A-Z][a-z]+)》|){
+    $1+$2.tr('A-Z','a-z').to_kana+"》"}.
+    gsub(%r|(《[!-])([^《》]+)》|) {$1+$2.to_kana+"》"}.
+    gsub(%r|(《[=#])([^《》]*[a-z][^《》]*)》|){$1+$2.to_kana.tr("ぁ-ん","ァ-ン")+"》"}.
+    gsub(%r|《([\p{Han}a-z]+)》|){"《"+$1.to_kana.tr("ぁ-ん","ァ-ン")+"》"}.
+    gsub(%r|([　。「」『』（）【】─※◇・、][[\p{Han}]+]\K)《-|,"《").
+    gsub(%r|(《[^《》]*)\'([^《》]*》)|){$1+"’"+$2}.
+    gsub(%r|=>[　。「」『』（）【】─※◇・、]|,"=>").
+    gsub(%r|( =>.*)|){$1.gsub(%r|\([^()]*\)|,"")}.
+    gsub(%r|( =>.*)|){$1.gsub(%r|[’”〈〉（）！？]|,"")}.
+    gsub(%r|(.*は抱く.*)|){$1.gsub("はだく","はいだく")}.
+    gsub(%r|(.*を抱く.*)|){$1.gsub("をだく","をいだく")}.
+#    gsub(%r|(.*を弾く.*)|){$1.gsub("をひく","をはじく")}.
+#    gsub(%r|(.*を弾か.*)|){$1.gsub("をひか","をはじか")}.
+#    gsub(%r|(.*と弾く.*)|){$1.gsub("とひく","とはじく")}.
+#    gsub(%r|(.*と弾か.*)|){$1.gsub("とひか","とはじか")}.
+#    gsub(%r|(.*で弾く.*)|){$1.gsub("でひく","ではじく")}.
+#    gsub(%r|(.*で弾か.*)|){$1.gsub("でひか","ではじか")}.
+#    gsub(%r|(.*ら弾ける.*)|){$1.gsub("らひける","らはじける")}.
+#    gsub(%r|(.*ら弾く.*)|){$1.gsub("らひく","らはじく")}.
+#    gsub(%r|(.*ら弾か.*)|){$1.gsub("らひか","らはじか")}.
+    gsub(%r|(.*弾ける.*)|){$1.gsub("ひける","はじける")}.
+    gsub(%r|(.*弾く.*)|){$1.gsub("ひく","はじく")}.
+    gsub(%r|(.*弾か.*)|){$1.gsub("ひか","はじか")}.
+    gsub(%r|(.*に描く.*)|){$1.gsub("にかく","にえがく")}.
+    gsub(%r|(.*を描く.*)|){$1.gsub("をかく","をえがく")}.
+    gsub(%r|(.*に注げ.*)|){$1.gsub("にそそげ","につげ")}.
+    gsub(%r|(.*に注が.*)|){$1.gsub("にそそが","につが")}.
+    gsub("s","っ")
+end
+st=st.split(%r|\R|).reverse.join("\n") if /c/=~opt
+print "st=";p st
+cbd.setText(st)
+
+__END__
+*/
+
+

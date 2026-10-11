@@ -1,0 +1,61 @@
+﻿//ｔｍｐファイルを閉じて削除（強制）
+
+#fs=1;#fc=1;
+
+#c= hidemarucount;#i=0;#j=0;#k=0;#n=0;
+
+if(leftstr(basename[0],3)!="tmp")$fa=filename[0];
+while(#i<#c){
+  if(leftstr(basename[#i],3)=="tmp"){
+    $fs[#j]=filename[#i];
+    //message "fs="+$fs[#j];
+    #j=#j+1;
+  }else{
+    //message filename[#i];
+    //if($fa=="")$fa=filename[#i];
+    $fa[#n]=filename[#i];
+    #n=#n+1;
+  }
+  #i=#i+1;
+}
+//message $fa[0];
+if($fa[0]==""){
+  #k=1;
+}else{
+  setactivehidemaru findhidemaru($fa[0]);
+}
+
+while(#k<#j){
+  closehidemaruforced findhidemaru($fs[#k]);
+  #k=#k+1;
+}
+//question "tmpファイルを削除しますか？";
+//if(result==yes){runsync2 "rubyw "+currentmacrodirectory+"\\\\del_tmp.rbw";}
+runsync2 "rubyw -x "+currentmacrofilename;
+#k=1;
+//message "k="+str(#k)+",n="+str(#n);
+while(#k<#n){
+  closehidemaruforced findhidemaru($fa[#k]);
+  #k=#k+1;
+}
+
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# tmpファイル削除
+
+Encoding.default_external = 'UTF-8'
+require 'fileutils'
+
+#$stdout=open("tmp99.txt","w")
+#$stderr=open("tmp_err.txt","w")
+
+Dir.glob(%q|**|+%q|/tmp*|){|f|begin;FileUtils.rm(f);rescue;next;end}
+Dir.glob(__dir__+%q|/|+%q|**|+%|/tmp*|){|f|begin;FileUtils.rm(f);rescue;next;end}
+
+__END__
+*/
+

@@ -1,0 +1,21 @@
+﻿//マーカー色で間引き
+
+#x=x;#n=0;$a="";
+while(x==#x){
+  $c=getcolormarker(0x0002,findmarker);
+  //message $c;
+  if($a==$c){
+    #n=#n+1;
+    if(#n>2){
+      selectline 1;
+      delete;
+      moveto #x,y;
+      continue;
+    }
+  }else{
+    $a=$c;
+    #n=0;
+  }
+  down;
+}
+endmacro;

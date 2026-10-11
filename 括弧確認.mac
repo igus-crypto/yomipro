@@ -1,0 +1,23 @@
+//括弧確認.mac
+#col[0] =0x6267F5;#col[1] =0x72F531;
+#col[2] =0xFFCB1F;#col[3] =0x29FF77;
+#col[4] =0xFF82E6;#col[5] =0x4080FF;
+#col[6] =0xA8A8F9;#col[7] =0xFF80FF;
+#col[8] =0xFF97B1;#col[9] =0x944DFF;
+#col[10]=0xF9953E;#col[11]=0x957AFF;
+#col[12]=0xFF9354;#col[13]=0x7AAFFF;
+#col[14]=0xFFE645;#col[15]=0xC786F9;
+#col[16]=0x71B33C;#col[17]=0x0045FF;
+#col[18]=0xB48246;#col[19]=0xFF00FF;
+#x0=x;#y0=y;#i=0;
+disabledraw;escape;gofiletop;disableerrormsg;
+while(1){
+  searchdown "[{(]",regular;#x1=x;#y1=y;
+  if(result==0){break};
+  beginsel;gokakko;right;
+  colormarker 0x000000, #col[#i%20], 11, 0;
+  escape;moveto #x1,#y1;#i=#i+1;
+}
+escape;moveto #x0,#y0;enabledraw;
+endmacro;
+

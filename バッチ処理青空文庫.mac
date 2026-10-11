@@ -1,0 +1,83 @@
+﻿//バッチ処理青空文庫
+
+#hwnd= hidemaruhandle(0);
+$f1=filename;
+runsync2 "rubyw -x "+currentmacrofilename+" 1 "+filename;
+runsync2 currentmacrodirectory + "\\bat\\aozora04【ログ削除】.bat";
+appendsave currentmacrodirectory+"\\bat\\log\\"+basename;
+runsync2 "rubyw -x "+currentmacrofilename+" a";
+runsync2 currentmacrodirectory + "\\bat\\aozora01【連続処理全体】.bat";
+runsync2 "rubyw -x "+currentmacrofilename+" b "+$f1;
+execmacro currentmacrodirectory + "\\tmp.mac";
+closehidemaruforced #hwnd;
+begingroupundo;disabledraw;
+searchdown "---------------------";golinetop2;beginsel;down;
+searchdown "---------------------";golineend2;delete;
+replaceallfast "^\n(?#maxlines:20)^\n+","\n",regular;
+replaceallfast "^\n","◇。◇。◇。\n",regular;
+replaceallfast "^　*([^。、！？（）「」【】\n]+)\n","【\\1】\n",regular;
+replaceallfast "^(?![　◇（「【])","　",regular;
+enabledraw;endgroupundo;save;
+selectall;copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\del_oya.rbw "+filename;
+execmacro directory + "\\tmp.mac";
+moveto 0,1;right;beginsel;golineend2;left;$f2=getselectedtext();
+escape;saveas $f2+".txt";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+require 'inifile'
+require 'clipboard'
+require 'win32ole'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+gfl1=ini["grep"]["file_1"]
+
+opt=ARGV[0]
+
+if /1/=~opt
+  f1=ARGV[1].encode(Encoding::UTF_8).gsub("\\","/")
+  print "f1=";p f1
+  fi=open(__dir__+"/config.ini").readlines
+  fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f1}")}
+  File.write(__dir__+"/config.ini",fi.join)
+elsif /a/=~opt
+  mac=open("tmp.mac","w:utf-8")
+  mac.print("\uFEFF")
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.Popup("logフォルダにコピーしました",1)
+elsif /b/=~opt
+  f1=ARGV[1]
+  print "f1=";puts f1
+  #f1=ARGV[1].encode(Encoding::UTF_8).gsub(%r|.txt$|,"_u6.txt")
+  f1=ARGV[1].gsub(%r|.txt$|,"_u6.txt")
+  print "f1=";puts f1
+  mac=open(__dir__+"/tmp.mac","w:utf-8")
+  f2=File.dirname(gfl1)+"/"+File.basename(f1)
+  f3=f2.gsub("/","\\\\\\")
+  f4=__dir__+"/bat/log/"+File.basename(f1)
+  f4=f4.gsub("/","\\\\\\")
+  print "f1=";p f1
+  print "f2=";p f2
+  print "f3=";p f3
+  print "f4=";p f4
+  mac.print("\uFEFF")
+  mac.puts %Q|openfile "#{f4}";saveas "#{f3}";|
+  fi=open(__dir__+"/config.ini").readlines
+  fi=fi.map{|e| e.gsub(%r|file_1=.*|,"file_1=#{f2}")}
+  File.write(__dir__+"/config.ini",fi.join)
+  #wsh = WIN32OLE.new('WScript.Shell')
+  #wsh.Popup("対象ファイルを#{f2}に設定しました",1)
+end
+__END__
+*/
+
+

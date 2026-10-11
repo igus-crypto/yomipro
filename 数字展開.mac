@@ -1,0 +1,32 @@
+﻿//数字展開.mac
+
+disabledraw;begingroupundo;
+if(!selecting)selectline 1;
+$s=getselectedtext();delete;
+openfile "/h";insert $s;
+saveas directory+"\\tmp1.txt";
+#h=hidemaruhandle(0);
+setactivehidemaru 1;
+closehidemaruforced #h;
+runsync2 "rubyw -x "+currentmacrofilename;
+insertfile "tmp2.txt";
+enabledraw;endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+t1=open("tmp1.txt").read.chomp
+t2=open("tmp2.txt","w")
+s=""
+a=t1.split("..")
+(a[0]..a[1]).map{|e|s+=e+"\n"}
+s=t1+"\n" if s==""
+t2.print s
+__END__
+*/

@@ -1,0 +1,184 @@
+﻿//文字列挿入
+
+dir=REPLACE(GET_UWSC_NAME,"文字列挿入.uws","")
+flg=0
+
+// Dim list1[]=_
+// "キャンセル",_
+// "【〇〇】",_
+// "《〇〇》",_
+// "（〇〇）",_
+// "｜〇〇《》",_
+// "[\p{Han}]",_
+// "[ぁ-ん]",_
+// "[ァ-ヴー] ",_
+// "[一二三四五六七八九十]",_
+// "spc*120 ",_
+// "ボックス貼り付け"
+
+mn=_
+"Ｃ:キャンセル<#CR>"+_
+"Ｄ:【〇〇】<#CR>"+_
+"Ｕ:《〇〇》<#CR>"+_
+"Ｍ:（〇〇）<#CR>"+_
+"Ｐ:｜〇〇《》<#CR>"+_
+"Ｒ:〇〇《〇〇》<#CR>"+_
+"Ａ:[\p{Han}]<#CR>"+_
+"Ｈ:[ぁ-ん]<#CR>"+_
+"Ｋ:[ァ-ヴー]<#CR>"+_
+"Ｓ:spc*120 <#CR>"+_
+"Ｂ:ボックス貼り付け<#CR>"+_
+"１:[一二三四五六七八九十]<#CR>"+_
+"２:選択文字数挿入<#CR>"+_
+"５:p15<#CR>"+_
+"６:p16<#CR>"+_
+"７:p17<#CR>"+_
+"８:p18<#CR>"+_
+"／:/-<#CR>"+_
+"！:!<#CR>"+_
+"＃:#<#CR>"+_
+"→:先頭にスペース<#CR>"+_
+"↑:前に改行<#CR>"+_
+"↓:後に改行"
+
+t1=GETTIME()
+ans1=99
+while ans1=99
+  t2 = GETTIME()
+  if t2-t1>0.8
+    fukidasi(mn,600,200,0,11,"ＭＳゴシック",1,$C0C0C0)
+    sleep(0.1)
+  endif
+  ifb    GETKEYSTATE(VK_C) then
+   ans1=0
+  elseif GETKEYSTATE(VK_D) then
+   ans1=1
+  elseif GETKEYSTATE(VK_U) then
+   ans1=2
+  elseif GETKEYSTATE(VK_M) then
+   ans1=3
+  elseif GETKEYSTATE(VK_P) then
+   ans1=4
+  elseif GETKEYSTATE(VK_A) then
+   ans1=5
+  elseif GETKEYSTATE(VK_H) then
+   ans1=6
+  elseif GETKEYSTATE(VK_K) then
+   ans1=7
+  elseif GETKEYSTATE(VK_1) then
+   ans1=8
+  elseif GETKEYSTATE(VK_S) then
+   ans1=9
+  elseif GETKEYSTATE(VK_B) then
+    ans1=10
+  elseif GETKEYSTATE(VK_R) then
+   ans1=11
+  elseif GETKEYSTATE(VK_2) then
+   ans1=12
+  elseif  GETKEYSTATE(VK_5) then
+   ans1=13
+  elseif GETKEYSTATE(VK_6) then
+   ans1=14
+  elseif GETKEYSTATE(VK_7) then
+   ans1=15
+  elseif GETKEYSTATE(VK_8) then
+   ans1=16
+  elseif GETKEYSTATE(VK_OEM_2) then
+   ans1=17
+  elseif GETKEYSTATE(VK_OEM_MINUS) then
+   ans1=18
+  elseif GETKEYSTATE(VK_SHIFT) and GETKEYSTATE(VK_1) then
+   ans1=19
+  elseif GETKEYSTATE(VK_SHIFT) and GETKEYSTATE(VK_3) then
+   ans1=20
+  elseif GETKEYSTATE(VK_RIGHT) then
+    ans1=21
+  elseif GETKEYSTATE(VK_UP) then
+   ans1=22
+  elseif GETKEYSTATE(VK_DOWN) then
+   ans1=23
+  endif
+wend
+
+fukidasi()
+EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans1,true)
+TEXTBLOCK ruby
+
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+opt,rep=ARGV[0].to_i,1
+
+print "opt=";p opt
+
+if opt<1
+  mac=%Q|endmacro;|
+  rep=0
+elsif opt==1
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s9";|
+elsif opt==2
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s1";|
+elsif opt==3
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s2";|
+elsif opt==4
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s3";|
+elsif opt==5
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s4";|
+elsif opt==6
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s5";|
+elsif opt==7
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s6";|
+elsif opt==8
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s7";|
+elsif opt==9
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字変換.mac","s8";|
+elsif opt==10
+  mac =%Q|#x=x;selectline 1;copy;down;\n|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw bc "+str(#x);\n|
+  mac+=%Q|paste;\n|
+elsif opt==11
+  mac=%Q|execmacro currentmacrodirectory+"\\\\文字列挿入〇〇《〇〇》.mac";|
+elsif opt==12
+  mac=%Q|execmacro currentmacrodirectory+"\\\\選択文字数挿入.mac";|
+elsif opt==13
+  mac=%Q|setclipboard ",p15";paste;|
+elsif opt==14
+  mac=%Q|setclipboard ",p16";paste;|
+elsif opt==15
+  mac=%Q|setclipboard ",p17";paste;|
+elsif opt==16
+  mac=%Q|setclipboard ",p18";paste;|
+elsif opt==17
+  mac=%Q|escape;left;gowordtop2;insert "/-";|
+elsif opt==18
+  mac=%Q|escape;left;gowordtop2;insert "-";|
+elsif opt==19
+  mac=%Q|escape;left;gowordtop2;insert "!";|
+elsif opt==20
+  mac=%Q|escape;left;gowordtop2;insert "#";|
+elsif opt==21
+  mac =%Q|begingroupundo;\n|
+  mac+=%Q|#x=x;#y=y;moveto 0,#y;insert " ";moveto #x+1,#y;\n|
+  mac+=%Q|endgroupundo;\n|
+elsif opt==22
+  mac =%Q|begingroupundo;\n|
+  mac+=%Q|#x=x;#y=y;moveto 0,#y;insertreturn;moveto #x,#y+1;\n|
+  mac+=%Q|endgroupundo;\n|
+elsif opt==23
+  mac =%Q|begingroupundo;\n|
+  mac+=%Q|#x=x;#y=y;moveto 0,#y+1;insertreturn;moveto #x,#y;\n|
+  mac+=%Q|endgroupundo;\n|
+end
+
+print "mac=";p mac
+
+File.write("tmp.mac","\uFEFF"+mac)
+File.write("yomi.mac","\uFEFF"+mac) if rep==1 #繰り返し
+
+__END__
+ENDTEXTBLOCK
+

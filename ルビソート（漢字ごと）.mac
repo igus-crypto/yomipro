@@ -1,0 +1,59 @@
+//漢字ごとにソート
+
+//#fc=0;if(iskeydown(0x11)){#fc=1;}
+//#fs=0;if(iskeydown(0x10)){#fs=1;}
+#fk=0;#fj=0;
+if(iskeydown(0x75))#fk=1;
+if(iskeydown(0x74))#fj=1;
+
+begingroupundo;#x=x;#y=y;selectline 1;cut;
+if(#fj){
+  runsync2 "rubyw -x "+currentmacrofilename+" j";}
+else{
+  runsync2 "rubyw -x "+currentmacrofilename+" k";}
+paste;moveto 0,#y;endgroupundo;endmacro;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_s99.txt","w")
+$stderr=open("tmp_serr.txt","w")
+
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+arr=cbd.getText.
+  split("\r\n").grep_v(/^―*$|^最終更新日：/).uniq
+print "arr=";p arr
+
+st=cbd.getText
+print "st=";p st
+st=arr.compact.uniq.sort_by{|e| -e.size}.
+  group_by{|e| e.sub(%r|([^\p{Han}]*)(\p{Han}*).*|){$2}}.
+  to_a.transpose[1].to_a.map{|e| e.map{|f|
+    f=f.gsub(%r|^[。、「『]|,"　").gsub(%r|(?<=[,])[。、「『]|,"　")
+    t=[]
+    t << f
+    if /^　/=~f
+      t << f.gsub(%r|^　|,"。").gsub(%r|(?<=[,/])　|,"。")
+      t << f.gsub(%r|^　|,"「").gsub(%r|(?<=[,/])　|,"「")
+      t << f.gsub(%r|^　|,"『").gsub(%r|(?<=[,/])　|,"『")
+      t << f.gsub(%r|^　|,"、").gsub(%r|(?<=[,/])　|,"、")
+      t << f.gsub(%r|^　|,"が").gsub(%r|(?<=[,/])　|,"が")
+      t << f.gsub(%r|^　|,"は").gsub(%r|(?<=[,/])　|,"は")
+      t << f.gsub(%r|^　|,"").gsub(%r|(?<=[,/])　|,"") if %r|j|=~opt
+    end
+    print "t=";p t
+    t}.uniq.join("\n")}.join("\n\n")+"\n"
+cbd.setText(st)
+
+__END__
+*/
+
+

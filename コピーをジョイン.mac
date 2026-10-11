@@ -1,0 +1,69 @@
+//コピーをジョイン
+
+//0x10:shift
+#shi=0;
+if(iskeydown(0x10)){#shi=1;}
+
+#x=x;#y=y;
+if(#shi==1){
+  copy;
+  runsync2 "rubyw -x "+currentmacrofilename+" s";
+}else{
+  setmenudelay 700;
+  mousemenu
+  "&C コピー",          // 1
+  "&X クロス",          // 2
+  "&F ファイル名",      // 3
+  "&V コピペ";          // 4
+  #res=result;
+  if(#res==0){endmacro;
+  }else if(#res==1){   //【C】 コピー
+    if(selecting){
+      copy;
+    }else{
+      disabledraw;escape;searchup "《";beginsel;searchdown "》";
+      right;copy;moveto #x,#y;enabledraw;
+    }
+  }else if(#res==2){   //【X】 コピー２
+    copy
+    runsync2 "rubyw -x "+currentmacrofilename+" x";
+  }else if(#res==3){   //【F】 ファイル名
+    setclipboard filename;
+  }else if(#res==4){   //【V】 コピペ
+    copy;insert "\n";paste;
+  }
+}
+
+/*
+#/
+#! ruby
+
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99c.txt","w")
+$stderr=open("tmp_errc.txt","w")
+
+opt=ARGV[0]
+cbd = ClipBoard.new(__ENCODING__)
+ar=cbd.getText.split(/\R/).uniq#.sort.sort_by{|e| -e.size}
+print "ar=";p ar
+if %r|s|=~opt
+  if ar[0].size==1
+    st=ar.join
+  else
+    st="|"+ar.join("|")
+  end
+elsif %r|x|=~opt
+  st=ar.reverse.join("。")+"。"
+  print "st=";p st
+end
+cbd.setText(st)
+
+__END__
+*/
+
+
+

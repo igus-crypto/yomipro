@@ -1,0 +1,61 @@
+﻿//選択文字で対象ファイルを検索
+
+//標準 :対象ファイルを検索
+//ctrl :検索ファイル選択
+
+#fc=0;
+if(iskeydown(0x11))#fc=1;
+if(getarg(0)=="o")#fc=1;
+
+if(!selecting)endmacro;
+$s=getselectedtext();
+if(#fc){
+  $f=browsefile("","*.txt");
+  if(findhidemaru($f)==-1)openfile $f;
+  setactivehidemaru findhidemaru($f);
+  setsearch $s ,0x35003800;finddown;
+  colormarkerallfound;escape;
+}
+else{
+  copy2;
+  runsync2 "rubyw -x "+currentmacrofilename;
+  execmacro directory + "\\tmp.mac";
+}
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+require 'inifile'
+require 'clipboard'
+
+opt=ARGV[0]
+
+# g:選択文字で対象ファイルを検索
+
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+ini=IniFile.load(__dir__+"/config.ini")
+gfl1=ini["grep"]["file_1"]
+print "gfl1=";p gfl1
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+mac=open(File.expand_path("tmp.mac"),"w:utf-8")
+st=st.chomp
+mac.print("\uFEFF")
+gfl1=gfl1.gsub("/","\\\\\\")
+mac.puts %Q|if(findhidemaru("#{gfl1}")==-1){openfile "#{gfl1}";}|
+mac.puts %Q|setactivehidemaru findhidemaru("#{gfl1}");|
+mac.puts %Q|selectall;colormarker 0x000000, 0xC2C79E, 11, 1;|
+mac.puts %Q|setsearch "#{st}" ,0x35003800;finddown;|
+mac.puts %Q|colormarkerallfound;escape;|
+mac.puts %Q|disabledraw;enabledraw y - windowheight / 2;|
+
+__END__
+*/
+

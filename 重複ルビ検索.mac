@@ -1,0 +1,20 @@
+//重複ルビ検索
+
+runsync2 "rubyw -x "+currentmacrofilename+" "+filename;
+openfile "tmp99k.txt";
+endmacro;
+
+/*
+#/
+#! ruby
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99k.txt","w")
+$stderr=open("tmp_errk.txt","w")
+
+f=ARGV[0]
+a=open(f).read.scan(%r|\p{Han}+《[^《》]+》《[^《》]+》|)
+puts a.join("\n")
+
+__END__
+*/

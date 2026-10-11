@@ -1,0 +1,6 @@
+﻿//ファイル末尾
+
+#shi=0;
+if(iskeydown(0x10))#shi=1;
+if((#shi)&&(!selecting))beginsel;
+gofileend;

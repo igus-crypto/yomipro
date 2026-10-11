@@ -1,0 +1,52 @@
+//ルビソート
+
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+
+//範囲選択時
+//ctrl      :チェックリストのソート
+//alt       :選択範囲（!分離）
+//alt+shift :選択範囲
+//範囲選択なし
+//ctrl      :チェックリストのソート
+//alt       :ルビソート（全体）
+//alt+shift :
+
+if(iskeydown(0x10)){#fs=1;}else{#fs=0;}
+if(iskeydown(0x11)){#fc=1;}else{#fc=0;}
+if(iskeydown(0x12)){#fa=1;}else{#fa=0;}
+
+begingroupundo;disabledraw;
+if(#fa){
+  if(selecting){
+    if(#fs){//選択範囲
+      selectline 1;cut;
+      runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s";
+      paste;
+    }else{//選択範囲（!分離）
+      //selectline 1;cut;
+      //runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s1";
+      //paste;
+      selectline 1;cut;#y=y;
+      runsync2 "rubyw "+currentmacrodirectory+"\\sort1.rbw "+basename;
+      paste;moveto 0,#y;endmacro;
+      }
+  }else{
+    selectall;cut;
+    runsync2 "rubyw "+currentmacrodirectory+"\\sort1.rbw "+basename;
+    paste;gofiletop;insert "\n";
+  }
+}else if(#fc){
+  selectall;cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort3.rbw";
+  paste;
+}else{
+  if(!selecting){selectall;}
+  cut;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort5.rbw s1";
+  paste;
+}
+searchup "^$",regular;
+endgroupundo;enabledraw;

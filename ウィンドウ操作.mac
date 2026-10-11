@@ -1,0 +1,48 @@
+//ウィンドウ操作
+
+$op=getarg(0);
+// 1:カスケード
+// 2:縦に並べる
+// 3:横に並べる
+// 4:カスケード２
+
+disabledraw;
+if($op=="1"){ //カスケード
+  //windowcascade;endmacro;
+  #c=hidemarucount;#i=0;#j=0;#x=80;#y=10;
+  setactivehidemaru 1,-1;
+  //setwindowpos #x,#y;setwindowpos #x,#y;
+  while(#c>#i){
+    setwindowpos #x,#y;
+    #hwnd[#i]=hidemaruhandle(0);
+    setactivehidemaru 1,-1;
+    #i=#i+1;#x=#x+20;#y=#y+30;}
+  //message str(#c);
+  //setactivehidemaru 1,-1
+  while(#c>#j){setactivehidemaru #hwnd[#j];#j=#j+1;}
+}else if($op=="2"){ //縦に並べる
+  #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
+  iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowvert;
+  setwindowsize 100, 14;setwindowpos 80, 0;
+  setactivehidemaru #hwnd_f1;setwindowsize 100, 14;setwindowpos 80, 360;
+}else if($op=="3"){ //横に並べる
+  #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
+  iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowhorz;
+  setwindowsize 48, 34;setwindowpos 80, 0;
+  setactivehidemaru #hwnd_f1;setwindowsize 48, 34;setwindowpos 600, 0;
+}else if($op=="4"){ //カスケード２
+  #px=80;#py=30;
+  #hd1=hidemaruhandle(0);
+  setwindowpos #px,#py;
+  setactivehidemaru 1,-1;
+  #hd2=hidemaruhandle(0);
+  #px=#px+30;#py=#py+20;#n=1;
+  while(#n<hidemarucount){
+    setwindowpos #px,#py;
+    setactivehidemaru 1,-1;
+    #px=#px+30;#py=#py+20;#n=#n+1;
+  }
+  setactivehidemaru #hd2;
+  setactivehidemaru #hd1;
+}
+enabledraw;

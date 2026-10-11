@@ -1,0 +1,29 @@
+//踊り字確認.mac
+
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmpo.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_odoriji.txt","w")
+$stderr=open("tmp_eod.txt","w")
+
+s=open("s.txt").read.scan(%r|([^。　]{1,10})(／″?＼)|).
+  map{|e| e[0]+e[1]+","+e[1]+",s =>"}.sort_by{|e| -e.size}
+puts s.join("\n")+"\n"
+
+if s==[]
+  mac="endmacro;"
+else
+  mac=%Q|openfile "tmp_odoriji.txt";\nsetwindowsize 60,20;setactivehidemaru 1;|
+end
+File.write("tmpo.mac",mac)
+
+__END__
+*/

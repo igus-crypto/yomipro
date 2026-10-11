@@ -1,0 +1,106 @@
+//青空文庫まとめ読み.mac
+
+setmenudelay 100;
+mousemenu
+"&D ダウンロード",     // 1
+"&Z ZIP展開",          // 2
+"&T 読了時間算出";     // 3
+
+#res=result;
+if(#res==0){
+  endmacro;
+}else if(#res==3){  //【T】 読了時間算出
+  execmacro currentmacrodirectory+"\\読了時間算出.mac";
+  endmacro;
+}else{
+  $s=getselectedtext();
+}
+if(!selecting){
+  message "作家名を選択してください";
+  endmacro;
+}
+if(#res==1){        //【D】 ダウンロード
+  question $s+"の作品のダウンロードを開始します。よろしいですか？";
+  if(result!=0){
+    runsync2 "ruby -x "+currentmacrofilename+" d "+$s;
+  }
+}else if(#res==2){  //【Z】 ZIP展開
+  question $s+"フォルダ下のZIPファイルからテキストを作成します。よろしいですか？";
+  if(result!=0){
+    runsync2 "rubyw -x "+currentmacrofilename+" z "+$s;
+    openfile $s+".txt";
+  }
+}
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+#$stdout=open("tmp_a99.txt","w")
+#$stderr=open("tmp_aer.txt","w")
+
+require "fileutils"
+require "open-uri"
+require "csv"
+require "zip"
+
+#d:ダウンロード
+#z:ZIP展開
+opt=ARGV[0]
+aut=ARGV[1]
+
+if opt=="d"
+  CSV.foreach(
+    "list_person_all_extended_utf8.csv",
+    headers: true,
+    encoding: "UTF-8"
+  ){|row|
+    author = "#{row['姓']}#{row['名']}"
+    next unless author == aut
+    title = row['作品名']
+    url   = row['テキストファイルURL']
+    next if url.nil? || url.empty?
+    filename = File.join(
+      author,
+      "#{title.gsub(/[\\\/:*?\"<>|]/,'_')}.zip"
+    )
+    unless FileTest.directory?(aut)
+      FileUtils.mkdir_p(aut) if filename
+    end
+    STDOUT.puts "#{title}"
+    begin
+      URI.open(url){|src|
+        File.binwrite(filename,src.read)
+      }
+    rescue => e
+      warn "失敗: #{title} (#{e})"
+    end
+  }
+elsif opt=="z"
+  i=1
+  st=""
+  Dir.glob("#{aut}/*.zip").sort.each do |zipfile|
+    Zip::File.open(zipfile) do |zip|
+      zip.each do |entry|
+        next unless entry.name =~ /\.txt$/i
+        s1 =entry.get_input_stream.read
+        st << "\n☆彡#{i}☆彡"
+        st << s1.force_encoding("CP932").encode("UTF-8")
+        i+=1
+      end
+    end
+  end
+  st=st.gsub("\r","").
+    gsub(%r|^-{20,}.*?^-{20,}$|m,"").
+    gsub(%r|\n{2,}|,"\n\n").
+    gsub(%r|^☆彡(\d+)☆彡(.*)|){"【第#{$1.tr('0-9','０-９')}話】　【#{$2}】"}
+  File.write("#{aut}.txt",st)
+end
+
+__END__
+*/
+
+

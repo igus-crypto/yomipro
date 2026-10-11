@@ -1,0 +1,327 @@
+//青空ルビー.mac
+
+runsync2 "ruby -x "+currentmacrofilename+" "+filename+" -no";
+execmacro directory+"\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+Encoding.default_external = 'UTF-8'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+require 'regexp_trie'
+
+#data = <<'EOS'
+#📿📿📿
+#EOS
+
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
+unless RUBY_PLATFORM =~%r|wasm|
+  $stderr=open("tmp_ea.txt","w")
+  $stdout=open("tmp99a.txt","w")
+  require 'clipboard'
+  cbd=ClipBoard.new(__ENCODING__)
+  text=cbd.getText
+  # ⛑️📿💄💍💎
+end
+
+PATTERNS = [
+  ["m1a","",""],
+  ["n1a","(?<![《｜])","(?![\\p{Han}｜]*《)"],
+  ["n1b","(?<![《｜])",""],
+  ["p1a","(?<=[　。「」『』【】─])","(?![\\p{Han}｜]*《)"],
+  ["p1b","(?<=[　。「」『』【】─])","(?!《)"],
+  ["p1c","(?<=[　。「」『』【】─])",""],
+  ["p2a","(?<=[ァ-ヴー])","(?![《\\p{Han}｜》])(?![\\p{Han}｜]*《)"],
+  ["p2b","(?<=[ァ-ヴー])","(?![《\\p{Han}｜》])"],
+  ["p3a","(?<![《ａ-ｚＡ-Ｚ》｜])","(?![《ａ-ｚＡ-Ｚ》])"],
+  ["p4a","(?<![《a-zA-Z》｜])","(?![《a-zA-Z》])"],
+  ["p5a","(?<![《\\p{Han}｜》])","(?![\\p{Han}｜]*《)"],
+  ["p5b","(?<![《\\p{Han}｜》])",""],
+  ["p6a","(?<![《｜])","(?![《\\p{Han}｜》])(?![\\p{Han}｜]*《)"],
+  ["p6b","(?<![《｜])","(?![《\\p{Han}｜》])"],
+  ["p7a","(?<![《\\p{Han}｜》])","(?![《\\p{Han}｜》])(?![\\p{Han}｜]*《)"],
+  ["p7b","(?<![《\\p{Han}｜》])","(?![《\\p{Han}｜》])"],
+  ["p8a","(?<![《｜])","(?![\\p{Han}｜]*《)"],
+  ["p8b","(?<![《｜])","(?!《)"],
+  ["p8c","(?<![《｜])",""],
+].map{|e| e.map{|f| f.force_encoding("UTF-8")}}.
+  map{|a,b,c|[a,[b,c]]}.to_h
+
+class String
+  def gsub_ex(sym)
+    kug="⛑".force_encoding("UTF-8")
+    re1=Regexp.new("⛑+".force_encoding("UTF-8"))
+    re2=Regexp.new("([\p{Han}》])⛑([\p{Han}》]*《)".force_encoding("UTF-8"))
+    st2='\1｜\2'.force_encoding("UTF-8")
+    st3="(".force_encoding("UTF-8")
+    st4=")".force_encoding("UTF-8")
+    text=self.force_encoding("UTF-8")
+    n=sym.to_s
+    n=n[0]+n[2..-1]
+    before=PATTERNS[n][0]
+    after =PATTERNS[n][1]
+    hash=HAS[sym]
+    sou=SOU[sym].force_encoding("UTF-8")
+    pattern=Regexp.new(before+st3+sou+st4+after)
+    text=text.gsub(pattern){|m| kug+hash[m]}
+  text=text.gsub(re1,kug).gsub(re2,st2).gsub(kug,"")
+  text
+  end
+end
+
+STDOUT.puts "作業開始"
+apply="yes" unless apply
+output_mode="moon" unless output_mode
+priority="delete" unless priority
+
+#a=data.split("💍")
+#rep02=a[0].split("\n")
+#rep14=a[1].split("\n")
+rep02=open(__dir__+"/replace/rep02.txt").read.split("\n")
+rep14=open(__dir__+"/replace/rep14.txt").read.split("\n")
+
+HAS={}
+SYM={}
+#a2=a[2]
+a2.force_encoding("UTF-8")
+a2.each_line do |line|
+  i=line.index("|")
+  next unless i
+  j=line.index("|", i+1)
+  next unless j
+  g=line[0,i]
+  k=line[i+1...j]
+  v=line[j+1..-1]
+  v.chomp! if v
+  sym=SYM[g] ||= g.to_sym
+  h=HAS[sym]
+  unless h
+    h=HAS[sym] = {}
+  end
+  h[k]=v
+end
+
+STDOUT.puts "ハッシュ作成完了"
+
+sou=Hash.new({})
+a[3].gsub(%r|\R|,"").split("💎").each{|line|
+  k,v =line.chomp.split("💄")
+  next unless v
+  sou[k]=v
+}
+SOU=sou.transform_keys!{|k| k.intern}
+symbols=SOU.keys.group_by { |k| k.to_s[0] }.values
+RE1=Regexp.new("\A[\p{Han}]+《".force_encoding("UTF-8"))
+RE2=Regexp.new("[\p{Han}》]".force_encoding("UTF-8"))
+
+STDOUT.puts "置換開始"
+
+# -----------------------------
+# 外字取り込み前の処理
+# -----------------------------
+
+text="\n"+text
+text.gsub!(%r|\r\n|,"\n")
+text.gsub!(%r|^-{5,}\n.*?\n-{5,}\n|m,"")
+
+# -----------------------------
+# 外字取り込み
+# -----------------------------
+
+gaiji=rep14.map{|e|e.split(",", 2)}.reject(&:empty?).to_h.
+  transform_keys{|k|k.split("-").map{|f|f.to_i}}
+re1=Regexp.new("※［＃[^］]+］".force_encoding("UTF-8"))
+re2=Regexp.new("([0-9]+)-([0-9]+)(?:-([0-9]+))?".force_encoding("UTF-8"))
+pairs=text.scan(re1).uniq.map{|e|
+  d=e.match(re2).to_a.map{|e| e.to_i}[1..3]
+  [e,gaiji[d]] if d && gaiji[d]
+  }.compact.reject(&:empty?)
+pairs.each do |k,v|
+  next unless k && v
+  k=k.force_encoding("UTF-8")
+  v=v.force_encoding("UTF-8")
+  text.gsub!(k,v)
+end
+
+STDOUT.puts "外字取り込み完了"
+
+# -----------------------------
+# 置換前の処理
+# -----------------------------
+
+#注釈除去
+#（　＊）のみの行を空行に
+re1=Regexp.new("※?［＃[^［］]*］".force_encoding("UTF-8"))
+re2=Regexp.new("^[　＊]*$".force_encoding("UTF-8"))
+text.gsub!(%r<#{re1}|#{re2}>,"")
+text.gsub!(%r|^\n+|,"\n")
+
+STDOUT.puts "注釈の除去完了"
+
+# -----------------------------
+# 置換実行
+# -----------------------------
+
+symbols[0].each{|e|
+  text=text.gsub_ex(e)}
+
+# rep02 を Hash 化
+# key: [親文字,ルビ] → value: 置換
+hash={}
+rep02.each{|line|
+  line=line.force_encoding("UTF-8")
+  o,r,rep=line.split(",",3)
+  next unless o && r
+  if rep
+    hash[[o,r]]=rep
+  else
+    hash[[o,r]]=""
+  end
+}
+
+re1=Regexp.new("([\p{Han}]+)《([^《》]+)》".force_encoding("UTF-8"))
+st1="《".force_encoding("UTF-8")
+st2="》".force_encoding("UTF-8")
+text.gsub!(re1){|m|
+  o,r=$1,$2
+  t=hash[[o,r]]
+  next unless t
+  t=t.force_encoding("UTF-8")
+  a=o+st1+t+st2
+}
+
+a00=[
+  ["《》([\p{Han}]*《)",'｜\1'],
+  ["｜([^《。｜》]+)《》",'\1'],
+  ["｜([\p{Han}]+)《》",'\1'],
+  ["《》",""]]
+a00=a00.map{|e| e.map{|f| f.force_encoding("UTF-8")}}
+a00.each{|e|
+  re1=Regexp.new(e[0])
+  text.gsub!(re1,e[1])}
+
+re1=Regexp.new("※［＃[^］]+］".force_encoding("UTF-8"))
+re2=Regexp.new("([0-9]+)-([0-9]+)(?:-([0-9]+))?")
+text.gsub!(re1){|e|
+  if m = e.match(re2)
+    #STDOUT.puts "e=";p e
+    key = m.captures.map(&:to_i)
+    gaiji[key] || e
+  else
+    e
+  end
+}
+
+STDOUT.puts "ルビの除去完了"
+symbols[1].each{|e|
+  text=text.gsub_ex(e)}
+STDOUT.puts "直接置換完了"
+
+symbols[2].each{|e|
+  text=text.gsub_ex(e)}
+STDOUT.puts "正規表現の置換完了"
+
+if priority=="parent"
+  a01=["｜","《.*?》"].map{|e| e.force_encoding("UTF-8")}
+  a01.each{|e|
+    re1=Regexp.new(e)
+    text.gsub!(re1,"")}
+elsif priority=="delete"
+  a02=[
+    ["《[%~!]","《"],
+    ["《[=#][^《》]+》",""],
+    ["《は","《ハ"],
+    ["｜[^《》]+《([^《》]+)》",'\1'],
+    ["[\p{Han}]+《([^《》]+)》",'\1'],
+    [".《([^《》]+)》",'\1']]
+  a02=a02.map{|e| e.map{|f| f.force_encoding("UTF-8")}}
+  a02.each{|e|
+    re1=Regexp.new(e[0])
+    text.gsub!(re1,e[1])}
+end
+
+# -----------------------------
+# 置換後処理（読み上げ用）
+# -----------------------------
+
+re=Regexp.new("^\s*$")
+st="◇。◇。◇。".force_encoding("UTF-8")
+text.gsub!(re,st)
+
+a11=[ # 置換後処理（読み上げ用）（正規表現）
+  ["^　　+",""],
+  ["^([　]*)([０-９七三九二五八六十四一]+)([　]*)$",
+    '【第\2章】　────'],
+  ["^(第[一二三四五六七八九十　 ]+話)[　◆](.*)$",
+    '【\1】　【\2】'],
+  ["^(≪[^。、]+$)",'【\1】'],
+  ["^　　+([^　].*[^。、』」）〕〉］】？！─…\n])$",'【\1】'],
+  ["^[　]*([^。、』」）〕〉］】？！─…\n]*)$",'【\1】'],
+  ["^【＊?】$",""],
+  ["(?<=[　。「」『』（）【】─※◇・、])-",""],
+  ["’+","’"]]
+a11=a11.map{|e| e.map{|f| f.force_encoding("UTF-8")}}
+a12=[ #置換後処理（読み上げ用）（単純置換）
+  ["’+","’"],
+  ["◇","▓"],
+  ["｜",""],
+  ["▓。▓。▓。▓。▓。▓。","▓。▓。▓。"]]
+a12=a12.map{|e| e.map{|f| f.force_encoding("UTF-8")}}
+a13=[ #kindle版
+  ["≪[^≪≫]+≫",""],
+  ["(?<![。])([」』】〉）])$",'\1'],
+  ["(?<=[ぁ-ん])([-])(?=[ぁ-ん])","’"],
+  ["(?<=[ァ-ヴー])([-])(?=[ァ-ヴー])","’"]]
+a13=a13.map{|e| e.map{|f| f.force_encoding("UTF-8")}}
+
+a11.each{|e|
+  re1=Regexp.new(e[0])
+  text.gsub!(re1,e[1])
+}
+
+unless RUBY_PLATFORM =~%r|wasm|
+  n=1
+  while 1
+    break if FileTest.file?("s#{n}.txt")
+    n=n+1
+    break n>=100
+  end
+  File.write("s#{n}.txt","\uFEFF"+text)
+  File.write("tmp.mac",%Q|openfile "s#{n}.txt";|)
+end
+
+a12.each{|e|
+  text.gsub!(e[0],e[1])}
+
+# -----------------------------
+# kindle用
+# -----------------------------
+
+if output_mode=="kindle"
+
+  a13.each{|e|
+    re1=Regexp.new(e[0],"m")
+    text.gsub!(re1,e[1])}
+  re2=Regexp.new("▓。▓。▓。".force_encoding("UTF-8"))
+  text.gsub!(re2,"\n")
+end
+#print "a13\n";#puts text
+
+# -----------------------------
+# 出力
+# -----------------------------
+
+text
+
+# python -m http.server 8000
+# http://localhost:8000/aozora2.html
+
+
+__END__
+*/

@@ -1,0 +1,333 @@
+﻿//文字列変換
+
+begingroupundo;
+#fg=getclipboardinfo(1);
+setmenudelay 600;
+mousemenu
+"&M 半角数字－１",                      // 1
+"&L 半角数字＋",                        // 2
+"&F 数字連番振り直し",                  // 3
+"&S 半角数字除去",                      // 4
+"&K 数値計算",                          // 5
+"&T 数字展開",                          // 6
+"&E エンコード",                        // 7
+"&D デコード",                          // 8
+"&R ＲＥＦ変換",                        // 9
+"&V リバース",                          //10
+"&G ＧＲＥＰ",                          //11
+"&, 数字半角化",                        //12
+"&. 数字全角化",                        //13
+"&0 =》",                               //14
+"&1 《!",                               //15
+"&2 《”",                              //16
+"&3 《#",                               //17
+"&4 《=",                               //18
+"&7 《’",                              //19
+"&9 《",                                //20
+"&/ 《/",                               //21
+"&- 《-",                               //22
+"&; 《+",                               //23
+"&^ 《~",                               //24
+"&O /-》",                              //25
+"&I /《》",                             //26
+"&8 （）⇔《》",                        //27
+"&x +◯◯（□□）→+□□（◯◯）",      //28
+"&H 「は」対策（置換リストに挿入）",    //29
+"&P パイプをソート";                    //30
+
+
+//message str(result);
+#res=result;
+#alt=0;#shi=0;#ctr=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctr=1;}
+if(iskeydown(0x12)){#alt=1;}
+
+disabledraw;
+#x0=x;#y0=y;
+if(#res==0){endmacro;
+}else if(#res==1){  //【M】 半角数字－１
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e4";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+}else if(#res==2){  //【L】 半角数字＋
+  execmacro currentmacrodirectory+"\\半角数字＋.mac";
+}else if(#res==3){  //【F】 数字連番振り直し
+  execmacro currentmacrodirectory+"\\数字連番振り直し.mac";
+}else if(#res==4){  //【S】 半角数字除去
+  cut;#fg=getclipboardinfo(1);
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw e3";
+  beginclipboardread;if(#fg){pasterect;}else{paste;}
+}else if(#res==5){  //【K】 数値計算
+  execmacro currentmacrodirectory+"\\数値計算.mac";
+}else if(#res==6){  //【T】 数字展開
+  execmacro currentmacrodirectory+"\\数字展開.mac";
+}else if(#res==7){  //【E】 エンコード
+  if(!selecting)selectline 1;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  moveto #px,#py;beginsel;moveto #dx,#dy;copy2;
+  runsync2 "rubyw -x "+currentmacrodirectory+"\\エンコード.mac e";
+  execmacro directory + "\\tmp.mac";
+}else if(#res==8){  //【D】 デコード
+  if(!selecting)selectline 1;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  moveto #px,#py;beginsel;moveto #dx,#dy;copy2;
+  runsync2 "rubyw -x "+currentmacrodirectory+"\\エンコード.mac d";
+  execmacro directory + "\\tmp.mac";
+}else if(#res==9){  //【R】 ref変換
+  execmacro currentmacrodirectory+"\\ＲＥＦ変換.mac";
+}else if(#res==10){  //【V】 リバース
+  execmacro currentmacrodirectory+"\\リバース.mac";
+}else if(#res==11){  //【G】 ＧＲＥＰ
+  if(!selecting)endmacro;
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  $s1=getselectedtext();
+  selectall;$s2=getselectedtext();
+  escape;moveto #tx,#ty;beginsel;moveto #ex,#ey;
+  openfile "";insert $s1+"\n"+$s2;saveas "tmp_p.txt";#hwnd=hidemaruhandle(0);
+  setactivehidemaru 1;closehidemaruforced #hwnd;
+  runsync2 "rubyw -x "+currentmacrofilename+" g";
+  openfile "tmp_p.txt";
+  setsearch ".*?:" , 0x4003819;
+  colormarkerallfound 0x000000,0x6267F5,11,1;
+  setsearch $s1, 0x4003809;
+  colormarkerallfound 0x000000,0x72F531,11,1;
+}else if(#res==12){  //【,】 数字半角化
+  execmacro currentmacrodirectory+"\\半角全角変換.mac","h";
+}else if(#res==13){  //【.】 数字全角化
+  execmacro currentmacrodirectory+"\\半角全角変換.mac","z";
+}else if(#res==14){  //【0】 =》
+  if(imestate)imeswitch;
+  //if(selecting)moveto seltopx,seltopy;
+  if(selecting){
+    begingroupundo;
+    //replaceallfast "《([^《》=]*)[=]?》","《\\1=》",regular,inselect2;
+    //replaceallfast "(?<=《)([^《》=]*[=]?)(?=》)","\\1=",regular,inselect2;
+    replaceallfast "=?》","=》",regular,inselect2;
+    endgroupundo;endmacro;}
+  if(code!=33140)searchdown "》";right;left;
+  insert "=";
+  searchup "《";right;left;right;
+  sleep 300;
+}else if(#res==15){  //【1】 《!
+  if(imestate)imeswitch;
+  if(selecting)moveto seltopx,seltopy;
+  if(code!=33140)searchdown "》";
+  replaceup "《[!”’%#=/~+-]?","《!",regular;
+  if(!result){golinetop2;insert "!";moveto #x0+1,#y0;endmacro;}
+  searchdown "》";right;left;
+  if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+}else if(#res==16){  //【2】 《”
+  if(#alt==1){
+    insert "”";
+   }else{
+    if(imestate)imeswitch;
+    if(selecting)moveto seltopx,seltopy;
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《”",regular
+    searchdown "》";right;left;
+  }
+  //if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+}else if(#res==17){  //【3】 《#
+  if(imestate)imeswitch;
+  //if(selecting)moveto seltopx,seltopy;
+  if(selecting){
+    begingroupundo;
+    //replaceallfast "《#","《",regular,inselect2;
+    //if(result)endmacro;
+    replaceallfast "《[!”’%#=/~+-]?","《#",regular,inselect2;
+    endgroupundo;endmacro;}
+  if(code!=33140)searchdown "》";
+  beginsel;golinetop2;replaceallfast "《#","《",regular,inselect2;
+  if(result){right;endmacro;}
+  moveto #x0,#y0;
+  replaceup "《[!”’%#=/~+-]?","《#",regular;
+  searchdown "》";right;left;
+  if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+}else if(#res==18){  //【4】 《=
+  if(imestate)imeswitch;
+  disabledraw;begingroupundo;
+  if(!selecting)selectline 1;
+  if(#alt){replaceallfast "《[!”’%#=/~+-]?","《=",regular,inselect2;}
+  else{replaceallfast "《(?![!”’%#=/~+-])","《=",regular,inselect2;}
+  endgroupundo;enabledraw;endmacro;
+  //if(code!=33140)searchdown "》";
+  //if(#alt){replaceup "《(?![!”’%#=/~+-])","《=",regular;}
+  //else{replaceup "《[!”’%#=/~+-]?","《=",regular;}
+  //searchdown "》";right;left;
+  //if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+}else if(#res==19){  //【7】 《’
+  if(imestate)imeswitch;
+  if(rectselecting && seltopx==selendx){
+    begingroupundo;#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;#yy=seltopy;
+    while(#yy<=#ey){moveto #tx,#yy;insert "’";#yy=#yy+1;}
+    moveto #tx,#ty;endgroupundo;
+  }else if(#alt){
+    insert "’";
+  }else{
+    if(selecting)moveto seltopx,seltopy;
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《’",regular;
+    searchdown "》";right;left;
+  }
+}else if(#res==20){  //【9】 《""
+  if(imestate)imeswitch;
+  if(selecting)moveto seltopx,seltopy;
+  if(code!=33140)searchdown "》";
+  replaceup "《[!”’%#=/~+-]?","《",regular;
+  searchdown "》";right;left;
+  if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+}else if(#res==21){  //【/】 《/
+  if(imestate)imeswitch;
+  if(#alt){
+    insert "/";
+  }else{
+    if(selecting)moveto seltopx,seltopy;
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《/",regular;
+    searchdown "》";right;left;
+  }
+//  if(code!=33140)searchdown "》";
+//  replaceup "《[!”’%#=/~+-]?","《/",regular;
+//  searchdown "》";right;left;
+}else if(#res==22){  //【-】 《-
+  if(imestate)imeswitch;
+  if(selecting){
+    replaceallfast "(.)(?=.)","\\1-",regular,inselect2;
+  }else if(#alt){
+    insert "-";
+  }else{
+    if(selecting)moveto seltopx,seltopy;
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《-",regular;
+    searchdown "》";left;
+    if(code==61)delete;
+    right;left;
+    //if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+  }
+}else if(#res==23){  //【;】 《+
+  if(imestate)imeswitch;
+  if(selecting){
+    disabledraw;begingroupundo;
+    #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+    replaceallfast "《","《+",inselect2;
+    moveto #tx,#ty;beginsel;moveto #ex+1,#ey;
+    enabledraw;endgroupundo;
+    endmacro;
+  }
+  if(#alt){
+    insert "+";
+  }else{
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《+",regular;
+    searchdown "》";right;left;
+    //if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+  }
+}else if(#res==24){  //【^】 《~
+  if(imestate)imeswitch;
+  if(selecting){
+    disabledraw;begingroupundo;
+    #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+    replaceallfast "《","《~",inselect2;
+    //moveto #tx,#ty;beginsel;moveto #ex+1,#ey;
+    moveto #ex+1,#ey;
+    enabledraw;endgroupundo;
+    endmacro;
+  }
+  if(#alt){
+    insert "~";
+  }else{
+    if(code!=33140)searchdown "》";
+    replaceup "《[!”’%#=/~+-]?","《~",regular;
+    searchdown "》";right;left;
+    //if(#alt){beginsel;searchup "[!”’#=/~-]",regular;right;delete;}
+  }
+}else if(#res==25){  //【O】 -/》 /
+  if(imestate)imeswitch;
+  if(code==13)golinetop;
+  if(#shi){
+    replaceup "《([^》/]*)([/》])","《\\2",regular;
+    right;
+  }else{
+    //message str(code);endmacro;
+    //if(code==33140){searchup "/|^",regular;right;left;if(code==47){endmacro;}}
+    replacedown "》","/-》";#r=result;
+    if(y!=#y0){undo;moveto #x0,#y0;#r=0;}
+    if(!#r){searchup "《";replacedown "》","/-》";}
+    left; // 
+  }
+}else if(#res==26){  //【I】 《》
+  if(imestate)imeswitch;
+  if(code!=33140){searchdown "》";right;left;}
+  beginsel;
+  searchup "《";right;delete;
+}else if(#res==27){  //【8】 （）⇔《》
+  if(!selecting)selectline 1;
+  disabledraw;begingroupundo;
+  if(imestate)imeswitch;
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "（([^（）]*)）","《\\1》",regular,inselect2;
+  #r=result;
+  if(#r==0){
+    moveto #tx,#ty;beginsel;moveto #ex,#ey;
+    replaceallfast "《([^《》]*)》","（\\1）",regular,inselect2;
+  }
+  moveto #tx,#ty;beginsel;moveto #ex,#ey;enabledraw;endgroupundo;
+}else if(#res==28){  //【x】 +◯◯（□□）→+□□（◯◯）
+  if(!selecting)selectline 1;
+  disabledraw;begingroupundo;
+  if(imestate)imeswitch;
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "[+]([^（）]*)（([^（）]*)）","+\\2（\\1）",regular,inselect2;
+  moveto #tx,#ty;beginsel;moveto #ex,#ey;enabledraw;endgroupundo;
+}else if(#res==29){  //【H】 「は」対策（置換リストに挿入）
+  if(!selecting)endmacro;
+  $fl="置換リスト11【読み上げ】.txt";
+  if(findhidemaru($fl)==-1){message $fl+"が開いてません";endmacro;}
+  copy2;$d=directory;
+  openfile "";paste;saveas "tmp_p.txt";#hwnd=hidemaruhandle(0);
+  setactivehidemaru 1;closehidemaruforced #hwnd;
+  runsync2 "rubyw -x "+currentmacrofilename+" h";
+  setsearch ".*?:" , 0x4003819;
+  setactivehidemaru findhidemaru($fl);
+  //colormarkerallfound 0x000000,0x6267F5,11,1;
+  setsearch ".*=>.*" , 0x4003819;
+  colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+  execmacro $d + "\\tmp_h.mac";
+}else if(#res==30){  //【P】 パイプをソート
+  if(!selecting)selectline 1;
+  execmacro currentmacrodirectory+"\\パイプをソート.mac";
+}
+enabledraw;
+endgroupundo;endmacro;
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+opt=ARGV[0]
+if /^g/=~opt  #ＧＲＥＰ
+  ar=open("tmp_p.txt").read.split(%r|\R|)
+  st=ar.shift
+  ar=ar.grep(%r|#{st}|)
+  File.write("tmp_p.txt",ar.join("\n")+"\n")
+elsif //=~opt #「は」対策（置換リストに挿入）
+  ar=open("tmp_p.txt").read.split(%r|\R|).grep(%r|^[ぁ-ん]は[ぁ-ん]{3}$|).
+    group_by{|e| e[0..1]}.to_a.sort_by{|e| e[0]}.reverse
+  print "ar=";p ar;
+  ar=ar.map{|e| [e[0],e[1].map{|f| f[2..4]}.uniq]}
+  print "ar=";p ar;
+  st=%Q|begingroupundo;disabledraw;gofileend;searchup "――――";\n|
+  ar.map{|e|
+    print "e=";p e
+    st+=%Q<searchdown "ん])#{e[0]}([ぁ";searchdown "っ]";\n>
+    st+=%Q<right;right;insert "|#{e[1].join("|")}";\n>}
+  st+=%Q|gofileend;searchup "――――";golinetop2;\n|
+  st+=%Q|endgroupundo;enabledraw;\n|
+  File.write("tmp_h.mac",st)
+end
+__END__
+*/

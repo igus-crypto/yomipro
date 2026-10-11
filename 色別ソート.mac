@@ -1,0 +1,54 @@
+// 色別ソート
+
+if(!selecting)endmacro;
+disabledraw;begingroupundo;
+#x=x;#y=y;#tx=seltopcolumn;#ex=selendcolumn;
+#ty=seltoplineno;#ey=selendlineno;#i=#ty;
+$s[0]="";$s[1]="";$s[2]="";$s[3]="";
+while(1){
+  escape;
+  movetolineno 1,#i;
+  //$c=getcolormarker(0x0002,findmarker);
+  $c=getcolormarker(0x0002);
+  selectline 1;
+  //message $c;
+  if($c=="0072F531"){
+    $s[1]=$s[1]+getselectedtext();
+  }else if($c=="0029FF77"){
+    $s[2]=$s[2]+getselectedtext();
+  }else if($c=="00FF82E6"){
+    $s[3]=$s[3]+getselectedtext();
+  }else{
+    $s[0]=$s[0]+getselectedtext();
+  }
+  //message $c;
+  if(#i+1>=#ey)break;
+  #i=#i+1;
+}
+movetolineno #tx,#ty;beginsel;movetolineno #ex,#ey;delete;
+#i=0;
+while (#i<4){
+  //message $s[#i];
+  if($s[#i]!=""){
+    #x0=x;#y0=y;
+    insert $s[#i];
+    #x1=x;#y1=y;
+    if(#i==0){
+      beginsel;movetolineno #tx,#ty;
+      replaceallfast "(?#maxlines:10)\n+","\n",regular,inselect2;
+    }else if(#i==1){
+      moveto #x0,#y0;beginsel;moveto #x1,#y1;
+      colormarker 0x000000, 0x72F531, 11, 1;
+    }else if(#i==2){
+      moveto #x0,#y0;beginsel;moveto #x1,#y1;
+      colormarker 0x000000, 0x29FF77, 11, 1;
+    }else if(#i==3){
+      moveto #x0,#y0;beginsel;moveto #x1,#y1;
+      colormarker 0x000000, 0xFF82E6, 11, 1;
+    }
+  escape;
+  insert "\n";
+  }
+  #i=#i+1;
+}
+enabledraw;endgroupundo;

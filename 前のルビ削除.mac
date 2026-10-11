@@ -1,0 +1,42 @@
+//前のルビ削除
+
+//標準        :前のルビ削除
+//ctrl        :前のルビ削除(カラーマーカー検索)
+//ctrl+shift  :前のルビ削除せず次へ(カラーマーカー検索)
+
+//message getcolormarker(0x0002,findmarker);endmacro;
+
+begingroupundo;#fs=0;#fc=0;
+if(iskeydown(0x10))#fs=1;
+if(iskeydown(0x11))#fc=1;
+if(imestate)imeswitch;
+if(#fc && #fs){
+  while(1){
+    searchdown "》|(,\\w+\\K) ",regular;
+    if(!result)break;
+    //message str(marked);
+    #x=x;#y=y;moveto 0,#y;
+    if(code==33){down;}else{ //先頭が「!」の行をとばす
+      moveto #x,#y;
+      if(getcolormarker(0x0002,findmarker)!="")break;}
+    }
+}else{
+  replaceup "《[^《》]*》|,\\w+","",regular;
+  #x0=x;#y0=y;
+  searchup "[》｜]",regular;
+  if(code==33122)delete; //「｜」を削除
+  escape;moveto #x0,#y0;
+//   while(1){
+//     searchdown "》|(,\\w+\\K) ",regular;
+//     if(!result)break;
+//     //message str(marked);
+//     #x=x;#y=y;moveto 0,#y;
+//     if(code==33){down;}else{ //先頭が「!」の行をとばす
+//       moveto #x,#y;
+//       if(#fc){
+//         if(getcolormarker(0x0002,findmarker)!="")break;}
+//       else{break;}
+//     }
+//   }
+}
+endgroupundo;

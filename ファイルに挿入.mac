@@ -1,0 +1,29 @@
+//ファイルに挿入.mac
+
+runsync2 "rubyw -x "+currentmacrofilename+" "+directory;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+f=ARGV[0].gsub(%r|\\[^\\]*$|,"\\s1.txt")
+File.write(f,"\uFEFF") unless FileTest.file?(f)
+
+mac=open("tmp.mac","w:utf-8")
+mac.print("\uFEFF")
+mac.puts %Q|$a=gettotaltext();|
+mac.puts %Q|openfile "#{f.gsub(/\\/){'\\\\'}}";gofileend;#y=y;|
+mac.puts %Q|insert $a;moveto 0,#y;|
+
+__END__
+*/
+
+
+

@@ -1,0 +1,9 @@
+﻿//grep正規表現をマッチ部別に
+
+if(selecting && y==selopeny){copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sm ";}
+else{selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw m ";}
+execmacro directory + "\\tmp_g.mac";
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";

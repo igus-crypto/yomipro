@@ -1,0 +1,45 @@
+﻿//ボックス貼り付け
+
+#x0=x;
+begingroupundo;disabledraw;selectline 1;
+#x=selendx;#y=selendy;copy;moveto #x,#y;
+if(#x!=0)insert "\n";
+runsync2 "rubyw -x "+currentmacrofilename+" "+str(#x0);
+paste;
+enabledraw;endgroupundo;endmacro;
+
+/*/
+#! ruby
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+ar=cbd.getText.split(%r|\R|)
+
+st=""
+i=ARGV[0].to_i*0.5
+i=i.to_i
+i=i-1 unless i==0
+print "i=";p i;
+print "ar=";p ar;
+ar.each{|e|
+  next if e==""
+  #st+=e+"\n"
+  print "e=";p e
+  p e[0..i]
+  "山川海陸カタガナひらがな".each_char{|f|
+    if i==0
+      st+=f+e[0..-1]+"\n"
+    else
+      st+=e[0..i]+f+e[i+1..-1]+"\n"
+    end}}
+
+print "st=";p st
+cbd.setText(st)
+
+__END__
+*/

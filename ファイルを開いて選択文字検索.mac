@@ -1,0 +1,16 @@
+﻿//ファイルを開いて選択文字検索
+
+setcompatiblemode 0x00000200;
+
+if(!selecting){endmacro;}
+$sel = gettext(seltopx,seltopy,selendx,selendy);
+
+if(leftstr($sel,5)=="http:"){
+  run "cmd /c start chrome "+$sel+">nul";
+  endmacro;
+}
+
+openfile "*.txt";
+searchdown $sel ,linknext,hilight,loop;
+endmacro;
+

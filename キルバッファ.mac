@@ -1,0 +1,4 @@
+﻿#hwnd= hidemaruhandle(0);
+setactivehidemaru 1;
+closehidemaruforced #hwnd;
+

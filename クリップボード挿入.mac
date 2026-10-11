@@ -1,0 +1,87 @@
+﻿//クリップボード挿入.mac
+
+begingroupundo;
+setmenudelay 50;
+mousemenu
+"&2 【”+クリップボード】",       // 1
+"&7 【’+クリップボード】",       // 2
+"&@ 【クリップボード+’】",       // 3
+"&s 【/-+クリップボード】",       // 4
+"&3 【#+クリップボード】",        // 5
+"&/ 【/+クリップボード】",        // 6
+"&- 【-+クリップボード】",        // 7
+"&e 【イコール変換】",            // 8
+"&o 【オプション除去】",          // 9
+"&r 【ルビ除去】";                //10
+
+#opt=result;
+if(#opt==0){endmacro;}
+
+disabledraw;
+if(selecting){cut;}
+#fg=getclipboardinfo(1);
+#h1=hidemaruhandle(0);
+//openfile "/h";paste;
+//saveas currentmacrodirectory+"\\tmp99gm.txt";
+//#hm=hidemaruhandle(0);setactivehidemaru #h1;
+//closehidemaruforced #hm;
+runsync2 "rubyw -x "+currentmacrofilename+" "+str(#opt);
+openfile "/h "+currentmacrodirectory+"\\tmp99gn.txt";
+#hn=hidemaruhandle(0);
+if(#fg){gofiletop;beginrect;gofileend;up;golineend;copy2;}
+else{selectall;copy2;}
+setactivehidemaru #h1;
+if(#fg){pasterect;}else{paste;}
+closehidemaruforced #hn;
+
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+escape;moveto #px,#py;
+endgroupundo;enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+opt=ARGV[0]
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText.gsub(/\R/,"\n")
+
+#st=open(__dir__+"/tmp99gm.txt").read.chomp
+print "st=";p st
+if /10/=~opt
+  st=st.gsub(/《[^《》]*》|｜/,"")
+elsif /1/=~opt
+  st=st.gsub(/^/,"”")
+elsif /2/=~opt
+  st=st.gsub(/^/,"’")
+elsif /3/=~opt
+  st=st.gsub(/$/,"’")
+elsif /4/=~opt
+  st=st.gsub(/^/,"/-")
+elsif /5/=~opt
+  st=st.gsub(/^/,"#")
+elsif /6/=~opt
+  st=st.gsub(/^/,"/")
+elsif /7/=~opt
+  st=st.gsub(/^/,"-")
+elsif /8/=~opt
+  st=st.gsub(/《[-%=]?/,"《=")
+elsif /9/=~opt
+  st=st.gsub(/[a-zA-Z0-9,]/,"")
+end
+print "st=";p st
+
+t=open(__dir__+"/tmp99gn.txt","w")
+t.print st
+
+__END__
+*/
+
+

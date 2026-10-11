@@ -1,0 +1,3 @@
+﻿//文字列挿入｜〇〇《》
+
+execmacro currentmacrodirectory+"\\\\文字変換.mac","s3";

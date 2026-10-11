@@ -1,0 +1,42 @@
+﻿//青空文庫外字変換
+
+$f=leftstr(basename,strlen(basename)-4);
+saveas $f+"_a.txt",utf8,bom;
+saveas "tmp_a.txt",utf8,bom;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+//endmacroall;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+a1=open("tmp_a.txt").read.split(%r|\R|)
+jis=open(__dir__+"/bat/aozora.csv").readlines.map{|e|e.chomp.split(%r|(?<!,),|)}.to_h
+jis.transform_keys!{|k| k.split("-").map{|f|f.to_i}}
+a2=a1.map{|e| e.scan(%r|(※［＃[^］]+］)|)}.flatten.uniq.
+  compact.reject(&:empty?)
+a3=a2.map{|e|
+  d=e.match(/(\d+)-(\d+)(?:-(\d+))?/).to_a.map{|e| e.to_i}[1..3]
+  %Q|replaceallfast "#{e}","#{jis[d]}";| if d && jis[d]
+  }.uniq.compact.reject(&:empty?)
+
+#print "jis=";p jis
+#print "a2=";p a2
+#print "a3=";p a3
+
+s =%Q|#x=x;#y=y;selectall;\n|
+s+=%Q|colormarker 0x000000, 0xc2c79e, 11, 1;\n|
+s+=%Q|escape;begingroupundo;disabledraw;\n|
+s+=a3.join("\n")+"\n"
+s+=%Q|moveto #x,#y;enabledraw;endgroupundo;\n|
+File.write("tmp.mac",s)
+__END__
+*/

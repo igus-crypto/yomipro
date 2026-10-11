@@ -1,0 +1,94 @@
+﻿//カタカナ変換.mac
+
+//shift     :変換後選択
+//ctrl      :前方のカッコ内を対象
+//ctrl+shift:前方の「は」をかたかなに
+
+disablebreak;
+disabledraw;begingroupundo;
+#fs=0;#fc=0;
+if(iskeydown(0x10))#fs=1;
+if(iskeydown(0x11))#fc=1;
+
+#x=x;#y=y;
+if(selecting){copy2;}else{setclipboard "";
+  if(#fc && #fs){
+    searchup "は";
+    if(y==#y){beginsel;right;}else{moveto #x,#y;}}
+  else if(#fc){
+    beginsel;golinetop2;}
+//  else{beginsel;searchup "[《=]",regular;}}
+}
+beginclipboardread;
+#fg=getclipboardinfo(1);
+if(#fg){ //矩形選択
+  if(seltopx==selendy){wordleft;}
+  #h1=hidemaruhandle(0);
+  copy2;openfile "/h";paste;
+  saveas currentmacrodirectory+"\\tmp99gm.txt";
+  #h2=hidemaruhandle(0);
+  selectall;copy2;
+  runsync2 "rubyw -x "+currentmacrofilename;
+  delete;paste;
+  setactivehidemaru #h1;cut;
+  setactivehidemaru #h2;
+  gofiletop;beginrect;gofileend;copy2;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  setactivehidemaru #h1;pasterect;
+  $s1=getclipboard;
+  beginrect;moveto x+#dx-#px,y+#dy-#py;
+  closehidemaruforced #h2;
+}else{
+  if(selecting){
+    if(seltopx==selendx){wordleft;}
+  }else{beginsel;wordleft;}
+  cut;
+  if(#fc && #fs)  {runsync2 "rubyw -x "+currentmacrofilename;
+    paste;escape;endmacro;}
+  else if(#fc)    {runsync2 "rubyw -x "+currentmacrofilename+" c";
+    paste;escape;endgroupundo;endmacro;}
+  else            {runsync2 "rubyw -x "+currentmacrofilename;}
+  #x=x;#y=y;paste;$s1=getclipboard;
+  if(#fs==1){ //shiftキーが押されてたら選択
+    beginsel;moveto #x,#y;}
+}
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+if(rectselecting){escape;moveto #px,#dy;beginrect;moveto #dx,#py;}
+if(#fs==0){escape;}
+enablebreak;
+endgroupundo;enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'romkan'
+
+cbd = ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+st=cbd.getText
+print "st=";p st
+if /c/=~opt
+  st=st.gsub(/《[^》]+》?/){|s|
+    s.to_kana.tr(%Q|ぁ-ん"|,%Q|ァ-ン”|).
+      gsub(%r|(?<![ぁ-んァ-ヴ])[ー]|,"-").
+      gsub("s","ッ")}
+else
+  st=st.to_kana.tr(%Q|ぁ-ん"|,%Q|ァ-ン”|).
+    gsub(%r|(?<![ぁ-んァ-ヴ])[ー]|,"-").
+    gsub("s","ッ")
+end
+print "st=";p st
+
+cbd.setText(st)
+
+__END__
+*/
+
+

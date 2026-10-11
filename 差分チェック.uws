@@ -1,0 +1,6 @@
+//差分チェック
+
+if param_str[1]="a" then file="\tmp_diff1.txt" else file="\tmp_diff2.txt"
+fileid1 = fopen(param_str[0]+file, f_write8)
+fput(fileid1, getstr(0))
+fclose(fileid1)

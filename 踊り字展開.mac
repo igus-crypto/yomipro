@@ -1,0 +1,57 @@
+//踊り字展開
+
+disablebreak;
+disabledraw;begingroupundo;
+
+#sel=0;
+if(!selecting)endmacro;
+if(rectselecting)#sel=1;
+copy2;delete;
+runsync2 "rubyw -x "+currentmacrofilename;
+if(#sel==1){
+  pasterect;
+}else{
+  paste;
+}
+enabledraw;endgroupundo;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+ar=cbd.getText.lines
+
+def expand_odori(s)
+  if %r|《([^《》]+)／″?＼》|=~s
+    s.gsub(%r|《([^《》]+)／″?＼》|){"《#{$1}#{$1}》"}
+  else
+    s.gsub(/(.+?)((?:／″?＼)+)/){
+      s1=$1
+      n=$2.scan(/／″?＼/).size
+      s1*(n+1)
+    }
+  end
+end
+
+ar=ar.map{|s|
+  s1=s.split(",",2)
+  print "s1=";p s1
+  if s1.size==2
+    s2=s1[0]+","+expand_odori(s1[1])
+  else
+    s2=expand_odori(s1[0])
+  end
+  s2.gsub("、,s",",s")
+}
+
+cbd.setText(ar.join)
+
+__END__
+*/

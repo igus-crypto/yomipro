@@ -1,0 +1,45 @@
+//かれ彼変換.mac
+
+if(!selecting)endmacro;
+//#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+//replaceallfast "かれ","彼",inselect2;
+//if(!result){
+//  moveto #tx,#ty;beginsel;moveto #ex,#ey;
+//  replaceallfast "彼","かれ",inselect2;
+//}
+
+copy2;delete;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp_99r.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+a=["を","が","で","に","も"]
+ar=cbd.getText.split(%r|\R|).
+  map{|e|
+    if %r|かれ(.)|=~e
+      s=$1
+      e1=e+","+e.gsub("かれ","｜かれ《~彼》")+",p18 =>"+e
+      a=([s]+a).uniq.map{|f|
+        e1.gsub("かれ#{s}","かれ#{f}").
+        gsub("彼》#{s}","彼》#{f}")}.join("\n")
+    else
+      e
+    end
+  }
+p ar
+cbd.setText(ar.join("\n")+"\n")
+__END__
+*/
+

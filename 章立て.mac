@@ -1,0 +1,88 @@
+﻿//章立て.mac
+
+begingroupundo;selectall;copy
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory+"\\tmp.mac";
+endgroupundo;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# 章立て
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+
+st2="\uFEFFbegingroupundo;disabledraw;\n"
+
+arr=st.split("\r\n")
+hs,n={},1
+arr.each_with_index{|e,i|
+  s=/^((?:\d*)\s+【.*】)$/.match(e).to_a[1]
+  spc=s.match(/^(?:\d*)\s+/)[0].size if s
+  #p spc
+  #s=s.gsub(/^\s+/,"").gsub(/\"/,"\\\\\"").gsub(%r|≪[^≪≫]+≫[ 　]*|,"") if s
+  if s
+    print "s=";p s
+  end
+  s=s.gsub(/^\s+/,"").gsub(/\"/,"\\\\\"").gsub(/≪[^≪≫]+title=\\"/,"").
+     gsub(%r|≪[^≪≫]+≫[ 　]*|,"").gsub(/\\"≫/,"") if s
+  if s
+    print "s=";p s
+  end
+  if /【[　]*(第?[　0-9０-９一二三四五六七八九十〇○]+)の([　0-9０-９一二三四五六七八九十〇○]+)】/=~s
+    n1,n2=$1,$2
+    n1="第"+n1 if /^第/!~n1
+    s="【第#{n1}章　その#{n2}】" if spc==1
+    s="【第#{n1}話　その#{n2}】" if spc!=1
+    s=s+"　────" if s.size<=9
+    hs[i+1]=s
+  elsif /【(　*第?[0-9０-９一二三四五六七八九十〇○]+[章話部])[　]+(.*)】/=~s
+    m1,m2=$1,$2
+    m1=m1.gsub(%r|^　*|,"")
+    m1="第"+m1 if /^第/!~m1
+     hs[i+1]="【#{m1}】　【#{m2}】"
+  elsif /【(　*第?[0-9０-９一二三四五六七八九十〇○]+[章話部])】$/=~s
+    m1=$1
+    m1="第"+m1 if /^第/!~m1
+     hs[i+1]="【#{m1}】"+" "*120
+  elsif /【([0-9０-９一二三四五六七八九十〇○]+)[　]+([章話部])】/=~s
+    m1,m2=$1,$2
+     hs[i+1]="【第#{m1}#{m2}】　────"
+  elsif /【([0-9０-９一二三四五六七八九十〇○]+)[　]+(.*)】/=~s
+    m1,m2=$1,$2
+    hs[i+1]="【第#{m1}章】　【#{m2}】"
+  elsif /(【[　]*第?[　0-9０-９一二三四五六七八九十〇○]+)章?】/=~s
+    s=s.gsub(/【[　]*第?([　0-9０-９一二三四五六七八九十〇○]+)章?】/){"【第#{$1}章】"} if spc==1
+    s=s.gsub(/【[　]*第?([　0-9０-９一二三四五六七八九十〇○]+)章?】/){"【第#{$1}話】"} if spc!=1
+    s=s+"　────" if s.size<=9
+    #puts "bbb"
+    hs[i+1]=s
+  elsif s
+    #puts "ddd"
+    print "s=";p s
+    s=s.gsub("　","")
+    #hs[i+1],n="【第#{n.to_s.tr("0-9","０-９")}章】　#{s.gsub(/【　+/,"【")}",n+1 if spc==1
+    #hs[i+1],n="【第#{n.to_s.tr("0-9","０-９")}話】　#{s.gsub(/【　+/,"【")}",n+1 if spc!=1
+    hs[i+1],n="【第#{n.to_s.tr("0-9","０-９")}章】　#{s}",n+1 if spc==1
+    hs[i+1],n="【第#{n.to_s.tr("0-9","０-９")}話】　#{s}",n+1 if spc!=1
+  end}
+  hs.each{|k,v| st2=st2+%Q|moveto2 0,#{k};\ndeleteafter;\ninsert "#{v}";\n|}
+st2+="enabledraw;endgroupundo;\n"
+print "st2=";p st2
+
+File.write("tmp.mac",st2)
+
+__END__
+*/
+
+

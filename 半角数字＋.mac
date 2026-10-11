@@ -1,0 +1,29 @@
+﻿//半角数字＋
+
+if(!selecting)endmacro;
+$a=input("数値入力","1");
+$b=input("条件","0<=i");
+cut;#fg=getclipboardinfo(1);
+runsync2 "rubyw -x "+currentmacrofilename+" "+$a+" "+$b;
+beginclipboardread;if(#fg){pasterect;}else{paste;}
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+include Math
+require 'clipboard'
+
+n=ARGV[0].to_i
+b=ARGV[1]
+cbd=ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(/\R/).map{|e| e=e.gsub(%r|\d+|){|i|
+  i=i.to_i;i=i+n if eval(b);i.to_s}}
+print "ar=";p ar
+cbd.setText(ar.join("\n")+"\n")
+__END__
+*/

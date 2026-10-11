@@ -1,0 +1,8 @@
+﻿//grepチェックリスト
+
+if(selecting && y==selopeny){copy;}
+else{selectline 1;copy;}
+runsync2 "rubyw "+currentmacrodirectory+"\\grep5.rbw r1 ";
+execmacro directory + "\\tmp_g.mac";
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";

@@ -1,0 +1,4 @@
+//選択を次の秀丸にコピー
+
+if(!selecting){golinetop2;beginsel;golineend2;}
+copy2;setactivehidemaru 1;selectline 1;delete;paste;

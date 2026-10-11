@@ -1,0 +1,99 @@
+//更新日時を操作.mac
+
+begingroupundo;
+#fg=getclipboardinfo(1);
+setmenudelay 500;
+mousemenu
+"&H 更新日時を保持して上書き保存",            // 1
+"&S 更新日時を指示して上書き保存",            // 2
+"&F ファイルの更新日時を変更",                // 3
+"&D フォルダ内のファイルの更新日時を変更",    // 4
+"&T tmpファイル削除";                         // 5
+
+#r=result;
+$f=filename;
+$date=year+"-"+month+"-"+day+" "+hour+":"+minute+":"+second;
+
+if(#r==0){endmacro;}
+if(imestate)imeswitch; //半角入力
+setclipboard "00:00:00";
+if(#r==1){        //【H】 更新日時を保持して上書き保存
+  runsync2 "rubyw -x "+currentmacrofilename+" w "+$f;
+  save
+  runsync2 "rubyw -x "+currentmacrofilename+" f ";
+}else if(#r==2){  //【S】 更新日時を指示して上書き保存
+  $d=input("日時入力",$date);
+  runsync2 "rubyw -x "+currentmacrofilename+" w "+$f;
+  save
+  runsync2 "rubyw -x "+currentmacrofilename+" f "+$d;
+}else if(#r==3){  //【F】 ファイルの更新日時を変更
+  $d=input("日時入力",$date);
+  if($d=="")endmacro;
+  question "ファイルの更新日時を変更しますか？";
+  if(result==no)endmacro;
+  runsync2 "rubyw -x "+currentmacrofilename+" w "+$f;
+  runsync2 "rubyw -x "+currentmacrofilename+" f "+$d;
+  message "ファイルの更新日時を変更しました","完了",0x0000,1000;
+}else if(#r==4){  //【D】 フォルダ内のファイルの更新日時を変更
+  $d=input("日時入力",$date);
+  if($d=="")endmacro;
+  question "フォルダ内のファイルの更新日時を変更しますか？";
+  if(result==no)endmacro;
+  runsync2 "rubyw -x "+currentmacrofilename+" d "+$d;
+  message "フォルダ内のファイルの更新日時を変更しました","完了",0x0000,1000;
+}else if(#r==5){  //【T】 tmpファイル削除
+  question "tmpファイルを削除しますか？";
+  if(result==no)endmacro;
+  runsync2 "rubyw -x "+currentmacrofilename+" t";
+  message "tmpファイルを削除しました","完了",0x0000,1000;
+}
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'fileutils'
+require 'time'
+
+opt=ARGV[0].to_s
+
+unless %r|^t|=~opt
+  $stdout=open("tmp_a#{opt}.txt","w")
+  $stderr=open("tmp_e#{opt}.txt","w")
+end
+
+class String
+  def to_time
+    begin
+      date=Time.parse(self)
+    rescue
+      date=Time.now
+    end
+    date
+  end
+end
+
+if %r|^t|=~opt    #tmpファイル削除
+  Dir.glob(%q|./tmp*|){|f|begin;FileUtils.rm(f);rescue;next;end}
+else
+  if /^w/=~opt    #ファイル名書き出し
+    f=ARGV[1].encode(Encoding::UTF_8).gsub("\\","/")
+    d=File.mtime(f).to_s
+    File.write("tmp_z.txt",f+"\n"+d)
+  elsif /^f/=~opt #ファイルの更新日時を変更
+    file,date=open("tmp_z.txt").read.split("\n")
+    date=ARGV[1].to_s+" "+ARGV[2].to_s if ARGV[1]
+    date=date.to_time
+    FileUtils.touch(file,mtime:date)
+  elsif /^d/=~opt #フォルダ内のファイルの更新日時を変更
+    date=ARGV[1].to_s+" "+ARGV[2].to_s
+    date=date.to_time
+    FileUtils.touch(Dir.glob("*"),mtime:date)
+  end
+end
+__END__
+*/
+

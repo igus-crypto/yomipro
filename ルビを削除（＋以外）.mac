@@ -1,0 +1,28 @@
+﻿//ルビを削除（＋以外）
+
+setcompatiblemode 0x20050;
+begingroupundo;
+#x=x;#y=y;
+if(!selecting)selectall;cut;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;endgroupundo;moveto 0,#y;endmacro;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(/\R/)
+st=ar.map{|e|print "e=";p e;
+  e.gsub(%r|｜([^｜《》]+)《[^+《》]+》|,"\\1").
+    gsub(%r|《[^+《》]+》|,"")}.join("\n")
+cbd.setText(st)
+
+__END__
+*/

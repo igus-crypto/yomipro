@@ -1,0 +1,69 @@
+//漢字選択
+
+#x0=x;#y0=y;#s=0;
+if(selecting){#s=1;}
+escape;if(!imestate)imeswitch;
+while(1){
+  #x=x;#y=y;
+  searchup "[=]|^",regular;
+  //$a=gettext(foundtopx,foundtopy,foundendx,foundendy);
+  //message $a;
+  //message str(code);
+  //if(#x==foundendx && #s==1){
+  //  escape;golineend2;searchdown "^.",regular;golineend2;continue;
+  //}
+      //message "x="+str(x)+"\ny="+str(y);
+      //message str(code);
+  if(code==61){ //"="検出
+    searchdown "\\p{Han}+|$",regular;
+    if(code==eof){ //ファイル末検出
+      moveto #x0,#y0;endmacro;
+    }else if(x==0){
+      searchdown "^.",regular;
+      golineend;
+      continue;
+    }else if(code==13){ //行末検出
+      //message "x="+str(x)+"\ny="+str(y);
+      //message "hoge";
+      searchdown "^.",regular;
+      golineend;
+      continue;
+    }else{
+      #tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+      moveto #tx,#ty;beginsel;moveto #ex,#ey;
+      endmacro;
+      //golineend;right;golineend;continue;
+    }
+  }else if(code==eof){ //ファイル末検出
+    moveto #x0,#y0;endmacro;
+  }else if(code==13){ //行末検出
+    right;golineend;continue;
+    //break;
+  //}else{
+  //  //searchup "[=]|^",regular;
+  //  //searchdown "\\p{Han}+",regular;
+  //  //#tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+  //  //moveto #tx,#ty;beginsel;moveto #ex,#ey;
+  //  endmacro;
+  }
+}
+endmacro;
+searchup "=>";
+searchdown "[\\p{Han}]+",regular;
+//searchup2 "[^\\p{Han}]|^",regular;
+//searchdown2 "[\\p{Han}]+|$",regular;
+if(code==13){
+  setsearch "[一-龯々〇]" , 0x34003810;
+  colormarkerallfound 0x000000,0x72f531,-1,0,0;escape;
+  setsearch "=>.*" , 0x34003810;
+  selectallfound;
+  //endmacro;
+  setsearch "[一-龯々〇]" , 0x34003810;
+  forceinselect 2;
+  //colormarkerallfound;escape;
+  //colormarkerallfound 0xffffff,0xb48246,1,0,0,"a";escape;
+  colormarkerallfound 0x000000,0xb48246,1,0,0,"a";escape;
+  moveto #x,#y;endmacro;
+}
+#tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+moveto #tx,#ty;beginsel;moveto #ex,#ey;

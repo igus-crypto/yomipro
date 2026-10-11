@@ -1,0 +1,52 @@
+//ルビを削除
+
+setcompatiblemode 0x20050;
+$inifile=currentmacrodirectory + "\\config.ini";
+$file=getinistr($inifile,"grep","file_2");
+
+
+selectline 1;
+copy;
+
+beginclipboardread;
+#i=0;
+#j=0;
+$a[#i]= getclipboard;
+while($a[#i]!=""){
+  $a[#i]=leftstr($a[#i],strlen($a[#i])-1) ;//改行削除
+  #c=strstr($a[#i],",");
+  if (#c>0){
+    $aa=leftstr($a[#i],#c);
+  }else{
+    $aa=$a[#i];
+  }
+  if ($aa!=""){
+    $s[#j]=$aa;
+    #j=#j+1;
+  }
+  //message $a[#i];
+  #i=#i+1;
+  $a[#i]= getclipboard;
+}
+escape;
+
+openfile "/h "+$file;
+begingroupundo;
+disabledraw;
+
+#k=0;
+while(#k<#j){
+  //message $a[#j];
+  replaceallfast $s[#k]+"《.*?》",$s[#k], regular;
+  #k=#k+1;
+}
+endgroupundo;
+
+setsearch ".*" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;
+
+//undo;
+
+enabledraw;
+endmacro;
+

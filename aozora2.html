@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>青空変換</title>
+<style>
+#dropzone { width:100%; height:100px; border:2px dashed #333; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+textarea { width:100%; height:120px; margin-bottom:5px; }
+.select-group { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<div id="dropzone">ここにテキストファイルをドラッグ＆ドロップ</div>
+
+<textarea id="input" readonly></textarea>
+
+<div class="select-group">
+  ●ルビの処理：  
+  <select id="priority">
+    <option value="delete">できれば消したい</option>
+    <option value="ruby">ルビ優先</option>
+    <option value="parent">親文字優先</option>
+    <option value="keep">保持</option>
+  </select>
+
+  ●読み上げ方法：  
+  <select id="outputMode">
+    <option value="moon">moon+ reader pro</option>
+    <option value="kindle">kindle</option>
+  </select>
+</div>
+
+<button id="replace" disabled>置換実行</button>
+<button id="copy">コピー</button>
+
+<textarea id="output" readonly></textarea>
+
+<script src="https://cdn.jsdelivr.net/npm/ruby-head-wasm-wasi@0.3.0-2022-09-29-a/dist/browser.umd.js"></script>
+
+<script>
+let RubyModule;
+let vm;
+const { DefaultRubyVM } = window["ruby-wasm-wasi"];
+let textContent = "";
+let dataText = "";
+
+// Ruby WASM の読み込み
+(async () => {
+  const resp = await fetch("https://cdn.jsdelivr.net/npm/ruby-head-wasm-wasi@0.3.0-2022-09-29-a/dist/ruby+stdlib.wasm");
+  const buffer = await resp.arrayBuffer();
+
+  RubyModule = await WebAssembly.compile(buffer);
+
+  // VM生成（1回だけ）
+  const ruby = await DefaultRubyVM(RubyModule);
+  vm = ruby.vm;
+
+  // Rubyスクリプト読込（1回だけ）
+  const resp2 = await fetch("aozora2.rb");
+  const rubySource = await resp2.text();
+
+  // convertを定義（1回だけ）
+  vm.eval(rubySource);
+
+  document.getElementById("replace").disabled = false;
+})();
+
+// ドラッグ＆ドロップ読み込み
+const dropzone = document.getElementById('dropzone');
+const inputArea = document.getElementById('input');
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.style.backgroundColor='#f0f0f0'; });
+dropzone.addEventListener('dragleave', e => { e.preventDefault(); dropzone.style.backgroundColor=''; });
+
+dropzone.addEventListener('drop', e => {
+  e.preventDefault(); dropzone.style.backgroundColor='';
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const bytes = new Uint8Array(reader.result);
+
+    if (bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+      textContent = new TextDecoder('utf-8').decode(bytes);
+    } else {
+      try { textContent = new TextDecoder('shift_jis').decode(bytes); }
+      catch { textContent = new TextDecoder('utf-8').decode(bytes); }
+    }
+
+    inputArea.value = textContent;
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+
+// ● 4つの置換リストを読み込む（文字列で返す）
+async function loadList(path) {
+  try {
+    const resp = await fetch(path);
+    if (!resp.ok) throw new Error(path + " が読み込めません");
+    return await resp.text();
+  } catch (e) {
+    alert("置換リスト読み込みエラー: " + e.message);
+    return "";
+  }
+}
+
+// ●置換実行
+document.getElementById('replace').onclick = async () => {
+
+  if (!textContent)
+    return alert("ファイルが読み込まれていません");
+
+  const priority = document.getElementById("priority").value;
+  const outputMode = document.getElementById("outputMode").value;
+  //console.log(priority)
+
+  const code = `
+    convert(
+      ${JSON.stringify(textContent)}.force_encoding("UTF-8"),
+      "${priority}",
+      "${outputMode}"
+    )
+  `;
+
+  const result = vm.eval(code);
+
+  document.getElementById("output").value = result;
+};
+
+// コピー
+document.getElementById('copy').onclick = async () => {
+  const text = document.getElementById('output').value;
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+  }
+  alert("コピーしました");
+};
+
+// python -m http.server 8000
+// http://localhost:8000/aozora2.html
+</script>
+</body>
+</html>

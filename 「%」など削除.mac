@@ -1,0 +1,73 @@
+//「%」など削除.mac
+
+#x=x;#y=y;selectall;copy;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+moveto #x,#y;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+ls=cbd.getText.to_s
+
+# 処理対象
+# １  %r|｜[^《。｜》]+《[=#]([^》]*)》|                   ⇒ルビの頭に[=#]で「｜」付き
+# ２  %r|([\p{Han}]+)《[=#]([^》]*)》|                     ⇒ルビの頭に[=#]で漢字
+# ３  %r|([^\p{Han}])《([=#][^》]*)》|                     ⇒ルビの頭に[=#]で漢字以外
+
+ls2=ls.gsub(%r|《([^《》=]*)=》|,"《=\\1》").gsub(%r|《[%!~]|,"《")
+kk1=ls2.scan(%r|(｜(([^《。｜》]+))《[=#][^》]*》)|).uniq
+kk2=ls2.scan(%r|((([\p{Han}]+)《[=#]([^》]*)》))|).uniq
+kk3=ls2.scan(%r|((([^\p{Han}]))《[=#][^》]*》)|).uniq
+kk4=ls2.scan(%r|([　。「」『』（）【】─※◇・、]｜(([^《。｜》]+))《[-][^》]*》)|).uniq
+kk5=ls2.scan(%r|([　。「」『』（）【】─※◇・、](([\p{Han}]+)《[-]([^》]*)》))|).uniq
+kk6=(kk4+kk5).reject{|e| e[0]=~%r|《-[\p{Han}]|}.
+  map{|e| [e[0],e[1],e[0].gsub("《-","《"),e[3]]}
+kk7=ls2.scan(%r|(([\p{Han}]+)｜([\p{Han}]+)《([^》]*)》)|).uniq
+kk7=kk7.map{|e| [e[0],e[1],e[1]+e[2]+"《"+e[1]+e[3]+"》"]}
+#kk8=ls2.scan(%r|(([\p{Han}]+)｜([^《》]+)《([^》]*)》)|).uniq
+#kk8=kk8.map{|e| [e[0],e[1],"｜"+e[1]+e[2]+"《"+e[1]+e[3]+"》"]}
+
+#kk=kk1+kk2+kk3+kk6+kk7+kk8
+kk=kk1+kk2+kk3+kk6+kk7
+print "kk7=";p kk7
+print "ls2=";p ls2
+print "kk=";p kk
+
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print("\uFEFF")
+macro.puts %|
+begingroupundo;
+//マーカー設定
+setsearch "(.*)" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+disabledraw;
+replaceallfast "《([^《》=]*)=》","《=\\\\1》", regular;
+replaceallfast "《[%!~]","《", regular;
+|
+
+i=0
+kk.each{|e|
+  macro.puts %|replaceallfast "#{e[0]}","#{e[2]}";|
+}
+macro.puts %|replaceallfast "《([^《》]+)\\\\+([^《》]+)》","《+\\\\1\\\\2》",regular|
+macro.puts %|replaceallfast "([\\\\p{Han}]+)《([^《》]+)》([\\\\p{Han}]+)《([^《》]+)》","\\\\1\\\\3《\\\\2\\\\4》",regular|
+macro.puts %|replaceallfast "([\\\\p{Han}]+)《([^《》]+)》([\\\\p{Han}]+)","\\\\1\\\\3《\\\\2\\\\3》",regular|
+macro.puts %|gofiletop;enabledraw;endgroupundo;|
+macro.puts %|endmacro;|
+macro.close
+
+__END__
+*/
+

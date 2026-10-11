@@ -1,0 +1,104 @@
+﻿//grepメニュー旧バージョン
+
+dir=REPLACE(GET_UWSC_NAME,"grep.uws","")
+flg=0
+
+mn=_
+"ＡＬＴ＋Ｃ：キャンセル<#CR>"+_
+"ＡＬＴ＋Ｓ：スタンダード<#CR>"+_
+"ＡＬＴ＋Ｒ：正規表現<#CR>"+_
+"ＡＬＴ＋Ｔ：ルビ展開後<#CR>"+_
+"Ｓ　　　　：【選択範囲】スタンダード<#CR>"+_
+"Ｒ　　　　：【選択範囲】正規表現<#CR>"+_
+"Ｔ　　　　：【選択範囲】ルビ展開後<#CR>"
+
+t1=GETTIME()
+ans1=99
+while ans1=99
+  t2 = GETTIME()
+  if t2-t1>3
+    fukidasi(mn,600,200,0,15)
+    sleep(0.1)
+  endif
+  ifb GETKEYSTATE(VK_ALT) and GETKEYSTATE(VK_C) then
+    ans1=0
+  elseif GETKEYSTATE(VK_ALT) and GETKEYSTATE(VK_S) then
+    ans1=1
+  elseif GETKEYSTATE(VK_ALT) and GETKEYSTATE(VK_R) then
+   ans1=2
+  elseif GETKEYSTATE(VK_ALT) and GETKEYSTATE(VK_T) then
+   ans1=3
+  elseif GETKEYSTATE(VK_S) then
+   ans1=4
+  elseif GETKEYSTATE(VK_R) then
+   ans1=5
+  elseif GETKEYSTATE(VK_T) then
+   ans1=6
+  endif
+wend
+
+fukidasi()
+EXEC("rubyw -x "+GET_UWSC_NAME+" "+ans1,true)
+TEXTBLOCK ruby
+
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+opt=ARGV[0].to_i
+if opt<1
+  mac=%Q|endmacro;|
+elsif opt==1 #スタンダード
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw g ";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+elsif opt==2 #正規表現
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw r2 ";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+elsif opt==3 #ルビ展開
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw t ";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+elsif opt==4 #【範囲選択】スタンダード
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw sg ";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+elsif opt==5 #【範囲選択】正規表現
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw sr2";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+elsif opt==6 #【範囲選択】ルビ展開
+  mac =%Q|selectline 1;copy;|
+  mac+=%Q|runsync2 "rubyw "+currentmacrodirectory+"\\\\grep1.rbw sg ";|
+  mac+=%Q|insert " ";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp.mac";|
+  mac+=%Q|execmacro directory + "\\\\tmp_g.mac";|
+end
+
+print "opt=";p opt
+
+File.write("tmp.mac","\uFEFF"+mac)
+
+__END__
+ENDTEXTBLOCK
+

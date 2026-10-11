@@ -1,0 +1,117 @@
+﻿//名前をつけて保存
+
+//message str(code);endmacro;
+
+//0x11:ctrl
+//0x12:alt
+#fs=0;#fc=0;
+if(iskeydown(0x10))#fs=1;
+if(iskeydown(0x11))#fc=1;
+
+begingroupundo;
+setmenudelay 300;
+mousemenu
+"&W 名前をつけて保存",        // 1
+"&A Ａ連番",                  // 2
+"&T Ｔ連番",                  // 3
+"&S Ｓ連番",                  // 4
+"&P tmp連番",                 // 5
+"&L 選択文字",                // 6
+"&M 目次保存",                // 7
+"&C クリップボード",          // 8
+"&Z 全角ファイルに上書き";    // 9
+
+//message str(result);
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+if(result==0){endmacro;
+}else if(result==1){  //【W】 名前をつけて保存
+  run $uwsc+" "+currentmacrodirectory+"\\\\名前をつけて保存.uws";
+}else if(result==2){  //【A】 Ａ連番
+  runsync2 "rubyw -x "+currentmacrofilename+" a";
+  execmacro $dir + "\\tmp_a.mac";
+  execmacro currentmacrodirectory+"\\\\ｔｍｐファイルを閉じて削除（強制）.mac";
+  setwindowpos 100,50;
+}else if(result==3){  //【T】 Ｔ連番
+  runsync2 "rubyw -x "+currentmacrofilename+" t";
+  execmacro $dir + "\\tmp_a.mac";
+  execmacro currentmacrodirectory+"\\\\ｔｍｐファイルを閉じて削除（強制）.mac";
+  setwindowpos 100,50;
+}else if(result==4){  //【S】 S連番
+  runsync2 "rubyw -x "+currentmacrofilename+" s";
+  execmacro $dir + "\\tmp_a.mac";
+}else if(result==5){  //【P】 tmp連番
+  runsync2 "rubyw -x "+currentmacrofilename+" p";
+  execmacro $dir + "\\tmp_a.mac";
+}else if(result==6){  //【L】 選択文字
+  $s=getselectedtext();
+  runsync2 "rubyw -x "+currentmacrofilename+" l "+$s;
+  execmacro $dir + "\\tmp_a.mac";
+}else if(result==7){  //【M】 目次保存
+  if(!selecting)endmacro;
+  cut;openfile "";paste;saveas "mokuji.txt";
+  gofiletop;setwindowsize 40,10;
+}else if(result==8){  //【C】 クリップボード
+  beginclipboardread;
+  $s=getclipboard();
+  runsync2 "rubyw -x "+currentmacrofilename+" c "+$s;
+  execmacro $dir + "\\tmp_a.mac";
+}else if(result==9){  //【Z】 全角ファイルに上書き
+  if(#fc){
+    runsync2 "rubyw -x "+currentmacrofilename+" zc";
+  }else{
+    runsync2 "rubyw -x "+currentmacrofilename+" z";
+  }
+  execmacro $dir + "\\tmp_a.mac";
+}
+endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+op1,op2,i,st,f=ARGV[0],ARGV[1],1,"",""
+print "op1=";p op1
+op1="tmp_" if /p/=~op1
+if %r|^z|=~op1
+  Dir.glob("*.txt").each{|e| f=e if %r|^[a-zA-Z0-9◇]|!~e}
+  if f==""
+    f=Dir.pwd.split("/").reverse.
+      map{|e| e.encode(Encoding::UTF_8)}.
+      find{|e| %r|^[\p{Han}ァ-ヴーぁ-ん０-９ａ-ｚＡ-Ｚ]+$|=~e}
+  end
+  f=f+".txt" if %r|[a-z0-9]$|!~f
+  #print "f=";p f
+  if f==""
+    st+=%Q|$dir=directory;\n|
+    st+=%Q|$ini=currentmacrodirectory + "\\config.ini";\n|
+    st+=%Q|$uwsc=getinistr($ini,"path","uwsc");\n|
+    st+=%Q|run $uwsc+" "+currentmacrodirectory+"\\\\名前をつけて保存.uws";\n|
+  else
+    #p f
+    f=File.dirname(f)+"/◇"+File.basename(f) if %r|c|=~op1
+    st=%Q|saveas "#{f}"|
+  end
+elsif %r|^[atsp]|=~op1
+  while 1
+    if FileTest.file?("#{op1}#{i}.txt")
+      i=i+1
+    else
+      break
+    end
+  end
+  st=%Q|saveas "#{op1}#{i}.txt"|
+elsif op2
+  st=%Q|saveas "#{op2}.txt"|
+end
+File.write("tmp_a.mac",st)
+__END__
+*/
+

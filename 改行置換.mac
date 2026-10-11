@@ -1,0 +1,28 @@
+﻿//改行置換
+
+disabledraw;begingroupundo;selectall;copy2;delete;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99k.txt","w")
+$stderr=open("tmp_errk.txt","w")
+
+require 'clipboard'
+
+cbd=ClipBoard.new(__ENCODING__)
+
+st=cbd.getText
+p st
+st=st.gsub(%r|\R\R\R\R|,"\n")
+st=st.gsub(%r|\R\R|,"\n")
+
+cbd.setText(st)
+__END__
+*/

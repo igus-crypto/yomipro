@@ -1,0 +1,140 @@
+﻿//grepの修正を反映
+
+#x=x;#y=y;selectall;copy;escape;moveto #x,#y; 
+runsync2 "rubyw -x "+currentmacrofilename+" \""+filename+"\"";
+execmacro directory + "\\tmp0.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+# diff
+# grepの修正反映.mac
+
+Encoding.default_external = 'UTF-8'
+
+require 'inifile'
+require 'diff/lcs'
+require 'win32ole'
+require 'clipboard'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+cbd=ClipBoard.new(__ENCODING__)
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(file_2))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+
+$stdout=File.open("tmp99g.txt","w")
+$stderr=File.open("tmp_errg.txt","w")
+
+i=1
+while FileTest.file?(ofile="tmp_"+sprintf("%#02d",i)+".txt")
+  i+=1
+end
+
+#FileUtils.cp filename,ofile
+
+ofile=File.expand_path(ofile)
+p ofile
+ofl=open(ofile,"w")
+
+#print "argv0=";p ARGV[0].to_s.encode(Encoding::UTF_8)
+p bf=ARGV[0].to_s.encode(Encoding::UTF_8)
+# 差分の取得(BOM除去)
+bf=open(ARGV[0].to_s.encode(Encoding::UTF_8)).read.
+  gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"").split(/\R/)
+af=cbd.getText.
+  gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"").split(/\R/).select{|e| %r|\.txt:|=~e}
+#bf=open(bf).readlines.map{|e| e.chomp}
+#af=cbd.getText.split("\r\n").map{|e| e.chomp}
+
+tf=File.basename(filename) #ターゲットファイル
+#op=(/s/=~File.basename(ARGV[0]) ? "s" : "n")
+
+#puts op
+print "bf=";p bf
+print "af=";p af
+
+ar1,ar2,arr,hs=[],[],[],{}
+diffs=Diff::LCS.diff(bf,af)
+
+#p diffs.methods
+
+diffs.flatten.each{|diff|
+  #p diff.methods
+  p diff.element
+  ar1 << diff.element if diff.deleting?
+  ar2 << diff.element if diff.adding?}
+
+ar1=ar1.grep(%r|(.*?:[^:]*:)|).map{|e| e.gsub(/^\s+/,"")}
+ar2=ar2.grep(%r|(.*?:[^:]*:)|).map{|e| e.gsub(/^\s+/,"")}
+puts "ar1=";p ar1
+puts "ar2=";p ar2
+#puts ar1[0]
+
+ar1=ar1.map{|e| /(.*?):\((.+?)\):(.*)/.match(e).to_a.values_at(1..3)}
+ar2=ar2.map{|e| /(.*?):\((.+?)\):(.*)/.match(e).to_a.values_at(1..3)}
+puts "ar1=";p ar1
+puts "ar2=";p ar2
+
+ar1.each{|e|
+  fil=ar2.filter{|f| e[0..1]==f[0..1]}
+  if fil.size==1
+    g=fil[0]
+  else
+    g=fil.sort_by{|f| sdiffs=Diff::LCS.sdiff(e[2],f[2])
+      sdiffs.filter{|t| t.to_a[0]=="="}.size}[-1]
+  end
+  hs[e[0]]=[] unless hs.has_key?(e[0])
+  hs[e[0]]<<[e[1].to_i,e[2],g[2]] if g}
+
+# hs[ファイル名]=[[行,旧要素,新要素],・・・]
+p hs
+p hs[tf]
+
+fl=open(filename).readlines
+fl.each_with_index{|e,i|
+  if hs[tf].transpose[0].include?(i+1)
+    ar,s=hs[tf].filter{|f| f[0]==i+1},""
+    p ar
+    ar.each{|f| s=(s=="" ? e.sub(f[1],f[2]) : s.sub(f[1],f[2]))}
+    ofl.puts s
+  else
+    ofl.puts e
+  end}
+
+filename2=filename.gsub("/","\\\\\\")
+st =%Q|$f="#{filename2}";\n|
+st+=%Q|setactivehidemaru findhidemaru($f);#r=result;\n|
+st+=%Q|if(#r==1){\n|
+st+=%Q|  if(updated==1){message "ファイルが開いてます";endmacro;\n|
+st+=%Q|  }else{sleep 1000;selectall;colormarker 0x000000, 0xC2C79E, 11, 1;\n|
+st+=%Q|  }\n|
+st+=%Q|}\n|
+st+=%Q|runsync2 "rubyw #{__dir__}/diff4.rbw \\"#{filename}\\" \\"#{ofile}\\""\n|
+#st =%Q|if(filename=="#{filename2}"){message "ファイルが開いてます";endmacro;}\n|
+#st+=%Q|if(findhidemaru("#{filename2}")!=-1){message "ファイルが開いてます";endmacro;}\n|
+#st+=%Q|runsync2 "rubyw #{__dir__}/diff4.rbw \\"#{filename}\\" \\"#{ofile}\\""\n|
+File.write("tmp0.mac",st)
+
+#spawn(%Q|rubyw #{__dir__}/diff4.rbw "#{filename}" "#{ofile}"|)
+
+__END__
+*/
+

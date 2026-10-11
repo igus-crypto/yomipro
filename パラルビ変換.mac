@@ -1,0 +1,27 @@
+﻿//パラルビ変換.mac
+
+copy2;delete;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp_99r.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+s1=st.gsub(%r|《[^《》]*》|,"").gsub("｜","")
+s2=st.gsub(%r|^[^《》]*《|,"").gsub(%r|》[^《》]*《|,"").gsub(%r|》[^《》]*$|,"")
+s3="#{s2}（#{s1}）"
+cbd.setText(s3)
+__END__
+*/
+

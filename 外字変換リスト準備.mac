@@ -1,0 +1,62 @@
+﻿//外字変換リスト準備
+
+if(!selecting)selectall;
+copy;
+runsync2 "rubyw -x "+currentmacrofilename;
+openfile "tmpl.txt";
+execmacro directory + "\\tmp.mac";
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmpl.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'inifile'
+
+cbd = ClipBoard.new(__ENCODING__)
+ini=IniFile.load(__dir__+"/config.ini")
+
+st=cbd.getText
+a=st.scan(%r|≪龠\d+≫|).uniq.sort_by{|e| e.match(%r|\d+|)[0].to_i}
+a.map{|e| puts e+",龠,s =>\n"+
+  st.scan(%r|.{1,16}#{e}.{1,16}|).map{|e| e.chomp}.join("\n")+"\n\n"}
+
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print("\uFEFF")
+macro.puts %|
+#color[ 1]=val("0x#{ini['color']['color_1']}");
+#color[ 2]=val("0x#{ini['color']['color_2']}");
+#color[ 3]=val("0x#{ini['color']['color_3']}");
+#color[ 4]=val("0x#{ini['color']['color_4']}");
+#color[ 5]=val("0x#{ini['color']['color_5']}");
+#color[ 6]=val("0x#{ini['color']['color_6']}");
+#color[ 7]=val("0x#{ini['color']['color_7']}");
+#color[ 8]=val("0x#{ini['color']['color_8']}");
+#color[ 9]=val("0x#{ini['color']['color_9']}");
+#color[10]=val("0x#{ini['color']['color_10']}");
+#color[11]=val("0x#{ini['color']['color_11']}");
+#color[12]=val("0x#{ini['color']['color_12']}");
+#color[13]=val("0x#{ini['color']['color_13']}");
+#color[14]=val("0x#{ini['color']['color_14']}");
+#color[15]=val("0x#{ini['color']['color_15']}");
+#color[16]=val("0x#{ini['color']['color_16']}");
+setsearch ".*=>.*" , 0x4003819;
+colormarkerallfound 0x000000, 0x71B33C, 11, 1;;
+|
+
+i=0
+a.each{|e|
+  macro.puts %|setsearch "#{e}" , 0x4003809;|
+  macro.puts %|colormarkerallfound 0x000000, #color[#{i%16+1}], 11, 1;|
+  i+=1
+}
+
+
+__END__
+*/

@@ -1,0 +1,82 @@
+﻿//選択文字数挿入
+
+setcompatiblemode 0x00100000;
+begingroupundo;disabledraw;
+$a="n";
+if(iskeydown(0x12)){$a="a";}
+
+#x=x;#y=y;#t=seltopy;#e=selendy;#o=seltopx;
+if(#t!=#e){
+  copy2;delete;#x1=x;#y1=y;
+  runsync2 "rubyw -x "+currentmacrofilename+" 2"+$a;
+  escape;paste;
+  moveto #x1,#y1;
+}else{
+  copy2;delete;#x1=x;#y1=y;
+  if(#x==#o){
+    runsync2 "rubyw -x "+currentmacrofilename+" o"+$a;
+  }else{
+    runsync2 "rubyw -x "+currentmacrofilename+" x"+$a;
+  }
+  escape;paste;
+  moveto #x1,#y1;
+}
+  enabledraw;endgroupundo;
+endmacro;
+
+/*
+#/
+#! ruby
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+opt=ARGV[0]
+
+print "opt=";p opt
+cbd=ClipBoard.new(__ENCODING__)
+ar=cbd.getText.encode(Encoding::UTF_8).split(%r|\R|)
+print "ar=";p ar
+
+class String
+  def size2(a)
+    if %r|a|=~a
+      self.size-1<0 ? 0 : self.size-1
+    else
+      self.size
+    end
+  end
+end
+
+if /2/=~opt
+  ar=ar.map{|e|
+    e=e.gsub(%r|^[0-9]+|,"").gsub(%r|[0-9]+$|,"")
+    a=e.gsub(%r|[\p{Han}].*|,"")
+    b=e.gsub(%r|.*[\p{Han}]|,"")
+    print "e=";p e
+    print "a=";p a
+    print "b=";p b
+    a="" if a==e
+    b="" if b==e
+    a=a.size2(opt).to_s
+    b=b.size2(opt).to_s
+    a="" if a=="0"
+    b="" if b=="0"
+    e=a+e+b
+  }
+  st=ar.join("\n")+"\n"
+else
+  st=ar[0].gsub(%r|\R|,"").gsub(%r|^[0-9]+|,"").gsub(%r|[0-9]+$|,"")
+  print "st=";p st
+  if /o/=~opt
+    st=st.size2(opt).to_s+st
+  else
+    st=st+st.size2(opt).to_s
+  end
+end
+print "st=";p st
+cbd.setText(st)
+__END__
+*/

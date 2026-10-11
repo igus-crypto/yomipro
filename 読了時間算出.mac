@@ -1,0 +1,43 @@
+//読了時間算出.mac
+
+$f=basename;
+runsync2 "rubyw -x "+currentmacrofilename+" "+basename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99t.txt","w")
+$stderr=open("tmp_et.txt","w")
+
+fl=ARGV[0]
+print "fl=";p fl
+ar=open(fl).readlines
+a1,s1,s2=[],"",""
+ar.each{|e|
+  if %r|^【第.*話】|=~e
+    a1 << [s1.chomp,s2] unless s1==""
+    s1,s2=e,""
+  else
+    s2+=e
+  end
+}
+a1.map!{|e|
+  n=(e[1].size)/605.0
+  h=(n.to_i/60).to_s
+  m=(n.to_i%60).to_s+"m"
+  m=h+"h"+m unless h=="0"
+  sprintf("%7s",m)+":"+e[0]
+}
+#a1.each{|e| print "e=";p e}
+File.write("tmp_"+fl,"\uFEFF"+a1.join("\n")+"\n")
+File.write("tmp.mac",%Q|openfile "tmp_#{fl}";|)
+
+__END__
+*/
+
+

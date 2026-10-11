@@ -1,0 +1,32 @@
+﻿//半角全角変換
+
+$op=getarg(0);
+// h:半角化
+// z:全角化
+
+disabledraw;begingroupundo;
+if(!selecting){left;gowordtop;beginsel;gowordend;}
+copy2;
+runsync2 "rubyw -x "+currentmacrofilename+" "+$op;
+delete;paste;
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+include Math
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+if %r|z|=~opt
+  st=cbd.getText.tr("0-9","０-９")
+else
+  st=cbd.getText.tr("０-９","0-9")
+end
+cbd.setText(st)
+__END__
+*/

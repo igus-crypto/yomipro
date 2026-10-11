@@ -1,0 +1,79 @@
+//バッチ作成
+
+runsync2 "rubyw -x "+currentmacrofilename;
+runsync2 directory+"\\touch.bat";
+endmacro;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+st1= <<EOS
+REM cat.bat
+chcp 65001
+
+ruby -x "%~f0"
+start tmp_s.txt
+goto end
+
+#!ruby
+#encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_s.txt","w")
+$stderr=open("err.log","w")
+
+s=""
+Dir.glob(%q|[0-9][0-9]/|+%q|**|+%q|/2*|+%q|/s1.txt|){|f|
+  #p f
+  s=s+open(f).read
+}
+print s
+__END__
+:end
+EOS
+
+st2= <<EOS
+REM touch.bat
+chcp 65001
+
+ruby -x "%~f0"
+goto end
+
+#~
+#!ruby
+#encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp_s.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+#p s=Dir.pwd.split("/")[-1].encode(Encoding::UTF_8)
+a=Dir.pwd.encode(Encoding::UTF_8)
+s=a.split("/").reverse.find{|e| %r|^[\\p{Han}ぁ-んァ-ヴーａ-ｚＡ-Ｚ]|=~e}
+
+File.write(s+".txt","") unless FileTest.file?(s+".txt")
+Dir.glob(%|**|+%q|/|){|e|
+  unless FileTest.file?(e+s+".txt")
+    p e
+    File.write(e+s+".txt","")
+  end
+}
+File.write("a0.txt","") unless FileTest.file?("a0.txt")
+File.write("gosyoku.txt","") unless FileTest.file?("gpsyoku.txt")
+File.write("memo.txt","") unless FileTest.file?("memo.txt")
+__END__
+:end
+EOS
+
+File.write("cat.bat",st1)
+File.write("touch.bat",st2)
+
+__END__
+*/
+
+
+

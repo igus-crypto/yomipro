@@ -1,0 +1,42 @@
+﻿//数字連番振り直し
+
+if(!selecting)endmacro;
+cut;#fg=getclipboardinfo(1);
+runsync2 "rubyw -x "+currentmacrofilename;
+beginclipboardread;if(#fg){pasterect;}else{paste;}
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+include Math
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+
+n,f="",0
+ar=cbd.getText.split(/\R/).map{|e|
+  #print "e=";p e
+  if %r|[０-９]|=~e
+    e=e.tr('０-９','0-9')
+    f=1
+  end
+  if %r|(\d+)|=~e
+    n=(n=="" ? $1.to_i : n+1)
+    e=e.gsub(%r|\d+|,"#{n}")
+  end
+  e=e.tr('0-9','０-９') if f==1
+  #print "e=";p e
+  f=0
+  e
+}
+print "ar=";p ar
+cbd.setText(ar.join("\n"))
+__END__
+*/

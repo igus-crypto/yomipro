@@ -1,0 +1,27 @@
+//コピー＋：
+
+copy2;escape;
+runsync2 "rubyw -x "+currentmacrofilename;
+
+/*
+#/
+#! ruby
+
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmp99c.txt","w")
+$stderr=open("tmp_errc.txt","w")
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+cbd.setText(st+":")
+
+__END__
+*/
+
+
+

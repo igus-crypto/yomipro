@@ -1,0 +1,67 @@
+﻿//ＣＴＬ＋＠
+
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+#fs=0;#fc=0;
+
+setmenudelay 700;
+mousemenu
+"&@ フィードバック準備",          // 1
+"&5 「%」など削除",               // 2
+"&; 「+」削除",                   // 3
+"&: 「%+」削除",                  // 4
+"&K キンドル用に変換",            // 5
+"&R ルビ削除",                    // 6
+"&S 選択文字変換",                // 7
+"&Y 読み上げファイル作成",        // 8
+"&/ 折り返しをウィンドウ幅";      // 9
+//message str(result);
+#res=result;
+if(iskeydown(0x11))#fc=1;
+#x=x;#y=y;
+begingroupundo;
+if(#res==0){endmacro;
+}else if(#res==1){   //【@】 フィードバック準備
+  execmacro currentmacrodirectory+"\\\\フィードバック準備.mac";
+}else if(#res==2){   //【5】 「%」など削除
+  execmacro currentmacrodirectory+"\\「%」など削除.mac";
+}else if(#res==3){   //【;】 「+」削除
+  disabledraw;begingroupundo;
+  replaceallfast "《[+]","《",regular;
+  gofiletop;endgroupundo;enabledraw;endmacro;
+}else if(#res==4){   //【:】 「%+」削除
+  disabledraw;begingroupundo;#x=x;#y=y;
+  execmacro currentmacrodirectory+"\\「%」など削除.mac";
+  replaceallfast "《[+]","《",regular;
+  gofiletop;endgroupundo;enabledraw;
+  moveto #x,#y;
+  endmacro;
+}else if(#res==5){   //【K】 キンドル用に変換
+  execmacro currentmacrodirectory+"\\キンドル用に変換.mac";
+}else if(#res==6){   //【R】 ルビ削除
+  execmacro currentmacrodirectory+"\\チェックリストによりルビ削除.mac";
+  // selectline 1;  copy;
+  // run "rubyw "+currentmacrodirectory+"\\replace3.rbw";
+}else if(#res==7){   //【S】 選択文字変換
+  execmacro currentmacrodirectory+"\\選択文字変換.mac";
+}else if(#res==8){   //【Y】 読み上げファイル作成
+  execmacro currentmacrodirectory+"\\読み上げファイル作成.mac";
+  //#x=x;#y=y;selectall;copy;moveto #x,#y; 
+  //runsync2 "rubyw "+currentmacrodirectory+"\\del_oya.rbw "+filename;
+  //execmacro directory + "\\tmp.mac";
+}else if(#res==9){   //【/】 折り返しをウィンドウ幅
+  //message getconfig("AutoAdjustOrikaeshi");endmacro;
+  $a=getconfig("AutoAdjustOrikaeshi");
+  if($a=="1"){
+    config "xAutoAdjustOrikaeshi:2";
+  }else{
+    config "xAutoAdjustOrikaeshi:1";
+  }
+}
+endgroupundo;endmacro;
+

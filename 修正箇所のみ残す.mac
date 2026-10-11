@@ -1,0 +1,63 @@
+﻿//修正箇所のみ残す
+
+if(updated==0);endmacro;
+disabledraw;begingroupundo;gofiletop;#i=1;$s="txt\n"+filename+"\n";
+while(1){
+  #y1=y;#i=#i+1;
+  if(!lineupdated){beginsel;golineend2;delete;}else{$s=$s+str(#i-2)+",";}
+  movetolineno 1,#i;
+  if(y==#y1)break;
+  }
+replaceallfast "^\n","",regular:gofiletop;
+enabledraw;endgroupundo;
+#h1=hidemaruhandle(0);
+openfile "/h";insert $s;
+saveas "tmp_s.txt",utf8,bom;
+#h2=hidemaruhandle(0);
+setactivehidemaru #h1;
+closehidemaruforced #h2;
+
+runsync2 "rubyw -x "+currentmacrofilename;
+endmacro;
+
+// disabledraw;begingroupundo;
+// if(!selecting)selectline 1;
+// copy2;
+// runsync2 "rubyw -x "+currentmacrofilename;
+// execmacro directory + "\\tmp.mac";
+// endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'fileutils'
+
+t=open("tmp_s.txt").readlines
+f=t[1].chomp.gsub(%Q|\\|,%Q|/|)
+a=t[2].gsub(%r|,$|,"").split(",").map{|e| e.to_i}
+#p f
+#p a
+b=File.basename(f)
+e=File.extname(f)
+i,s,f2=1,"",""
+while(1)
+  f2=b+"_"+i.to_s+e
+  break unless FileTest.file?(f2)
+  i=i+1
+end
+r=open(f).readlines
+
+a.each{|i| s+=r[i]}
+puts s
+
+FileUtils.cp(f,f2)
+File.write(f,s)
+
+__END__
+*/

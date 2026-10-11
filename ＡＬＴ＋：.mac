@@ -1,0 +1,257 @@
+﻿//ＡＬＴ＋：
+
+setcompatiblemode 0x10000F;
+
+$d=directory;
+#x=x;#y=y;
+
+disablebreak;
+begingroupundo;
+setmenudelay 300;
+mousemenu
+"&: 検索マーカー",              // 1
+"&@ マーカー１",                // 2
+"&[ マーカー２",                // 3
+"&] マーカー３",                // 4
+"&H ）．は（",                  // 5
+"&R 選択範囲を置換",            // 6
+"&A 全範囲色付け",              // 7
+"&P 前方を色付け",              // 8
+"&S 数字の色を確認",            // 9
+"&I ＩＭＥオン",                //10
+"&; 半角選択",                  //11
+"&K 漢字選択",                  //12
+"&B ボックス選択",              //13
+"&U カーソル行下線モード",      //14
+"&Y 拗音チェック",              //15
+"&8 括弧確認",                  //16
+"&9 ルビにマーク",              //17
+"&D マーカー色で間引き",        //18
+"&M マーカー",                  //19
+"&, マーカー上移動",            //20
+"&. マーカー下移動",            //21
+"&C マーカー色リセット";        //22
+
+//message str(result);
+//0x12:alt
+#fs=0;#fc=0;#fa=0;#x=x;#y=y;
+if(iskeydown(0x12))#fa=1;
+
+if(result==0){endmacro;
+}else if(result==1){  //【:】 検索マーカー
+  if(#fa){
+    if(selecting){
+      $st=getselectedtext();escape;
+      searchdown $st,loop,hilight;
+    }else{
+      finddown;
+    }
+  }else{
+    copy2;
+    execmacro currentmacrodirectory+"\\\\検索マーカー.mac";
+  }
+}else if(result==2){  //【@】 マーカー１
+  execmacro currentmacrodirectory+"\\\\一時マーカー.mac","1";
+}else if(result==3){  //【[】 マーカー２
+  execmacro currentmacrodirectory+"\\\\一時マーカー.mac","2";
+}else if(result==4){  //【]】 マーカー３
+  execmacro currentmacrodirectory+"\\\\一時マーカー.mac","3";
+}else if(result==5){  //【H】 ）．は（
+  #n=0;
+  if(strstr(basename[1],"置換リスト11")>=0){#n=1;setactivehidemaru 1;}
+  setsearch "\\).は\\(" , 0x4003819;
+  colormarkerallfound 0x000000,0x00FFFF,-1,0,0;
+  if(#n){setactivehidemaru 1;}
+}else if(result==6){  //【R】 選択範囲を置換
+  execmacro currentmacrodirectory+"\\\\選択範囲を置換.mac";
+}else if(result==7){  //【A】 全範囲色付け
+  disabledraw;#x=x;#y=y;selectall;
+  colormarker 0x000000, 0xC2C79E, 11, 1;
+  escape;moveto #x,#y;enabledraw;
+}else if(result==8){  //【P】 前方を色付け
+  #alt=0;
+  if(iskeydown(0x12)){#alt=1;}
+  disabledraw;//#x=x;#y=y;escape;
+  while(code==33139 ||code==58 ||  code==33140 || code==33089 || code==38099){left;} //《:、》
+  //endmacro;
+  right;searchup "。|$|:",regular;
+  right;beginsel;gofiletop;#x=selendx;#y=selendy;
+  if(#alt){colormarker 0x000000, 0xA8A8F9, 11, 1;}
+  escape;moveto #x,#y;
+  beginsel;gofileend;copy;moveto #x,#y;
+  enabledraw;
+  //runsync2 "rubyw -x "+currentmacrodirectory+"\\\\選択をsend.mac";
+  runsync2 "rubyw -x "+currentmacrofilename+" a";
+  save;
+}else if(result==9){  //【S】 数字の色を確認
+  if(!selecting)endmacro;
+  $s=getselectedtext();
+  openfile "/h";insert $s;saveas "tmp_a.txt";#hwnd=hidemaruhandle(0);
+  setactivehidemaru 1;closehidemaruforced #hwnd;
+  runsync2 "rubyw -x "+currentmacrofilename+" s";
+  if(val($s)==0)$s="0x"+$s;
+  execmacro $d + "\\tmp_a.mac";
+}else if(result==10){  //【I】 ＩＭＥオン
+  if(#fa){
+    if(imestate)imeswitch;
+    message "ＩＭＥをオフにしました","ＩＭＥ",0,500;
+  }else{
+    if(!imestate)imeswitch;
+    message "ＩＭＥをオンにしました","ＩＭＥ",0,500;
+  }
+}else if(result==11){  //【;】 半角選択
+  escape;//if(!imestate)imeswitch;
+  searchup2 "[\\w}]|^",regular;
+  searchup2 "[^\\w]|^",regular;
+  searchdown2 "[\\w]+|$",regular;
+  if(code==13){moveto #x,#y;endmacro;}
+  #tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+  moveto #tx,#ty;beginrect;moveto #ex,#ey;
+}else if(result==12){  //【K】 漢字選択
+  execmacro currentmacrodirectory+"\\\\漢字選択.mac";
+}else if(result==13){  //【B】 ボックス選択
+  #ox=selopenx;#oy=selopeny;
+  //message str(#x)+"/"+str(#y)+"/"+str(#ox)+"/"+str(#oy)+
+  //  "/"+str(rectselecting)+"/"+str(multiselectcount);
+  #mc=multiselectcount;
+  escape;//if(!imestate)imeswitch;
+  searchup2 "[\\w}]|^",regular;
+  searchup2 "[^\\w]|^",regular;
+  searchdown2 "[\\w]+|$",regular;
+  if(code==13){moveto #x,#y;endmacro;}
+  #tx=foundtopx;#ty=foundtopy;#ex=foundendx;#ey=foundendy;
+  //debuginfo 2;
+  //debuginfo str(#mc);
+  moveto #tx,#ty;beginrect;moveto #ex,#ey;moveto x,y-#mc+1;
+}else if(result==14){  //【C】 カーソル行モード切り替え
+  //message getconfig("UnderLine");
+  if(getconfig("UnderLine")==0){
+    config "xUnderLine:1";
+  }else{
+    config "xUnderLine:0";
+  }
+}else if(result==15){  //【Y】 拗音チェック
+  //selectall;copy
+  //run "rubyw "+currentmacrodirectory+"\\grep6.rbw "+filename+" m";
+  //execmacro directory + "\\tmp.mac";
+  execmacro currentmacrodirectory+"\\\\拗音チェック.mac";
+}else if(result==16){  //【8】 括弧対応
+  execmacro currentmacrodirectory+"\\\\括弧確認.mac";
+}else if(result==17){  //【9】 ルビにマーク
+  setsearch "《[^《》]*》" , 0x4003812;
+  colormarkerallfound;
+}else if(result==18){  //【D】 マーカー色で間引き
+  execmacro currentmacrodirectory+"\\\\マーカー色で間引き.mac";
+}else if(result==19){  //【M】 マーカー
+  execmacro currentmacrodirectory+"\\\\マーカー.mac";
+}else if(result==20){  //【,】 マーカー上移動
+  disabledraw;
+  golinetop2;$c=getcolormarker(0x0002);
+  while(y!=0){
+    up_nowrap;golinetop2;
+    if(getcolormarker(0x0002)!=$c)break;
+  }
+  enabledraw;
+}else if(result==21){  //【.】 マーカー下移動
+  disabledraw;
+  golinetop2;$c=getcolormarker(0x0002);
+  while(code!=eof){
+    down_nowrap;golinetop2;
+    if(getcolormarker(0x0002)!=$c)break;
+  }
+  enabledraw;
+}else if(result==22){  //【C】 マーカー色リセット
+  execmacro currentmacrodirectory+"\\\\マーカー色リセット.mac";
+}
+enablebreak;
+endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'inifile'
+require 'clipboard'
+require 'win32ole'
+
+ini=IniFile.load(__dir__+"/config.ini")
+send=ini["path"]["send"]
+adb=ini["path"]["adb"]
+
+class String
+  def del_oya
+    st=self.gsub(/｜([^《》]+)《[=#][^《》]*》/,'\1').gsub(/｜[^《》]+《[+%]?([^《》]*)》/,'\1').
+      gsub(/《[+%!]([^《》]*)》/,'《\1》').gsub(/([\p{Han}])(《[=#][^《》]*》)/,'\1').
+      gsub(/([^\p{Han}])《[=#]([^《》]*)》/,'\1').gsub(/[\p{Han}]+《([^《》]*)》/,'\1').
+      gsub(/.《([^《》]*)》/,'\1').gsub(/^《?([^《》]*)》/,'\1').gsub(/《[^《》]*$/,"")
+  end
+end
+
+opt=ARGV[0]
+print "opt=";p opt
+if /^s/=~opt  #【S】 数字の色を確認
+  st="forceinselect 1;\n"
+  a1=open("tmp_a.txt").read.scan(%r|((?:0x)?[0-9a-fA-F]{6})|).flatten
+  print "a1=";p a1
+  a2=a1.map{|e|
+    if %r|[a-zA-Z]|=~e && %r|^0x|!~e
+      "0x"+e
+    else
+      e
+    end}
+  print "a2=";p a2
+  a1.each_with_index{|e,i|
+    st+=%Q|setsearch "#{e}" , 0x4003809;\n|
+    st+=%Q|colormarkerallfound 0x000000, #{a2[i]}, 11, 1;\n|}
+  File.write("tmp_a.mac",st)
+elsif /^a/=~opt #【P】 前方を色付け
+  cbd = ClipBoard.new(__ENCODING__)
+  st=cbd.getText
+  print "st=";p st
+  ar=st.split(/\R/).reject{|e| e==""}
+  ar=ar.map{|e| e.gsub(%r|《\+|,"《").del_oya.gsub(%r|《[^》]*$|,"").
+    gsub(%r|.*:?\(?\d*\):|,"").gsub(%r| =>.*|,"").gsub("=","").
+    gsub(%r|,?[srp]\d+|,"").gsub(" //"," ,").gsub(/\([^\(\)]+\)/,"").
+    gsub(%r|[a-z0-9._]*t::|,"").gsub("◇","▓")}
+  print "ar=";p ar
+  File.write(send,ar.join("\n")+"\n")
+  wsh = WIN32OLE.new('WScript.Shell')
+  wsh.run("adb push #{send} #{adb}")
+  #wsh.run("adb push #{send} #{adb2}")
+  wsh.Popup("#{send} に出力しました",1)
+elsif /^8/=~opt #【8】 括弧対応
+  c=["0xC786F9","0x72F531","0xFFCB1F","0x7AAFFF",
+    "0x4080FF","0xA8A8F9","0xFF80FF","0xFF97B1",
+    "0x944DFF","0x29FF77","0x6267F5","0xFF9354",
+    "0x957AFF","0xFFE645","0xF9953E","0xFF82E6"]
+  mac=""
+  #st=open("tmp_k.txt").read.gsub(%r|\R|,"⏬")
+  cbd = ClipBoard.new(__ENCODING__)
+  st=cbd.getText.gsub(%r|\R|,"⏬")
+  a,n=[],0
+  while(1)
+    a << st.scan(%r|{[^{}]*}|).uniq
+    st2=st.gsub(%r|{([^{}]*)}|){"⏩"+$1+"⏪"}
+    break if st2==st
+    st=st2
+    n=n+1
+  end
+  a=a.flatten.uniq.map{|e| 
+    e.gsub("⏬","\n").gsub("⏩","{").gsub("⏪","}").gsub(%r|"|,"\"\"")}
+  a=a.group_by{|e| e.gsub(%r|[^}]|,"").size}.to_a.transpose[1].reverse
+  print "a=";p a
+  a.each_with_index{|e,i| e.each{|f|
+      mac+=%Q|setsearch @"#{f}" , 0x4003809;\n|
+      mac+=%Q|colormarkerallfound 0x000000, #{c[(n-i)%16]}, 11, 1;\n|}}
+  File.write("tmp_a.mac",mac)
+  #p st
+end
+
+__END__
+*/
+

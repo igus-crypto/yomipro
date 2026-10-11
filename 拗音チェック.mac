@@ -1,0 +1,16 @@
+//拗音チェック
+
+setcompatiblemode 0x0F;
+begingroupundo;
+
+setsearch "(?<=[ぁ-んァ-ヴ])[ゃャ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[ゅュ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[ょョ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[っッ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[ぁぃぅぇぉァィゥェォ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[やゆよつヤユヨツ]" , 0x4003819;colormarkerallfound;
+setsearch "(?<=[ぁ-んァ-ヴ])[あいうえおアイウエオ]" , 0x4003819;colormarkerallfound;
+
+endgroupundo;
+endmacro;
+

@@ -1,0 +1,187 @@
+﻿//ＣＴＬ＋Ｘ
+
+disablebreak;
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+#fs=0;#fc=0;#fa=0;
+if(iskeydown(0x10))#fs=1;
+
+begingroupundo;
+if(#fs){
+  setmenudelay 700;
+  mousemenu
+  "&M moon+変換",                  // 1
+  "&L moon+リストチェック",        // 2
+  "&T 対象ファイル選択",           // 3
+  "&P tmpファイルを閉じて削除",    // 4
+  "&K ファイル内容を削除して破棄", // 5
+  "&E メモに書き込み",             // 6
+  "&5 「%」削除",                  // 7
+  "&S 読み上げファイル作成";       // 8
+
+  
+  //message str(result);
+  if(result==0){endmacro;
+  }else if(result==1){   //【M】 moon+変換
+    selectall;copy;
+    runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw "+filename;
+  }else if(result==2){   //【L】moon+リストチェック
+    if(leftstr(basename,1)=="n"){
+      if(selecting){selectline 1;copy;}else{selectall;copy;}
+      setactivehidemaru 1;
+    }else{
+      setclipboard "";
+    }
+    runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw l "+filename;
+    execmacro directory + "\\tmp.mac";
+  }else if(result==3){   //【T】 対象ファイル選択
+    execmacro currentmacrodirectory+"\\ルビのgrepのファイル選択.mac";
+  }else if(result==4){   //【P】 tmpファイルを閉じて削除
+    execmacro currentmacrodirectory+"\\\\ｔｍｐファイルを閉じて削除.mac";
+  }else if(result==5){   //【K】 ファイル内容を削除して破棄
+    selectall;delete;insert "\n";save;#hwnd= hidemaruhandle(0);
+    setactivehidemaru 1;closehidemaruforced #hwnd;
+  }else if(result==6){   //【E】 メモに書き込み
+    execmacro currentmacrodirectory+"\\\\メモに書き込み.mac";
+  }else if(result==7){   //【5】 「%」削除
+    begingroupundo;disabledraw;
+    replaceallfast "《%","《";
+    endgroupundo;endgroupundo;
+  }else if(result==8){   //【S】 読み上げファイル作成
+    #x=x;#y=y;selectall;copy;moveto #x,#y; 
+    runsync2 "rubyw "+currentmacrodirectory+"\\del_oya.rbw "+filename;
+    execmacro directory + "\\tmp.mac";
+  }
+}else{
+  setmenudelay 700;
+  mousemenu
+  "&F 開く",                         // 1
+  "&S 上書き保存",                   // 2
+  "&C 保存して終了",                 // 3
+  "&K キルバッファ",                 // 4
+  "&W 名前をつけて保存",             // 5
+  "&B ファイルをバックアップ",       // 6
+  "&D フォルダを開く",               // 7
+  "&N 次の秀丸",                     // 8
+  "&I カーソル位置への読み込み",     // 9
+  "&E メモに書き込み",               //10
+  "&H すべてを選択",                 //11
+  "&P tmpファイルを閉じて削除",      //12
+  "&R 矩形選択",                     //13
+  "&M マクロ編集",                   //14
+  "&T 対象ファイル編集",             //15
+  "&Y 読み上げファイルを開く",       //16
+  "&A ファイル転送（青空）",         //17
+  "&V ファイルに挿入",               //18
+  "&Q アンフォールド",               //19
+  "&X ファイル転送",                 //20
+  "&J ファイル転送（スクリプト）",   //21
+  "&Z 置換リストをセーブして終了",   //22
+  "&@ 日付フォルダ作成",             //23
+  "&1 ウィンドウカスケード",         //24
+  "&2 ウィンドウを縦に並べる",       //25
+  "&3 ウィンドウを横に並べる",       //26
+  "&4 ウィンドウカスケード２",       //27
+  "&5 ウィンドウを小さく",           //28
+  "&6 ウィンドウ移動";               //29
+  
+  //message str(result);
+  #res=result;
+  if(iskeydown(0x11))#fc=1;
+  if(#res==0){endmacro;
+  }else if(#res==1){   //【F】 開く
+    execmacro currentmacrodirectory+"\\\\ファイルを開く.mac";
+  }else if(#res==2){   //【S】上書き保存
+    execmacro currentmacrodirectory+"\\\\上書き保存.mac";
+  }else if(#res==3){   //【C】 保存して終了
+    execmacro currentmacrodirectory+"\\\\選択範囲を置換.mac";
+  }else if(#res==4){   //【K】 キルバッファ
+    execmacro currentmacrodirectory+"\\\\保存して終了.mac";
+  }else if(#res==5){   //【W】 保存
+    execmacro currentmacrodirectory+"\\\\名前をつけて保存.mac";
+    //run $uwsc+" "+currentmacrodirectory+"\\\\名前をつけて保存.uws";
+  }else if(#res==6){   //【B】 ファイルをバックアップ
+    execmacro currentmacrodirectory+"\\\\ファイルをバックアップ.mac";
+  }else if(#res==7){   //【D】 フォルダを開く
+    execmacro currentmacrodirectory+"\\\\フォルダを開く.mac";
+  }else if(#res==8){   //【N】 次の秀丸（tmp.txtがあればtmp.txt）
+    if(#fc){
+      if(filename!="tmp.txt"){
+        setactivehidemaru findhidemaru("tmp.txt");
+        if(!result){setactivehidemaru 1;}}
+    }else{setactivehidemaru 1;}
+  }else if(#res==9){   //【I】 カーソル位置への読み込み
+    $f=browsefile("","*.*");
+    if($f=="")endmacro;
+    if(selecting){
+      $s=getselectedtext();
+      if(#fc){execmacro currentmacrodirectory+"\\\\割合表示.mac";}
+      openfile $f;begingroupundo;gofileend;insert "\n"+$s+"\n";
+      if(#fc){paste;insert "\n";endgroupundo;}
+    }else{insertfile $f;}
+  }else if(#res==10){  //【E】 メモに書き込み
+    execmacro currentmacrodirectory+"\\\\メモに書き込み.mac";
+  }else if(#res==11){  //【H】 すべてを選択
+    selectall;
+  }else if(#res==12){  //【P】 tmpファイルを閉じて削除
+    execmacro currentmacrodirectory+"\\\\ｔｍｐファイルを閉じて削除.mac";
+  }else if(#res==13){  //【R】 矩形選択
+    execmacro currentmacrodirectory+"\\\\矩形選択.mac";
+  }else if(#res==14){  //【M】 マクロ編集
+    $fl=currentmacrodirectory+"\\読みプロ01.mac";
+    if(findhidemaru($fl)==-1){openfile $fl;}
+    setactivehidemaru findhidemaru($fl);
+  }else if(#res==15){  //【T】 対象ファイル編集
+    execmacro currentmacrodirectory+"\\\\対象ファイル編集.mac";
+  }else if(#res==16){  //【Y】 読み上げファイルを開く
+    $fl=currentmacrodirectory+"\\置換リスト\\置換リスト11【読み上げ】.txt";
+    if(findhidemaru($fl)==-1){openfile $fl;}
+    setactivehidemaru findhidemaru($fl);
+    disabledraw;selectall;
+    colormarker 0x000000, 0xC2C79E, 11, 1;
+    escape;gofiletop;enabledraw;
+    execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","2";
+  }else if(#res==17){  //【A】 ファイル転送（青空）
+    if(selecting){copy2;}else{selectline 1;copy;}
+    runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw a "+filename;
+  }else if(#res==18){  //【V】 ファイルに挿入
+    execmacro currentmacrodirectory+"\\\\ファイルに挿入.mac";
+    //$a=gettotaltext();
+    //$f=browsefile("","*.*");
+    //if($f=="")endmacro;
+    //openfile $f;begingroupundo;gofileend;#y=y;
+    //insert $a;moveto 0,#y;
+  }else if(#res==19){  //【Q】 アンフォールド
+    unfoldall;
+    if(selecting){#x=seltopx;#y=seltopy;escape;moveto #x,#y;}
+  }else if(#res==20){  //【X】 ファイル転送
+    if(selecting){copy2;}else{selectline 1;copy;}
+    runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw f "+filename;
+  }else if(#res==21){  //【J】 ファイル転送（スクリプト）
+    if(selecting){copy2;}else{selectline 1;copy;}
+    runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw p "+filename;
+  }else if(#res==22){  //【Z】 置換リストをセーブして終了
+    execmacro currentmacrodirectory+"\\\\置換リストをセーブして終了.mac";
+  }else if(#res==23){  //【@】 日付フォルダを作成してコピー
+    execmacro currentmacrodirectory+"\\\\日付フォルダを作成してコピー.mac";
+  }else if(#res==24){  //【1】 ウィンドウカスケード
+    execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","1";
+  }else if(#res==25){  //【2】 ウィンドウを縦に並べる
+    execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","2";
+  }else if(#res==26){  //【3】 ウィンドウを縦に並べる
+    execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","3";
+  }else if(#res==27){  //【4】 ウィンドウカスケード２
+    execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","4";
+  }else if(#res==28){  //【5】 ウィンドウを小さく
+    setwindowsize 30,10;
+  }else if(#res==29){  //【6】 ウィンドウ移動
+    setwindowpos 100,50;
+  }
+}
+enablebreak;
+endgroupundo;endmacro;

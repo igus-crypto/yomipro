@@ -1,0 +1,21 @@
+﻿//ファイル操作
+
+// c-x esc：キャンセル
+// c-x c-f：ファイルを開く
+// c-x c-s：上書き保存
+// c-x c-w：名前をつけて保存
+// c-x d：フォルダを開く
+// c-x i：カーソル位置への読み込み
+// c-x h：すべてを選択
+// c-x o：ウィンドウを移動
+// c-x p：tmpファイルを閉じて削除
+
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+
+runsync2 $uwsc+" "+currentmacrodirectory+"\\ファイル操作.uws";
+execmacro currentmacrodirectory + "\\tmp.mac";
+
+
+
+

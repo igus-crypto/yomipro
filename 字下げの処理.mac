@@ -1,0 +1,41 @@
+﻿//字下げの処理
+
+disabledraw;begingroupundo;
+#x=x;#y=y;selectall;copy;moveto #x,#y;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd=ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(/\R/)
+st=%Q|\uFEFFbegingroupundo;disabledraw;escape;\n|
+#print "ar=";p ar
+a,b=[],[]
+ar.each_with_index{|e,i|
+  a << (i+2).to_s if /^［＃.*字下げ］$/=~e
+  b << (i).to_s if /^［＃.*字下げ終わり］$/=~e
+}
+
+print "a=";p a
+print "b=";p b
+
+a.each_with_index{|e,i|
+  st=st+%Q|moveto2 0,#{e};beginsel;moveto2 1,#{b[i]};\n|+
+    %Q|replaceallfast "^","　　",regular,inselect2;\n|}
+
+st+="enabledraw;endgroupundo;\n"
+
+print "st=";p st
+File.write("tmp.mac",st)
+__END__
+*/

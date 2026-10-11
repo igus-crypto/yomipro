@@ -1,0 +1,37 @@
+﻿//プラス変換
+
+copy2;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp_99p.txt","w")
+$stderr=open("tmp_erp.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+s1=cbd.getText
+s2=s1.gsub(%r|《[%=#]?|,"《+")
+print "s1=";p s1
+print "s2=";p s2
+a1=s1.scan(%r|[\p{Han}]+《[^》]+》|).uniq.reject{|e| %r|\R|=~e}
+a2=a1.map{|e| e.gsub(%r|《[%=#]?|,"《+")}
+print "a1=";p a1
+print "a2=";p a2
+s3 =%|\uFEFF\n#x=x;#y=y;begingroupundo;\n|
+#s3+=%|replaceallfast "#{s1}","#{s2}",regular;\n|
+a1.map.with_index{|e,i|
+  s3+=%|replaceallfast "#{e}","#{a2[i]}",regular;\n|}
+s3+=%|moveto #x,#y;endgroupundo;endmacro;\n|
+File.write("tmp.mac",s3)
+cbd.setText(s3)
+__END__
+*/
+

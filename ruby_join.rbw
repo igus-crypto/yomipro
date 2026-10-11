@@ -1,0 +1,29 @@
+# encoding: utf-8
+# ルビ結合
+
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+filename=ARGV[0].encode(Encoding::UTF_8).gsub("\\","/")
+p filename
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText.gsub(/\r\n/,"\n")
+
+st2=st.gsub(/(.?)((?:(?:[\p{Han}]+|｜[^《》:]+|.)《[^》:]*》){2,})/){
+  s1,s2=$1,$2
+  print "s12=";p [s1,s2]
+  so=s2.gsub(/《[^》]*》/,"").gsub(/｜/,"")
+  sr=s2.scan(/《([^》]*)》/).join
+  so="｜"+so if (/[^\p{Han}]/=~so or /[\p{Han}]/=~s1)
+  "#{s1}#{so}《#{sr}》"}
+st2=st2.gsub(/《[^《》]*》/){|s| s.gsub(/ /,"")}
+
+File.write("tmp_r.txt",st2+"\n")
+spawn(%Q|rubyw #{__dir__}/diff4.rbw "#{File.basename(filename)}" tmp_r.txt|)
+__END__
+

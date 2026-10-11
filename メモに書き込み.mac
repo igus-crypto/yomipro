@@ -1,0 +1,152 @@
+﻿//メモに書き込み(Ctrl+X E)
+
+setmenudelay 700;
+mousemenu
+"&E memo.txt",                           // 1
+"&A a0.txt",                             // 2
+"&g gosyoku.txt",                        // 3
+"&k koko.txt",                           // 4
+"&T 置換リストにコピペ（ＢＧ処理）";     // 5
+#res=result;
+if(#res==0)endmacro;
+
+#shi=0;#ctr=0;#alt=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctr=1;}
+if(iskeydown(0x12)){#alt=1;}
+
+if(#res==4){
+  disabledraw;
+  #x=x;#y=y;
+  $c=gettext(seltopx,seltopy,selendx,selendy,1);
+  beginsel;gofiletop;
+  $a=gettext(seltopx,seltopy,selendx,selendy,1);
+  selectall;
+  $b=gettext(seltopx,seltopy,selendx,selendy,1);
+  escape;moveto #x,#y;
+  #a=strlen($a);
+  #b=strlen($b);
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#res)+" "+str(#a)+" "+str(#b);
+  enabledraw;
+  execmacro directory + "\\tmp.mac";
+  begingroupundo;gofileend;insert "\n"+$c+"\n";
+  paste;insert "\n";endgroupundo;
+  endmacro;
+}else if(#res==5){
+  if(!selecting)endmacro;
+  selectline 1;wordleft;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\sort4.rbw b";
+  execmacro directory + "\\tmp.mac";
+  endmacro;
+}
+
+if(#shi==1 && #ctr==1){
+  if(selecting){copy2;}else{#x=x;#y=y;selectall;copy;moveto #x,#y;}
+  runsync2 "rubyw "+currentmacrodirectory+"\\moji_count.rbw";
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#res)+" s";
+  execmacro directory + "\\tmp.mac";endmacro;
+}else{
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#res)+" n";
+  execmacro directory + "\\tmp.mac";
+}
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'win32ole'
+require 'clipboard'
+
+op1,op2,op3=ARGV[0],ARGV[1],ARGV[2]
+
+fl,st="",""
+if %r|^1|=~op1
+  if FileTest.file?("memo.txt")
+    fl=File.expand_path("memo.txt")
+  elsif FileTest.file?("../memo.txt")
+    fl=File.expand_path("../memo.txt") 
+  elsif FileTest.file?("../../memo.txt")
+    fl=File.expand_path("../../memo.txt")
+  end
+elsif %r|^2|=~op1
+  if FileTest.file?("a0.txt")
+    fl=File.expand_path("a0.txt")
+  elsif FileTest.file?("../a0.txt")
+    fl=File.expand_path("../a0.txt") 
+  elsif FileTest.file?("../../a0.txt")
+    fl=File.expand_path("../../a0.txt")
+  end
+elsif %r|^3|=~op1
+  if FileTest.file?("gosyoku.txt")
+    fl=File.expand_path("gosyoku.txt")
+  elsif FileTest.file?("../gosyoku.txt")
+    fl=File.expand_path("../gosyoku.txt") 
+  elsif FileTest.file?("../../gosyoku.txt")
+    fl=File.expand_path("../../gosyoku.txt")
+  end
+elsif %r|^4|=~op1
+  if FileTest.file?("koko.txt")
+    fl=File.expand_path("koko.txt")
+  elsif FileTest.file?("../koko.txt")
+    fl=File.expand_path("../koko.txt") 
+  elsif FileTest.file?("../../koko.txt")
+    fl=File.expand_path("../../koko.txt")
+  end
+  fl=fl.gsub("/","\\\\\\")
+  wsh = WIN32OLE.new('Wscript.Shell')
+  cbd=ClipBoard.new(__ENCODING__)
+  a=op2.to_f
+  b=op3.to_f
+  c=(a*100000/b).to_i
+  p c=c/1000.0
+  t=Time.new
+  y=t.year.to_s.gsub(/^../,"")
+  s="#{c.to_s}%　"+y+t.strftime("/%m/%d　%H:%M:%S")
+  cbd.setText(s)
+  wsh.Popup(c,0,'',4096)
+  if fl==""
+    st+=%Q|$f=browsefile("","*.*");\n|
+    st+=%Q|if($f=="")endmacro;\n|
+  else
+    st+=%Q|$f="#{fl}";\n|
+  end
+  st+=%Q|openfile $f;\n|
+  File.write("tmp.mac",st)
+  exit
+end
+fl=fl.gsub("/","\\\\\\")
+
+if %r|^s|=~op2
+  if fl==""
+    st+=%Q|$f=browsefile("","*.*");\n|
+    st+=%Q|if($f=="")endmacro;\n|
+  else
+    st+=%Q|$f="#{fl}";\n|
+  end
+  st+=%Q|$s=getselectedtext();\n|
+  st+=%Q|openfile $f;begingroupundo;gofileend;\n|
+  st+=%Q|insert "\\n";paste;endgroupundo;\n|
+else
+  #st+=%Q|if(!selecting)endmacro;\n| unless %r|^2|=~op1
+  if fl==""
+    st+=%Q|$f=browsefile("","*.*");\n|
+    st+=%Q|if($f=="")endmacro;\n|
+  else
+    st+=%Q|$f="#{fl}";\n|
+  end
+  st+=%Q|$s=getselectedtext();\n|
+  st+=%Q|openfile $f;begingroupundo;gofileend;\n|
+  st+=%Q|if($s=="")endmacro;\n|
+  st+=%Q|insert "\\n"+$s+"\\n";endgroupundo;\n|
+end
+File.write("tmp.mac",st)
+
+__END__
+*/
+

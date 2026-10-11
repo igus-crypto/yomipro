@@ -1,0 +1,7 @@
+//スクロールアップ
+
+#x=x;#y=y;
+if(selecting){
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  escape;up 30;moveto #x,#y;moveto #tx,#ty;beginsel;moveto #ex,#ey;}
+else{up 30;moveto #x,#y;}

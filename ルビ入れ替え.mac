@@ -1,0 +1,5 @@
+﻿begingroupundo;disabledraw;
+if(selecting){}else{golinetop2;beginsel;golineend2;}
+selectline 1;wordleft;cut;
+runsync2 "rubyw "+currentmacrodirectory+"\\moji_hen.rbw ri";
+paste;enabledraw;endgroupundo;

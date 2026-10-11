@@ -1,0 +1,1 @@
+﻿if(selecting){golineend2;cut;}else{beginsel;golineend2;cut;}

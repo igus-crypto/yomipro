@@ -1,0 +1,61 @@
+﻿//数値計算
+
+disabledraw;begingroupundo;
+$opt="";
+if(!selecting)selectline 1;
+if(rectselecting){
+  $opt=" r";copy;
+}else{
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  moveto #px,#py;beginsel;moveto #dx,#dy;
+  copy2;
+}
+runsync2 "rubyw -x "+currentmacrofilename+$opt;
+execmacro directory + "\\tmp.mac";
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+include Math
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+opt=ARGV[0]
+
+ar=cbd.getText.split(/\R/).reject{|e| e==""}.map{|e| e.gsub(%r|^[0]+|,"")}
+ar=ar.each{|e| e+"\n"} if %r|r|=~opt
+print "ar=";p ar
+p ar.join
+st="\uFEFFbegingroupundo;disabledraw;\n"
+
+print "ar=";p ar
+if %r|^[-0-9.]+$|=~ar.join
+  f=ar.join("+").gsub("+-","-")
+  a=eval(f)
+  if %r|r|=~opt
+    st+=%Q|insert "    #{sprintf(%Q|%07d|,a)}"|
+  else
+    st+=%Q|delete;insert "#{f}=#{a}\\n"|
+  end
+else
+  ar.reverse.each{|e|
+    begin
+      if /([ -~]+)=(?![-0-9 ])/=~e
+        f=$1
+        a=eval(f)
+        st+=%Q|replaceup "#{f}=","#{f}=#{a}";\ngolineend2;\n|
+      end
+    rescue
+      st+=%Q|replaceup "#{f}=","#{f}=error";\ngolineend2;\n|
+    end}
+  st+="enabledraw;endgroupundo;\n"
+  st+="escape"
+end
+print "st=";p st
+File.write("tmp.mac",st)
+__END__
+*/

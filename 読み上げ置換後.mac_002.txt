@@ -1,0 +1,506 @@
+//読み上げ置換後
+
+if(selecting){selectline 1;}else{selectall;}copy;
+runsync2 "rubyw -x "+currentmacrofilename+" y3";
+if(strstr(filename,"tmp")==-1){
+execmacro directory + "\\tmp_g.mac";}
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";
+gofileend;searchup "^$",regular;down;#y=y;moveto 22,#y;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stderr=open("tmp_errg.txt","w")
+$stdout=open("tmp99g.txt","w")
+
+#require 'open3'
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+
+opt=ARGV[0].to_s
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+soro=ini["grep"]["soroe"]
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(file_2))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+puts Dir.pwd.encode(Encoding::UTF_8)
+#p soro
+cbd = ClipBoard.new(__ENCODING__)
+
+def bsize(txt)
+  txt.to_s.tr("—","-").split("").map{|e| e.bytesize==1 ? 1 : 2}.sum
+  #"—"は３バイト,"-"は１バイトという罠回避
+end
+
+class String
+  def del_oya
+    st=self.gsub(/《[+%!~]([^《》]*)》/,'《\1》').gsub(/｜([^《》]+)《[=#][^《》]*》/,'\1').
+      gsub(/｜[^《》]+《([^《》]*)》/,'\1').gsub(/([\p{Han}])(《[=#][^《》]*》)/,'\1').
+      gsub(/([^\p{Han}])《[=#]([^《》]*)》/,'\1').gsub(/[\p{Han}]+《([^《》]*)》/,'\1').
+      gsub(/.《([^《》]*)》/,'\1').gsub(/^《?([^《》]*)》/,'\1').gsub(/《[^《》]*$/,"")
+  end
+end
+
+i=1
+tp="tmp_y"
+while FileTest.file?(ofile=tp+sprintf("%#02d",i)+".txt")
+  i+=1
+end
+
+ofile=File.expand_path(ofile)
+p ofile
+ofl=open(ofile,"w")
+ost=""
+#p Dir.pwd
+print "opt=";p opt
+
+ls=cbd.getText.
+  split("\r\n").reject{|e| %r|^[ 　]*$|=~e or %r|^[―]*$|=~e }.
+  map{|e| e.gsub(%r|^置換リスト[^:]*: |,"").gsub(%r|^[!]+|,"")}
+
+ast,oya1,ruby,com,rp=[],[],[],[],[]
+ls.each_with_index{|line,i|
+  p line
+  if %r|^([^,]*),?([^,]*)?,s.*|=~line
+    ast[i],oya1[i],ruby[i],rp[i],com[i]=
+      %r|^([^,]*),?([^,]*)?(,s[0-9.]*)?(.*$)?.*|.match(line.chomp).to_a
+  elsif %r|^([^,]*),?([^, ]*)?,(?:[rsp][^, ]*),(y[^, ]*).*|=~line
+    ast[i],oya1[i],ruby[i],rp[i],com[i]=$&,$1,$2,$3
+  elsif %r|^([^,]*),?([^, ]*)?,([rspy][^, ]*).*|=~line
+    ast[i],oya1[i],ruby[i],rp[i],com[i]=$&,$1,$2,$3
+  else
+    line2=line.gsub(/\([^()]*\)/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}.
+      gsub(/\{[^{}]*\}/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}.
+      gsub(/《[^《》]*》/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}.
+      gsub(/｜[^《]*《/){|s| s.gsub(" ","_spc_").gsub(",","_cmm_")}
+    ast[i],oya1[i],ruby[i],rp[i],com[i]=
+      /^([^,]*),?([^, ]*)?(,[rspy][0-9.]*)?(.*$)?/.match(line2.chomp).to_a
+    ast[i]=line
+  end}
+rp=rp.map{|e| e.to_s.gsub(",","")}
+#print "ast=";p ast
+print "oya1=";p oya1
+oya1=oya1.map{|e| e.gsub(/_spc_/," ").gsub(/_cmm_/,",")}
+oya=oya1.map{|e| e.sub(/^!+~/,"")}
+ruby=ruby.map{|e| e.gsub(/_spc_/," ").gsub(/_cmm_/,",")}
+
+print "oya=";p oya
+print "ruby=";p ruby
+print "rp=";p rp
+
+ruby=ruby.map.with_index{|e,i| %r|y|=~rp[i] ? e.gsub(/《[^《》]+》/,"") :e}
+
+
+# パターン検索（pオプション）
+#                                                  ↓ルビで終わるとき
+# p       :                   〇〇                 (?![\p{Han}｜]*《)
+# p[0-9]+1:     (?<=[ァ-ヴー])〇〇                 (?![\p{Han}｜]*《)
+# p[0-9]+2:     (?<=[ァ-ヴー])〇〇(?![《\p{Han}｜》])
+# p[0-9]+3:  (?<![ａ-ｚＡ-Ｚ])〇〇(?![《ａ-ｚＡ-Ｚ])
+# p[0-9]+4:      (?<![a-zA-Z])〇〇(?![《a-zA-Z])
+# p[0-9]+5: (?<![《\p{Han}》])〇〇                 (?![\p{Han}｜]*《)
+# p[0-9]+6:                   〇〇(?![《\p{Han}｜》])
+# p[0-9]+7: (?<![《\p{Han}》])〇〇(?![《\p{Han}｜》])
+# p[0-9]+8:                   〇〇                 (?![\p{Han}｜]*《)
+# p[0-9]+9:                   〇〇
+# 正規表現オプションのある場合（rオプション）
+# r:マッチ部に「《》」があれば処理しない ⇒ マッチ評価時に対応
+# r:/[\p{Han}]/で終わる場合、後ろの文字が /[\p{Han}]*《/なら処理しない
+# オプション r:ルビ付き t:ルビ展開 の時は除く
+rp.each_with_index{|e,i|
+  print "e=";p e
+  print "oya=";p oya[i]
+  print "ruby=";p ruby[i]
+  if /^y/=~e
+    oya[i]="(?<!《)"+oya[i] #+"(?![\\p{Han}｜]*《)"
+  elsif e==nil # && /》$/=~ruby[i]
+  #elsif e==nil && /》$/=~ruby[i]
+    oya[i]=oya[i] +"(?![\\p{Han}]*《)"
+  elsif /p(?!\d)/=~e && /》$/=~ruby[i]
+    oya[i]=oya[i] +"(?![\\p{Han}｜]*《)"
+  elsif /p\d*1$/=~e
+    oya[i]="(?<=[　。「」『』（）【】─※◇・‥])"+oya[i] +"(?![\\p{Han}｜]*《)"
+  elsif /p\d*2$/=~e
+    oya[i]="(?<=[ァ-ヴー])"+oya[i]+"(?![《\\p{Han}｜》])"
+  elsif /p\d*3$/=~e
+    oya[i]="(?<![ａ-ｚＡ-Ｚ])"+oya[i]+"(?![《ａ-ｚＡ-Ｚ])"
+  elsif /p\d*4$/=~e
+    oya[i]="(?<![a-zA-Z])"+oya[i]+"(?![《a-zA-Z])"
+  elsif /p\d*5$/=~e
+    oya[i]="(?<![《\\p{Han}》])"+oya[i] #+"(?![\\p{Han}｜]*《)"
+  elsif /p\d*6$/=~e
+    oya[i]=oya[i]+"(?![《\\p{Han}｜》])"
+  elsif /p\d*7$/=~e
+    oya[i]="(?<![《\\p{Han}》])"+oya[i]+"(?![《\\p{Han}｜》])"
+  elsif /p\d*8$/=~e
+    oya[i]=oya[i] +"(?![\\p{Han}｜]*《)" if /》$/=~ruby[i]
+  elsif /p\d*9$/=~e
+    oya[i]=oya[i]
+  elsif /ry/=~e && /》$/=~ruby[i]
+    oya[i]=oya[i] +"(?![\\p{Han}｜]*《)"
+  elsif /ry/=~e
+    oya[i]=oya[i] +"(?![\\p{Han}｜]*《)"
+  else
+    e
+  end
+  print "oya[i]=";p oya[i]
+  print "e=";p e
+  unless /[rs]|^y|p[0-9]+[34]/=~e
+    if /[\\p{Han}｜]$/=~oya[i]
+      oya[i]=oya[i]+"(?![\\p{Han}｜]*《)"
+    else
+      #oya[i]=oya[i]+"(?![\\p{Han}]*《)"
+    end
+  end
+  print "oya[i]=";p oya[i]
+  print "e=";p e
+  #rp[i]="r"
+  rp[i]="w" unless rp[i]
+}
+
+#配列
+#ls:リスト kk:結果 mt:マッチ
+
+kk,mt=[],[]
+fname=File.basename(filename)
+fl=open(filename).read.gsub(%r|《([^《》=]*)=》|,"《=\\1》").split(%r|\R|)
+#fl=open(filename).readlines
+#print "fname=";p fname
+#print "fl=";p fl
+
+print "oya=";p oya
+print "ruby=";p ruby
+print "rp=";p rp
+tb2,oya2,oya3,oya5,ruby2,ruby3,rp2,rp3=[],[],[],[],[],[],[],[]
+rp.each_with_index{|s,i|
+  if /y/=~s
+    oya4=fl.join("\n").scan(%r|(#{oya[i]})|).transpose[0].to_a.uniq.select{|e| %r|#{ruby[i]}|=~e}
+    #print "oya4=";p oya4
+    oya4=oya4.sort_by{|e| -fl.join("\n").scan(e).size}.
+      sort_by{|e| e.size}
+    print "oya4=";p oya4
+    ruby4=oya4.map{|e| ruby[i]}
+    rp4=oya4.map{|e| rp[i]}
+    oya3+=oya4;ruby3+=ruby4;rp3+=rp4
+  else
+    oya3+=[oya[i]];ruby3+=[ruby[i]];rp3+=[rp[i]]
+  end
+  }
+oya,ruby,rp=oya3,ruby3,rp3
+print "oya=";p oya
+print "ruby=";p ruby
+print "rp=";p rp
+puts "---"
+
+
+oya.each_with_index{|s,i|
+  next if s==""
+  #マッチした行を kk に突っ込んでいく
+  #print "rp[i]=";p rp[i]
+  #oya[i]=oya[i]+"(?![\\p{Han}]*《|[^《》]*》)" if /y/=~opt and /\p{Han}$/=~oya[i]
+  #print "oya[i]=";p oya[i]
+  fl.each_with_index{|line,f|
+    if /#{s}/=~line
+      mtt=$&
+      #print "mtt=";p mtt
+      #print "ruby[i]=";p ruby[i]
+      kk << [fname+":(#{f+1}):#{line}",rp[i]] if /#{ruby[i]}/=~mtt
+      #rp2 << rp[i]
+    end
+  }
+  kk=kk.sort_by{|e|
+    e[0].match(/#{fname}:\(([0-9]+)\):/)[1].to_i}
+
+  hs,tb={},[]
+  n=16
+  puts "----"
+  #print "kk=";p kk
+  kk.each{|kkk| k=kkk[0];rpy=kkk[1]
+    #print "rpy=";p rpy
+    g=k.match(/^([^\)]*\):)/)[1]
+    k=k.gsub(/^([^\)]*\):)/,"")
+    print "oya[i]=";p oya[i]
+    if (/#{oya[i]}/ =~ k && /[《》]/!~k.match(/#{oya[i]}/)[0]) or #マッチ部に「《》」を含まない
+      /r/=~rp[i]
+      #if /^y/=~rpy && /#{oya[i]+"(?![\\p{Han}｜]*《)"}/=~k
+      if /^y/=~rpy && /#{oya[i]}/=~k
+        #print "oya[i]=";p oya[i]
+        #oy=(/\p{Han}/=~oya[i][-1] ? oya[i]+"(?![\\p{Han}｜]*《)" : oya[i])
+        #oy=(/\p{Han}/=~ruby[i][-1] ? oya[i]+"(?![\\p{Han}｜]*《)" : oya[i])
+        oy=oya[i]
+        k.scan(/#{oy}/){|f|
+          #m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([、。])(.*)/,"\\1").chomp
+          m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([。])(.*)/,"\\1").chomp
+          m1=m1.gsub(/^[+#=]/,"")
+          print "m123=";p [m1,m2,m3]
+          st=m1+m2+m3
+          print "gs=";p [g+st,g+m1,g+m1+m2]
+          unless /\p{Han}$/=~m2 && /^\p{Han}*《/=~m3 or
+            /｜[^《》]*$/=~m2 && /^[^《》]*《/=~m3
+            hs[m2]=[] unless hs[m2]
+            hs[m2] << [g+st,g+m1,g+m1+m2]
+          end
+            }
+      elsif /^y/!~rpy
+        k.scan(/#{oya[i]}/){|f|
+          #m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([、。])(.*)/,"\\1").chomp
+          m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([。])(.*)/,"\\1").chomp
+          m1=m1.gsub(/^[+#=]/,"")
+          print "m123=";p [m1,m2,m3]
+          hs[m2]=[] unless hs[m2]
+            st=m1+m2+m3
+          print "rpy=";p rpy
+          unless /\p{Han}$/=~m2 and /^\p{Han}*《/=~m3
+            hs[m2] << [g+st,g+m1,g+m1+m2]
+          else
+            hs[m2] << [g+st,g+m1,g+m1+m2] if /^s/=~rpy
+          end
+            }
+      end
+    elsif /^s/=~rpy
+      oy=oya[i]
+      k.scan(/#{oy}/){|f|
+        m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([。])(.*)/,"\\1").chomp
+        print "m123=";p [m1,m2,m3]
+        st=m1+m2+m3
+        print "gs=";p [g+st,g+m1,g+m1+m2]
+        unless /\p{Han}$/=~m2 && /^\p{Han}*《/=~m3 or
+          /｜[^《》]*$/=~m2 && /^[^《》]*《/=~m3
+          hs[m2]=[] unless hs[m2]
+          hs[m2] << [g+st,g+m1,g+m1+m2]
+        end
+          }
+    end}
+  print "hs=";p hs
+  kk=kk.uniq
+  #print "kk=";p kk
+  hs=hs.map{|k,v| [k,v.uniq]}.to_h
+  hs=hs.reject{|k,v| v==[]}
+  print "hs=";p hs
+  hs.to_a.sort_by{|e| 1.0/e[1].size}.each_with_index{|e,j| #出現回数順にソート
+    if /y/!~rp[i] and ruby[i]==""
+      e0=e[0]+","+e[0].gsub(/([\p{Han}]+)/){$1.to_s+"《’#{$1.to_s}》"}+" =>"
+    else
+      e0=e[0]+","+e[0].gsub(/#{oya[i]}/,"#{ruby[i]}")+" =>"
+    end
+
+    #print "e=";p e
+    #print "st=";p st=e[1].transpose[0]#.join("\n")
+
+    st2=e[1].transpose[1]
+    st3=e[1].transpose[2]
+    print "e=";p e
+    print "e[1]=";p e[1]
+    e[1].transpose[0].map.with_index{|st,j|
+      st=st.gsub(/^([^\)]*\):)/,"")
+      m1=st2[j].gsub(/^([^\)]*\):)/,"")
+      m2=st3[j].gsub(/^([^\)]*\):)/,"")
+      if /[\p{Han}]/=~m2.gsub(/oya[i]/,"")[-1] and /^[\p{Han}]+《/=~ruby[i]
+        rub="｜"+ruby[i]
+      else
+        rub=ruby[i]
+      end
+      if /y/=~rp[i] #読み上げ用
+        #st=st.gsub("《+","《")
+        st1=st.del_oya
+        tb << [st1,m1,m2]
+      elsif /y[1234]/=~opt #読み上げ用
+        #st=st.gsub("《+","《")
+        print "st=";p st
+        # y1:ルビ置換前 y2:ルビ置換前後 y3:ルビ置換後 y4:ルビ置換前後前
+        if /{([^{},]+),([^{},]+)([,a-z]+)?}/=~rub #ブロックへ渡す
+        #if /{'([^{}]+)','([^{}]+)',([a-z]+)?}/=~rub #ブロックへ渡す
+          e1,e2,e3=$1,$2,$3
+          print "e123=";p [e1,e2,e3]
+          #b=(/tr/=~e3 ? st.tr(e1,e2) : st.gsub(e1,e2))
+          if /tr/=~e3
+            b=st.tr(e1,e2)
+          else
+            
+            b=st.gsub(/#{oya[i]}/){|s| s.gsub(e1,e2)}
+          end
+          st=st.gsub(st,b)
+        else
+          print "st=";p st
+          print "oya[i]=";p oya[i]
+          print "rub="; p rub
+          st=st.gsub(/#{oya[i]}/,rub)
+          print "st=";p st
+        end
+        print "m1=";p m1
+        print "m1[-1]=";p m1[-1]
+        print "rub=";p rub
+        if (%r|[\p{Han}]|=~m1[-1] && %r|^[\p{Han}]+《|=~rub)
+          st=st.gsub("#{m1}","#{m1}｜")
+        end
+        #print "st_a=";p st,m1,m2
+        print "st=";p st
+        print "m1=";p m1
+        print "m2=";p m2
+        st=st.del_oya
+        print "st=";p st
+        tb << [st,m1,m2] unless st1==st
+      end}
+    }
+#  tb << ["","",""] unless /y/=~rp[i]
+  ts=""
+  print "tb=";p tb
+  tb=tb.map{|t| t.map{|f| f=f.del_oya}}
+  print "tb=";p tb
+  oya5 << s unless tb==[["", "", ""]]
+  if /m/=~rp[i] #マッチ別
+    #tb.map{|e| print "tb=";p e}
+    if soro==0
+      ts+=tb.transpose[0].join("\n")
+    elsif soro==1
+      max=tb.transpose[1].to_a.map{|f| bsize(f)}.max
+      ts+=tb.map{|f| " "*(max-bsize(f[1]))+f[0]}.join("\n")
+    elsif soro==2
+      max=tb.transpose[2].to_a.map{|f| bsize(f)}.max
+      ts+=tb.map{|f| " "*(max-bsize(f[1]))+f[0]}.join("\n")
+    end
+    ts.split("\n").each{|s| s="" if /^[ ]+$/=~s ; ost+=s+"\n"}
+    #print "oya2=";p oya2
+    #print "hs=";p hs
+  else
+    tb2+=tb
+  end
+  oya2+=hs.to_a.sort_by{|e| 1.0/e[1].size}.transpose[0] unless hs=={}
+}
+print "oya2=";p oya2
+print "tb2=";p tb2
+print "oya=";p oya
+#print "kk.to_s=";p kk.to_s
+#p tb2.reject{|e| e==["","",""]}
+unless tb2.reject{|e| e==["","",""]}==[]
+  ts=""
+  #tb2.map{|e| print "tb=";p e}
+  if soro==0
+    ts+=tb2.transpose[0].join("\n")
+  elsif soro==1
+    max=tb2.transpose[1].to_a.map{|f| bsize(f)}.max
+    ts+=tb2.map{|f| " "*(max-bsize(f[1]))+f[0]}.join("\n")
+  elsif soro==2
+    max=tb2.transpose[2].to_a.map{|f| bsize(f)}.max
+    ts+=tb2.map{|f| " "*(max-bsize(f[1]))+f[0]}.join("\n")
+  end
+  ts.split("\n").uniq.reject{|e| /^[ 　]+$/=~e}.each{|s| ost+=s+"\n"}
+end
+
+print "ast=";p ast
+print "oya=";p oya
+print "oya5=";p oya5
+
+ss=[]
+#oya.each_with_index{|e,i| ss+=ast[i]+"\n" if oya5.include?(e) && ast[i]}
+ast.each_with_index{|e,i| ruby.each{|f| ss << e if e.include?(f) && ss.none?(e)}}
+ss << "\n\n" unless ss==[]
+ofl.print ss.join("\n")+ost
+
+oya=oya2  #配色変更のため
+
+ofl.close
+t98a=[]
+#print "rp=";p rp
+mac1=File.expand_path("tmp.mac")
+mac2=File.expand_path("tmp_g.mac")
+#oya=oya.sort_by{|e| -kk.to_s.scan(e).size}
+oya.each_with_index{|e,i| t98a << [e.gsub(%r<｜.*>,""),rp[i]]}
+t98a=t98a.sort{|e| e[1].to_i*(-1)}
+print "ruby=";p ruby
+print "t98a=";p t98a
+ofile=ofile.gsub("\/"){'\\\\'}
+#ofile=ofile.gsub(/^.*\//,"")
+
+macro1=open(mac1,"w")
+macro2=open(mac2,"w")
+macro1.print("\uFEFF")
+macro2.print("\uFEFF")
+#macro.puts %|openfile "#{ofile}",utf8;|
+macro2.puts %|
+#color[ 1]=val("0x#{ini['color']['color_1']}");
+#color[ 2]=val("0x#{ini['color']['color_2']}");
+#color[ 3]=val("0x#{ini['color']['color_3']}");
+#color[ 4]=val("0x#{ini['color']['color_4']}");
+#color[ 5]=val("0x#{ini['color']['color_5']}");
+#color[ 6]=val("0x#{ini['color']['color_6']}");
+#color[ 7]=val("0x#{ini['color']['color_7']}");
+#color[ 8]=val("0x#{ini['color']['color_8']}");
+#color[ 9]=val("0x#{ini['color']['color_9']}");
+#color[10]=val("0x#{ini['color']['color_10']}");
+#color[11]=val("0x#{ini['color']['color_11']}");
+#color[12]=val("0x#{ini['color']['color_12']}");
+#color[13]=val("0x#{ini['color']['color_13']}");
+#color[14]=val("0x#{ini['color']['color_14']}");
+#color[15]=val("0x#{ini['color']['color_15']}");
+#color[16]=val("0x#{ini['color']['color_16']}");
+|
+
+macro1.puts %|
+if( findhidemaru("#{ofile}")==-1){
+  setactivehidemaru 1;if( findhidemaru("#{ofile}")==-1)
+{setactivehidemaru 1;openfile "#{ofile}",utf8;}}
+
+setactivehidemaru findhidemaru("#{ofile}");
+|
+macro2.puts %|
+//マーカー設定
+//setsearch "(.*?):(\\\\(.*?\\\\)):(.*)" , 0x4003819;
+//colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+setsearch "(.*?):(\\\\(.*?\\\\)):" , 0x4003819;
+colormarkerallfound 0, 0xB2B2F5, 0, 0;
+disabledraw;
+
+|
+
+i=0
+
+t98a.each{|e|
+  if e[1]
+    if /[!?]/=~e[0]
+      macro2.puts %|setsearch "#{e[0].gsub(/\\/){'\\\\'}}" , 0x4003809;|
+    else
+      macro2.puts %|setsearch "#{e[0].gsub(/\\/){'\\\\'}}" , 0x4003819;|
+    end
+  else
+    macro2.puts %|setsearch "#{e[0]}" , 0x4003809;|
+  end
+  macro2.puts %|colormarkerallfound 0x000000, #color[#{i%16+1}], 11, 1;|
+  i+=1
+}
+if /y[234]/=~opt
+  ruby.map{|e| #print "ed=";p e.del_oya
+    macro2.puts %|setsearch "#{e.del_oya.gsub(/\\/){'\\\\'}}" , 0x4003809;|
+    macro2.puts %|colormarkerallfound 0x000000, #color[#{i%16+1}], 11, 1;|
+    i+=1}
+end
+macro2.puts %|setactivehidemaru findhidemaru("#{ofile}");|
+macro2.puts %|enabledraw;endmacro;|
+macro1.close
+macro2.close
+
+__END__
+*/

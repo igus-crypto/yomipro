@@ -1,0 +1,4 @@
+﻿if(selecting){wordright;
+}else{beginsel;wordright;
+execmacro currentmacrodirectory+"\\選択範囲カーソル位置反転.mac";
+}

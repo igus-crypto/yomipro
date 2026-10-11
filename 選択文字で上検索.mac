@@ -1,0 +1,6 @@
+if(selecting){
+  #x=seltopx;#y=seltopy;
+  $sel = gettext(seltopx,seltopy,selendx,selendy);
+  escape;moveto #x,#y;
+  searchup $sel ,hilight,loop;}
+else{findup;}

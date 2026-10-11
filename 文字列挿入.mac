@@ -1,0 +1,418 @@
+﻿//文字列挿入
+
+begingroupundo;
+#fg=getclipboardinfo(1);
+setmenudelay 50;
+mousemenu
+"&I サブメニュー",              // 1
+"&D 【〇〇】",                  // 2
+"&U 《〇〇》",                  // 3
+"&M （〇〇）",                  // 4
+"&P print puts",                // 5
+"&R 〇〇《〇〇》",              // 6
+"&A [\\p{Han}]",                // 7
+"&H [ぁ-ん]",                   // 8
+"&K [ァ-ヴー]",                 // 9
+"&T 定型文挿入",                //10
+"&: spc*120 ",                  //11
+"&B ボックス貼り付け",          //12
+"&C 末尾にクリップボード",      //13
+"&  先頭にスペース",            //14
+"&E ======",                    //15
+"&F f",                         //16
+"&/ //",                        //17
+"&0 前後に0挿入",               //18
+"&1 [一二三四五六七八九十]",    //19
+"&2 選択文字数挿入",            //20
+"&3 単語前に#",                 //21
+"&5 p15",                       //22
+"&6 p16",                       //23
+"&7 p17",                       //24
+"&8 p18",                       //25
+"&Y y",                         //26
+"&S s",                         //27
+"&, ,",                         //28
+"&@ 現在時間挿入",              //29
+"&- マイナス移動コピー",        //30
+"&. 段落の後ろにコピー",        //31
+"&^ 前に改行",                  //32
+"&V 後に改行";                  //33
+
+//message str(result);
+#x=x;#y=y;#r=result;
+#tx=seltopx;#ex=selendx;#ty=seltopy;#ey=selendy;
+#shi=0;#alt=0;#ctl=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctl=1;}
+if(iskeydown(0x12)){#alt=1;}
+
+if(#r==0){endmacro;
+}else if(#r==1){  //【I】 サブメニュー
+  call submenu;
+}else if(#r==2){  //【D】 【〇〇】
+  execmacro currentmacrodirectory+"\\\\文字変換.mac","s9";
+}else if(#r==3){  //【U】 《〇〇》
+  //execmacro currentmacrodirectory+"\\\\文字変換.mac","s1";
+  if(#alt==1){
+    $k1="「";$k2="」";
+  }else{
+    $k1="《";$k2="》";
+  }
+  if(selecting){
+    $s=getselectedtext();
+    insert $k1+$s+$k2;left;
+   }else{
+    insert $k1+$k2;left;
+  }
+}else if(#r==4){  //【M】 （〇〇）
+  execmacro currentmacrodirectory+"\\\\文字変換.mac","s2";
+}else if(#r==5){  //【P】 print puts
+  copy2;delete;
+  runsync2 "rubyw -x "+currentmacrofilename+" p";
+  paste;
+  //execmacro currentmacrodirectory+"\\\\文字変換.mac","s3";
+}else if(#r==6){  //【R】 〇〇《〇〇》
+  execmacro currentmacrodirectory+"\\\\文字列挿入〇〇《〇〇》.mac";
+}else if(#r==7){  //【A】 [\\p{Han}]
+  if(#alt && #shi){
+    golinetop2;searchdown ",|$",regular;
+    right;left;insert "(?=[\\p{Han}])";
+  }else if(#alt){
+    disabledraw;begingroupundo;golinetop2;
+    selectline 1;
+    replaceallfast "(?<=[\\p{Han}])","(?<![\\p{Han}])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?<![\\p{Han}])","(?=[\\p{Han}])",inselect2;
+    if(result){
+      moveto 0,#y;beginsel;searchdown ")";right;delete;
+      searchdown ",";insert "(?=[\\p{Han}])";
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?=[\\p{Han}])","(?![\\p{Han}])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?![\\p{Han}])","",inselect2;
+    moveto 0,#y;insert "(?<=[\\p{Han}])";
+    endgroupundo;enabledraw;endmacro;
+  }else{
+    insert "[\\p{Han}]";
+  }
+//    //golinetop2;insert "(?<=[\\p{Han}])";
+//    golinetop2;
+//    if(code==40){
+//      selectline 1;replaceallfast "=[","![",inselect2;
+//      if(!result){moveto #x,#y;selectline 1;replaceallfast "![","=[",inselect2;}
+//      searchdown ")";right;
+//    }else{
+//      insert "(?<=[\\p{Han}])";
+//    }
+//  }else{
+//    insert "[\\p{Han}]";
+//  }
+}else if(#r==8){  //【H】 [ぁ-ん]
+  if(#alt && #shi){
+    golinetop2;searchdown ",|$",regular;
+    right;left;insert "(?=[ぁ-ん])";
+  }else if(#alt){
+    disabledraw;begingroupundo;golinetop2;
+    selectline 1;
+    replaceallfast "(?<=[ぁ-ん])","(?<![ぁ-ん])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?<![ぁ-ん])","(?=[ぁ-ん])",inselect2;
+    if(result){
+      moveto 0,#y;beginsel;searchdown ")";right;delete;
+      searchdown ",";insert "(?=[ぁ-ん])";
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?=[ぁ-ん])","(?![ぁ-ん])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?![ぁ-ん])","",inselect2;
+    moveto 0,#y;insert "(?<=[ぁ-ん])";
+    endgroupundo;enabledraw;endmacro;
+  }else{
+    insert "[ぁ-ん]";
+  }
+//    //golinetop2;insert "(?<=[ぁ-ん])";
+//    golinetop2;
+//    if(code==40){
+//      selectline 1;replaceallfast "=[","![",inselect2;
+//      if(!result){moveto #x,#y;selectline 1;replaceallfast "![","=[",inselect2;}
+//      searchdown ")";right;
+//    }else{
+//      insert "(?<=[ぁ-ん])";
+//    }
+//  }else{
+//    insert "[ぁ-ん]";
+//  }
+}else if(#r==9){  //【K】 [ァ-ヴー]
+  if(#alt && #shi){
+    golinetop2;searchdown ",|$",regular;
+    right;left;insert "(?=[ァ-ヴー])";
+  }else if(#alt){
+    disabledraw;begingroupundo;golinetop2;
+    selectline 1;
+    replaceallfast "(?<=[ァ-ヴー])","(?<![ァ-ヴー])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?<![ァ-ヴー])","(?=[ァ-ヴー])",inselect2;
+    if(result){
+      moveto 0,#y;beginsel;searchdown ")";right;delete;
+      searchdown ",";insert "(?=[ァ-ヴー])";
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?=[ァ-ヴー])","(?![ァ-ヴー])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?![ァ-ヴー])","",inselect2;
+    moveto 0,#y;insert "(?<=[ァ-ヴー])";
+    endgroupundo;enabledraw;endmacro;
+  }else{
+    insert "[ァ-ヴー]";
+  }
+}else if(#r==10){  //【T】 定型文挿入
+  execmacro currentmacrodirectory+"\\\\定型文挿入.mac";
+}else if(#r==11){  //【:】 spc*120
+  golineend2;
+  $s="";#i=0;
+  while(#i<12){$s=$s+"          ";#i=#i+1;}
+  setclipboard $s;paste;
+}else if(#r==12){ //【B】 ボックス貼り付け
+  execmacro currentmacrodirectory+"\\\\ボックス貼り付け.mac";
+  //selectline 1;copy;down;
+  //runsync2 "rubyw "+currentmacrodirectory+"\\\\moji_hen.rbw bc "+str(#x);
+  //paste;
+}else if(#r==13){ //【C】 末尾にクリップボード
+  beginclipboardread;$c=getclipboard;
+  if(!selecting){
+    golineend2;insert $c;
+  }else{
+    replaceallfast "$",$c,regular,inselect2;
+  }
+}else if(#r==14){ //【 】 先頭にスペース
+  #x=x;#y=y;
+  if(selecting){
+    if(#x==0 && #ty!=#ey){escape;moveto 0,#ty;beginsel;moveto 0,#ey-1;}
+    selectline 1;replaceallfast "^"," ",regular,inselect2;
+  }else{
+    moveto 0,#y;insert " ";
+  }
+  moveto #x+1,#y;
+}else if(#r==15){ //【E】 ======
+  escape;right;searchup2 "^[。◇]*$",regular;golinetop2;insert "======\n";
+  moveto #x,#y+1;
+}else if(#r==16){ //【f】 f
+  replaceallfast "(?<![>]|\\A)$",",f",regular,inselect2;
+}else if(#r==17){ //【//】/
+  #x=x;#y=y;moveto 0,#y;insert "//";moveto #x,#y;
+}else if(#r==18){ //【0】 前後に0
+  if(!selecting){
+    if(#alt==0){golinetop2;insert "0";
+    }else{golineend2;insert "0";}
+  }else{replaceallfast "^(.*)$","0\\10",regular,inselect2;}
+}else if(#r==19){ //【1】 [一二三四五六七八九十]
+  if(#alt && #shi){
+    golinetop2;searchdown ",|$",regular;
+    right;left;insert "(?=[一二三四五六七八九十])";
+  }else if(#alt){
+    disabledraw;begingroupundo;golinetop2;
+    selectline 1;
+    replaceallfast "(?<=[一二三四五六七八九十])","(?<![一二三四五六七八九十])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?<![一二三四五六七八九十])","(?=[一二三四五六七八九十])",inselect2;
+    if(result){
+      moveto 0,#y;beginsel;searchdown ")";right;delete;
+      searchdown ",";insert "(?=[一二三四五六七八九十])";
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?=[一二三四五六七八九十])","(?![一二三四五六七八九十])",inselect2;
+    if(result){golinetop2;searchdown ")";right;
+      endgroupundo;enabledraw;endmacro;}
+    moveto #x,#y;selectline 1;
+    replaceallfast "(?![一二三四五六七八九十])","",inselect2;
+    moveto 0,#y;insert "(?<=[一二三四五六七八九十])";
+    endgroupundo;enabledraw;endmacro;
+  }else{
+    insert "[一二三四五六七八九十]";
+  }
+  //execmacro currentmacrodirectory+"\\\\文字変換.mac","s7";
+}else if(#r==20){ //【2】 選択文字数挿入
+  execmacro currentmacrodirectory+"\\\\選択文字数挿入.mac";
+}else if(#r==21){ //【3】 単語前に#
+  escape;left;gowordtop2;insert "#";
+}else if(#r==22){ //【5】 p15
+  disabledraw;selectline 1;#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "([^ ,]+》[^ ,]*),p[12]5 ","\\1,p25 ",regular,inselect2;
+  if(result>0){setclipboard ",p25";endmacro;}
+  moveto #tx,#ty;beginsel;moveto #ex,#ey;setclipboard ",p15";
+  replaceallfast "([^ ,]+》[^ ,]*)(,[a-z0-9]*)? ","\\1,p15 ",regular,inselect2;
+  if(result==0){
+    moveto 0,#y;selectline 1;replaceallfast " ",",p15 ",regular,inselect2
+    if(result==0){moveto #x,#y;}else{left;enabledraw;}
+  }else{left;enabledraw;}
+}else if(#r==23){ //【6】 p16
+  disabledraw;selectline 1;#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "([^ ,]+》[^ ,]*),p[12]6 ","\\1,p26 ",regular,inselect2;
+  if(result>0){setclipboard ",p26";endmacro;}
+  moveto #tx,#ty;beginsel;moveto #ex,#ey;setclipboard ",p16";
+  replaceallfast "([^ ,]+》[^ ,]*)(,[a-z0-9]*)? ","\\1,p16 ",regular,inselect2;
+  if(result==0){
+    moveto 0,#y;selectline 1;replaceallfast " ",",p16 ",regular,inselect2
+    if(result==0){moveto #x,#y;}else{left;enabledraw;}
+  }else{left;enabledraw;}
+}else if(#r==24){ //【7】 p17
+  disabledraw;selectline 1;#tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "([^ ,]+》[^ ,]*),p[12]7 ","\\1,p27 ",regular,inselect2;
+  if(result>0){setclipboard ",p27";endmacro;}
+  moveto #tx,#ty;beginsel;moveto #ex,#ey;setclipboard ",p17";
+  replaceallfast "([^ ,]+》[^ ,]*)(,[a-z0-9]*)? ","\\1,p17 ",regular,inselect2;
+  if(result==0){
+    moveto 0,#y;selectline 1;replaceallfast " ",",p17 ",regular,inselect2
+    if(result==0){moveto #x,#y;}else{left;enabledraw;}
+  }else{left;enabledraw;}
+}else if(#r==25){ //【8】 p18
+  while(#alt>=0){
+    disabledraw;selectline 1;setclipboard ",p18";
+    #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+    replaceallfast ",p18",",p28",regular,inselect2;
+    if(result>0){
+      moveto #x,#y;selectline 1;
+      replaceallfast "(?<!’)》","’》",regular,inselect2;
+      moveto #x,#y;selectline 1;
+      replaceallfast "^([^),]+),","\\1(?=[\\\\p{Han}]),",regular,inselect2;
+      moveto 0,#y;searchdown " ";right;left;
+      endmacro;
+    }
+    //moveto #x,#y;selectline 1;
+    moveto #tx,#ty;beginsel;moveto #ex,#ey;
+    replaceallfast "([^ ,]+》[^ ,]*)(,[a-z0-9]*)? ","\\1,p18 ",regular,inselect2;
+    if(result==0){
+      moveto 0,#y;selectline 1;replaceallfast " ",",p18 ",regular,inselect2
+      if(result==0){moveto #x,#y;}else{left;enabledraw;}
+    }else{left;enabledraw;}
+    #alt=#alt-1;
+  }
+}else if(#r==26){ //【y】 y
+  disabledraw;selectline 1;setclipboard ",y";
+  replaceallfast "([^ ,]*)(,[a-z0-9]*)? =>","\\1,y =>",regular,inselect2;
+  if(result==0){
+    moveto 0,#y;selectline 1;replaceallfast " ",",y ",regular,inselect2
+    if(result==0){moveto #x,#y;}else{left;enabledraw;}
+  }else{left;enabledraw;}
+}else if(#r==27){ //【s】 s
+  disabledraw;selectline 1;setclipboard ",s";
+  replaceallfast "([^ ,]*)(,[a-z0-9]*)? =>","\\1,s =>",regular,inselect2;
+  if(result==0){
+    moveto 0,#y;selectline 1;replaceallfast " ",",s ",regular,inselect2
+    if(result==0){moveto #x,#y;}else{left;enabledraw;}
+  }else{left;enabledraw;}
+}else if(#r==28){ //【,】 ,
+  //golineend2;insert ",";enabledraw;
+  if(selecting)moveto seltopx,seltopy;
+  searchdown "》|$",regular;insert ",";enabledraw;
+}else if(#r==29){ //【@】 現在時間挿入
+  insert year+"-"+month+"-"+day+" "+time;
+}else if(#r==30){ //【-】 マイナス移動コピー
+  execmacro currentmacrodirectory+"\\\\マイナス移動コピー.mac";
+}else if(#r==31){ //【.】 段落の後ろにコピー
+  if(!selecting)endmacro;
+  copy;searchdown "^$",regular;paste;insert "\n";
+}else if(#r==32){ //【^】 前に改行
+  //#x=x;#y=y;moveto 0,#y;insertreturn;moveto #x,#y+1;
+  //if(selecting){
+  //  begingroupundo;
+  //  $s=getselectedtext();escape;
+  //  golinetop2;insert $s+",\n";left;
+  //  if(!imestate){imeswitch}; //全角入力
+  //  endgroupundo;endmacro;
+  //}else{
+    escape;
+    #x=x;#y=y;moveto 0,#y;insertreturn;moveto #x,#y+1;
+  //}
+}else if(#r==33){ //【V】 後に改行
+  if(selecting){
+    if(#ty==#ey){
+      copy;#x=x;#y=y;moveto 0,#y+1;
+      runsync2 "rubyw -x "+currentmacrofilename+" v";
+      paste;insertreturn;moveto 0,#y+1;
+    }else{
+      copy;#x=x;#y=y;moveto 0,#y+1;insert "\n";
+      runsync2 "rubyw -x "+currentmacrofilename+" v";
+      paste;insertreturn;moveto 0,#y+1;
+    }
+  }else{
+    #x=x;#y=y;moveto 0,#y+1;insertreturn;moveto #x,#y;
+  }
+}
+endgroupundo;endmacro;
+
+submenu:
+mousemenu
+"&I ルビ",                    //1
+"&S ◇。◇。◇。",            //2
+"&1 《!",                     //3
+"&7 《’",                    //4
+"&/ 《/-",                    //5
+"&- 《-";                     //6
+
+#r=result;
+if(#r==0){endmacro;
+}else if(#r==1){ //【ルビ】
+  execmacro currentmacrodirectory+"\\\\文字列挿入〇〇《〇〇》.mac";
+}else if(#r==2){ //【◇。◇。◇。】
+  if(selecting){
+    $s=getselectedtext();
+    #hwnd=hidemaruhandle(0);
+    setactivehidemaru 1;
+    escape;#x=x;#y=y;searchdown $s,loop;#r=result;
+    if(#r){escape;golineend2;insert "\n◇。◇。◇。";
+      setactivehidemaru #hwnd;escape;}
+    else{moveto #x,#y;setactivehidemaru #hwnd;}
+    
+  }else{
+    golineend2;insert "\n◇。◇。◇。";
+  }
+}else if(#r==3){ //【1】 《!
+  #x=x;#y=y;escape;searchup "《";right;insert "!";moveto #x,#y;right;
+}else if(#r==4){ //【7】 《’
+  #x=x;#y=y;escape;searchup "《";right;insert "’";moveto #x,#y;right;right;
+}else if(#r==5){ //【/-】 《/- 
+  #x=x;#y=y;escape;searchup "《";right;insert "/-";moveto #x,#y;right;right;
+}else if(#r==6){ //【-】 《- 
+  #x=x;#y=y;escape;searchup "《";right;insert "-";moveto #x,#y;right;
+  //escape;left;gowordtop2;insert "-";
+}
+endgroupundo;endmacro;
+
+/*/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+opt=ARGV[0]
+
+if %r|v|=~opt
+  st=st.gsub(/《[^《》]*》|｜/,"")
+else
+  st=%Q|print "#{st}=";p #{st}|
+end
+cbd.setText(st)
+__END__
+*/
+

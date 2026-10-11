@@ -1,0 +1,65 @@
+﻿//漢数英数変換
+
+disabledraw;begingroupundo;
+if(selecting){copy2;}else{setclipboard "";}
+beginclipboardread;
+#fg=getclipboardinfo(1);
+if(#fg){ //矩形選択
+  if(seltopx==selendy){wordleft;}
+  #h1=hidemaruhandle(0);
+  copy2;openfile "/h";paste;
+  saveas currentmacrodirectory+"\\tmp99gm.txt";
+  #h2=hidemaruhandle(0);
+  selectall;copy2;
+  runsync2 "rubyw -x "+currentmacrofilename;
+  delete;paste;
+  setactivehidemaru #h1;cut;
+  setactivehidemaru #h2;
+  gofiletop;beginrect;gofileend;copy2;
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  setactivehidemaru #h1;pasterect;
+  $s1=getclipboard;
+  beginrect;moveto x+#dx-#px,y+#dy-#py;
+  closehidemaruforced #h2;
+}else{
+  if(selecting){
+    if(seltopx==selendx){wordleft;}
+  }else{beginsel;wordleft;}
+  cut;
+  runsync2 "rubyw -x "+currentmacrofilename;
+  #x=x;#y=y;paste;$s1=getclipboard;
+  if(#fs==1){ //shiftキーが押されてたら選択
+    beginsel;moveto #x,#y;}
+}
+#px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+if(rectselecting){escape;moveto #px,#dy;beginrect;moveto #dx,#py;}
+if(#fs==0){escape;}
+endgroupundo;enabledraw;endmacro;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+st=st.tr('〇○一二三四五六七八九・','00123456789.').
+  gsub(%r|(\d+)?十(\d+)?|){($1||1).to_i*10+$2.to_i}.
+  gsub(%r|(\d+)?百(\d+)?|){($1||1).to_i*100+$2.to_i}.
+  gsub(%r|(\d+)?千(\d+)?|){($1||1).to_i*1000+$2.to_i}.
+  gsub(%r|(\d+)万(\d+)?|){$1.to_i*10** 4+$2.to_i}.
+  gsub(%r|(\d+)億(\d+)?|){$1.to_i*10** 8+$2.to_i}.
+  gsub(%r|(\d+)兆(\d+)?|){$1.to_i*10**12+$2.to_i}
+cbd.setText(st)
+
+__END__
+*/
+
+

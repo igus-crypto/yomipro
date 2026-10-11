@@ -1,0 +1,57 @@
+﻿//grep
+
+begingroupundo;
+#fg=getclipboardinfo(1);
+setmenudelay 700;
+mousemenu
+"&G スタンダード",                     // 1
+"&R ルビ付き・正規表現",               // 2
+"&M 読み上げ置換前",                   // 3
+"&Y 読み上げ置換後",                   // 4
+"&W 読み上げ置換前後",                 // 5
+"&T ルビ展開後",                       // 6
+"&P 読み上げプラス確認",               // 7
+"&C チェックリスト",                   // 8
+"&1 チェックリスト読み上げチェック",   // 9
+"&2 チェックリスト読み上げ展開",       //10
+"&3 チェックリスト読み上げ確認",       //11
+"&4 チェックリスト読み上げ確認２",     //12
+"&5 読み上げ確認",                     //13
+"&0 置換リスト";                       //14
+
+//message str(result);
+if(result==0){endmacro;
+}else if(result==1){  //【G】 スタンダード
+  execmacro currentmacrodirectory+"\\\\grepスタンダード.mac";
+}else if(result==2){  //【R】 ルビ付き・正規表現
+  execmacro currentmacrodirectory+"\\\\grepルビ付き・正規表現.mac";
+}else if(result==3){  //【M】 読み上げ置換前
+  execmacro currentmacrodirectory+"\\\\読み上げ置換前.mac";
+}else if(result==4){  //【Y】 読み上げ置換後
+  execmacro currentmacrodirectory+"\\\\読み上げ置換後.mac";
+  execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","4";
+}else if(result==5){  //【W】 読み上げ置換前後
+  execmacro currentmacrodirectory+"\\\\読み上げ置換前後.mac";
+}else if(result==6){  //【T】 ルビ展開後
+  execmacro currentmacrodirectory+"\\\\grepルビ展開後.mac";
+}else if(result==7){  //【P】 読み上げプラス確認
+  execmacro currentmacrodirectory+"\\\\読み上げプラス確認.mac";
+}else if(result==8){  //【C】 チェックリスト
+  execmacro currentmacrodirectory+"\\\\grepチェックリスト.mac";
+}else if(result==9){  //【1】 チェックリスト読み上げチェック
+  execmacro currentmacrodirectory+"\\\\チェックリスト読み上げチェック.mac";
+  selectall;copy;
+  runsync2 "rubyw -x "+currentmacrodirectory+"\\\\選択をsend.mac asc";
+}else if(result==10){  //【2】 チェックリスト読み上げ展開
+  execmacro currentmacrodirectory+"\\\\チェックリスト読み上げ展開.mac";
+}else if(result==11){  //【3】 チェックリスト読み上げ確認
+  execmacro currentmacrodirectory+"\\\\チェックリスト読み上げ確認.mac";
+}else if(result==12){  //【4】 チェックリスト読み上げ確認２
+  execmacro currentmacrodirectory+"\\\\チェックリスト読み上げ確認２.mac";
+}else if(result==13){  //【5】 読み上げ確認
+  execmacro currentmacrodirectory+"\\\\読み上げ確認.mac";
+}else if(result==14){  //【0】 置換リスト
+  execmacro currentmacrodirectory+"\\\\置換リストをgrep.mac";
+}
+endgroupundo;endmacro;
+

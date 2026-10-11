@@ -1,0 +1,56 @@
+﻿//ＲＥＦ変換
+
+disabledraw;begingroupundo;
+if(!selecting)selectline 1;
+copy2;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+
+cbd = ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(/\R/).reject{|e| e==""}
+st="\uFEFFbegingroupundo;disabledraw;\n"
+print "ar=";p ar
+an=ar.grep(/a href="part(\d+)/){|e| [$1.to_i,e]}
+a1=an.transpose[0]
+a2=an.transpose[1]
+print "an=";p an
+print "a1=";p a1
+print "a2=";p a2
+
+if a1==[]
+  ar.each{|e|
+    puts e
+    puts e.gsub(%Q|"|,%Q|\\\\"|)
+    a=e.match(%r|ref-\d+|)
+    puts a
+    #print "a=";p a
+    next unless a
+    st+=%Q<replaceallfast ".*#{a}.*"," 【#{e.gsub(%Q|"|,%Q|\\\\"|)}】",regular;\n>
+  }
+else
+  st+="escape;gofiletop;\n"
+  (1..a1[-1]).each{|e|
+    st+=%Q|searchdown @\"≪div class=""main""≫\";\n|
+    if a1.include?(e)
+      st+=%Q|deleteline 0;\ninsert @\" 【#{a2[a1.index(e)].gsub(%Q<">,%Q<"">)}\】\n";\n|
+    end}
+end
+
+st+="enabledraw;endgroupundo;\n"
+st+="escape"
+
+print "st=";p st
+File.write("tmp.mac",st)
+__END__
+*/

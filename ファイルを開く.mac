@@ -1,0 +1,41 @@
+﻿//ファイルを開く
+
+$opt="n";
+if(selecting){copy2;$opt="c";}
+runsync2 "rubyw -x "+currentmacrofilename+" "+$opt;
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+cbd=ClipBoard.new(__ENCODING__)
+fl,opt,s=cbd.getText.chomp,ARGV[0],"\uFEFF"
+
+print "opt=";p opt
+print "fl=";p fl
+if %r|c|=~opt
+  if FileTest.file?(fl)
+    s=%Q|openfile "#{fl}";\n|
+  else
+    s=%Q|openfile "#{fl}*";\n|
+  end
+else
+  s=%Q|openfile "*.*";\n|
+end
+File.write("tmp.mac",s)
+
+__END__
+*/
+
+
+
+

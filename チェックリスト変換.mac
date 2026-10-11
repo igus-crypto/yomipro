@@ -1,0 +1,29 @@
+﻿//チェックリスト変換.mac
+
+if(!selecting)endmacro;
+#h1=hidemaruhandle(0);
+copy2;openfile "/h";paste;
+saveas directory+"\\tmp99c.txt";
+#h2=hidemaruhandle(0);
+setactivehidemaru #h1;delete;
+closehidemaruforced #h2;
+runsync2 "rubyw -x "+currentmacrofilename;
+insertfile directory+"\\tmp99d.txt";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp_99r.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+Encoding.default_external = 'UTF-8'
+
+st=open("tmp99c.txt").read
+st=st.gsub(%r|《([^《》]*)》《([^《》]*)》|,',\2,+\1')
+File.write("tmp99d.txt",st)
+__END__
+*/
+

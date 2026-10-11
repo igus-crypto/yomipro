@@ -1,0 +1,164 @@
+﻿disabledraw;begingroupundo;beginclipboardread;
+//if(selecting){selectline 1;}
+//else{golinetop2;beginsel;golineend2;}
+selectline 1;
+#y1=seltoplineno;#y2=selendlineno;cut;
+runsync2 "rubyw -x "+currentmacrofilename;
+paste;moveto2 1,#y1;beginsel;moveto2 1,#y2;left;//golineend2;
+endgroupundo;enabledraw;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'romkan'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+#p st
+
+st0=st
+st=st.split("\r\n").map{|e| e.gsub(%r|^。/|,"。")}.map{|e|
+  print "e=";p e
+  #e.gsub!(/^[!]+/,"")
+  e=e.gsub(%r|^[0-9]+|,"").gsub(%r|[0-9]+$|,"") unless %r|^[0-9‐]*$|=~e
+  print "e=";p e
+  if /^$/=~e
+    ""
+  elsif /＼/=~e
+  "#{e},#{e},s =>"
+  elsif /^[a-zA-Z., \/]*$/=~e
+    r=e.gsub(/([a-zA-Z.,]+)/){"｜#{$1}《》,p14"}
+    print "r=";p r
+    "(#{e}),#{r} =>"
+  elsif /,y(\d+)?/=~e #読み上げ変換
+    a,b,o,r,q,y,d,c=/^([!]*)([^,]*),?([^, ]*)?(,p[^ ,]*)?(,y[^ ]*)?([^=]*=[^>]*)*(>.*$)?/.
+      match(e).to_a
+    oo=o.gsub(/\([^)]*\)/,"")
+    print "a=";p a
+    print "b=";p b
+    print "o=";p o
+    print "r=";p r
+    print "p=";p q
+    print "y=";p y
+    print "d=";p d
+    print "c=";p c
+    c="="+c
+    print "oo=";p oo
+    if /《.*》/=~r
+      r=r.gsub(/《[^》]*》/,"")
+    elsif r=="y"
+      r,y=o,",y"
+    elsif /p/=~r
+      q,r=r,o
+    end
+    c="=>" unless c
+    if q
+      r=o
+      #o=o.gsub(/\([^)]*\)/,"")
+      if /2$/=~q
+        o="([ァ-ヴー]+)#{oo}"
+      elsif /5$/=~q
+        o="([^\\p{Han}])#{oo}"
+      elsif /6$/=~q
+        o="#{o}([^\\p{Han}])"
+      elsif /7$/=~q
+        o="([^\\p{Han}])#{oo}([^\\p{Han}])"
+      end
+      y=(/^\p{Han}$/=~oo ? ",y6" : ",y3")
+    else
+      if /^\p{Han}$/=~oo && y==",y"
+        o="([^\\p{Han}])#{oo}([^\\p{Han}])"
+        y=",y6"
+      elsif /^\p{Han}\p{Han}$/=~oo && y==",y"
+        o="([^\\p{Han}])#{oo}([^\\p{Han}])"
+        y=",y5"
+      elsif /^\p{Han}+$/=~oo && y==",y"
+        o="([^\\p{Han}])#{oo}([^\\p{Han}])"
+        y=",y3"
+      elsif /^\p{Han}/=~oo && y==",y"
+        o="([^\\p{Han}])#{oo}"
+        y=",y2"
+      elsif /\p{Han}$/=~oo && y==",y"
+        o="#{oo}([^\\p{Han}])"
+        y=",y2"
+      end
+    end
+    y=",y1" if y==",y"
+    #c=y+" "+c
+    print "oryc=";p [o,r,y,c]
+    (o=="" ? a : b+o+","+r+y+" "+c)
+  #elsif /,[spr]/=~e
+  #  e
+  else
+    a,b,o,r,q,c=/^([!]*)([^,]*)(,[^, ]*)?(,[^ ]*)?(.*$)?/.match(e).to_a.map{|e| e ? e :""}
+    print "a=";p a
+    print "b=";p b
+    print "o=";p o
+    print "r=";p r
+    print "q=";p q
+    print "c=";p c
+    r=o if r==""
+    if /,[spr]/!~e
+      n=0
+      if /《.*》/!~r
+        r=r.split(/(\([^)]*\))/).map{|f|
+          if /\(/=~f
+            n+=1
+            '\\'+n.to_s
+          else
+            f.gsub(/([\p{Han}]+)(?!《)/){$1.to_s+"《#{$1.to_s}》"}
+            #f.gsub(/([\p{Han}]+)(?!《)/){$1.to_s+"《’#{$1.to_s}》"}.
+            #  #gsub(/っ(?![《》])/,"っ《-っ》")
+          end}.join
+      end
+      r=r+",r" if n!=0
+      unless /=>/=~c
+        c=c+" =>" 
+        if /[\p{Han}]/=~o and /[ぁ-ん]/=~o
+          if /^[\p{Han}]/=~o and /[\p{Han}]$/=~o
+            r=r+",p17"
+          else 
+            r=r+",p15" if /^[\p{Han}]/=~o
+            r=r+",p16" if /[\p{Han}]$/=~o
+          end
+        elsif /^[ａ-ｚＡ-Ｚ０-９‐\-]+$/=~o
+          o,r="#{o}","｜#{o}《#{r}》,p13"
+        elsif /^[a-zA-Z0-9‐\-]+$/=~o
+          o,r="(#{o})","｜#{o}《#{r}》,p14"
+        end
+      end
+    end
+    r=","+r unless /^,/=~r
+    print "orqc=";p [o,r,q,c]
+    #ns=(o=="" ? a : b+o+r+q+c)
+    if o==""
+      ns=a
+    elsif %r|( //.*)( =>.*$)|=~c
+      c1,c2=$1,$2
+      ns=b+o+r+q+c1+" //"+r.sub(%r|^,|,"")+c2
+    else
+      ns=b+o+r+q+c
+    end
+    print "ns=" ;p ns
+    print "e=" ;p e
+    ns=b+o+r+q+" //"+r.gsub(/^,/,"")+q+c if ns==e
+    ns
+  end}.join("\n")#+"\n"
+st+="\n" if /\R$/=~st0
+
+print "st=";p st
+cbd.setText(st)
+
+__END__
+*/
+
+

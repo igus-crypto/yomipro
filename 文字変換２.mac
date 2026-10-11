@@ -1,0 +1,192 @@
+﻿//文字変換２.mac
+
+begingroupundo;
+//setmenudelay 100;
+mousemenu
+"&Y 【まとめて拗音変換】",              // 1
+"&T 【他ファイルからルビチェック】",    // 2
+"&R 【ルビ結合】",                      // 3
+"&P 【パラルビ変換】",                  // 4
+"&C 【チェックリスト変換】",            // 5
+"&U 【上へ移動】",                      // 6
+"&V 【下へ移動】",                      // 7
+"&H 【変数確認(print,p)】",             // 8
+"&K 【かれ彼変換】",                    // 9
+"&J 【改行をジョイン】",                //10
+"&; 【+変換】",                         //11
+"&, 【、《:、》を前に移動】",           //12
+"&. 【、《:、》を後ろに移動】",         //13
+"&e 【《=◯◯》に変換】",               //14
+"&5 【《◯◯》から《◯◯=》】",         //15
+"&1 【=を!】",                          //16
+"&M 【イコール変換】",                  //17
+"&F 【クリップボードにfield-price】",   //18
+"&2 【”+クリップボード】",             //19
+"&7 【’+クリップボード】",             //20
+"&@ 【クリップボード+’】",             //21
+"&s 【/-+クリップボード】",             //22
+"&3 【#+クリップボード】",              //23
+"&/ 【/+クリップボード】",              //24
+"&- 【-+クリップボード】";              //25
+
+#opt=result;
+#shi=0;
+#x=x;#y=y;
+if(iskeydown(0x10)){#shi=1;}
+
+begingroupundo;
+if(#opt==0){endmacro;
+}else if(#opt==1){ //【まとめて拗音変換】
+  begingroupundo;
+  execmacro currentmacrodirectory+"\\まとめて拗音変換.mac";
+  execmacro currentmacrodirectory+"\\他ファイルからルビチェック.mac";
+  execmacro currentmacrodirectory+"\\ルビソート（チェックリスト）.mac";
+  #x=x;#y=y;beginsel;gofileend;
+  replaceallfast "(?#maxlines:10)\n+","\n",regular,inselect2;
+  replaceallfast "^!","!!",regular;
+  moveto #x,#y;endgroupundo;save;
+  execmacro currentmacrodirectory+"\\拗音チェック.mac";
+  execmacro currentmacrodirectory+"\\\\チェックリスト読み上げチェック.mac";
+  selectall;copy;
+  runsync2 "rubyw -x "+currentmacrodirectory+"\\\\選択をsend.mac asc";
+}else if(#opt==2){ //【他ファイルからルビチェック】
+  execmacro currentmacrodirectory+"\\他ファイルからルビチェック.mac";
+}else if(#opt==3){ //【ルビ結合】
+  execmacro currentmacrodirectory+"\\ルビ結合.mac";
+}else if(#opt==4){ //【パラルビ変換】
+  execmacro currentmacrodirectory+"\\パラルビ変換.mac";
+}else if(#opt==5){ //【チェックリスト変換】
+  execmacro currentmacrodirectory+"\\チェックリスト変換.mac";
+}else if(#opt==6){ //【上へ移動】
+  execmacro currentmacrodirectory+"\\上へ移動.mac";
+}else if(#opt==7){ //【下へ移動】
+  execmacro currentmacrodirectory+"\\下へ移動.mac";
+}else if(#opt==8){ //【変数確認】
+  //replaceallfast "^(.*$)","print %Q|\\1=|;p \\1",regular,inselect2;
+  if(!selecting)endmacro;
+  $s=getselectedtext();
+  delete;insert @"print """+$s+@"="";p "+$s;
+}else if(#opt==9){ //【かれ彼変換】
+  execmacro currentmacrodirectory+"\\かれ彼変換.mac";
+}else if(#opt==10){ //【改行をジョイン】
+  if(!selecting)endmacro;
+  #tx=seltopx;#ty=seltopy;#ex=selendx;#ey=selendy;
+  replaceallfast "\n","",regular,inselect2;
+  if(!result)moveto #tx,#ty;
+  selectline 1;
+  replaceallfast "[─]|◇。","",regular,inselect2;
+  if(!result)moveto #tx,#ty;
+  selectline 1;
+  replaceallfast "】【","】　【",inselect2;
+  if(!result)moveto #tx,#ty;
+}else if(#opt==11){ //【プラス変換】
+  execmacro currentmacrodirectory+"\\プラス変換.mac";
+}else if(#opt==12){ //【、《:、》を前に移動】
+  if(selecting){
+    replaceallfast "、([^、。]*)、《:、》","、《:、》\\1、",regular,inselect2;
+  }else{
+    searchup "、(?![》])",regular;left;
+    searchdown "、《:、》";
+    #ftx=foundtopx;#fty=foundtopy;#fex=foundendx;#fey=foundendy;
+    moveto #ftx,#fty;right;beginsel;moveto #fex,#fey;delete;left;
+    searchup "、(?![》])",regular;right;insert "《:、》";
+  }
+}else if(#opt==13){ //【、《:、》を後ろに移動】
+  if(selecting){
+    replaceallfast "、《:、》([^、。]*)、","、\\1、《:、》",regular,inselect2;
+  }else{
+    searchdown "、(?![》])",regular;left;
+    searchup "、《:、》";
+    #ftx=foundtopx;#fty=foundtopy;#fex=foundendx;#fey=foundendy;
+    moveto #ftx,#fty;right;beginsel;moveto #fex,#fey;delete;left;
+    searchdown "、(?![》])",regular;right;insert "《:、》";
+  }
+}else if(#opt==14){ //【《=◯◯》に変換】
+  execmacro currentmacrodirectory+"\\イコール変換.mac";
+  //replaceallfast "《([^《》]*)=》","《=\\1》",regular,inselect2;
+}else if(#opt==15){ //【《◯◯》から《◯◯=》】
+  replaceallfast "《([^《》]*)=?》","《\\1=》",regular,inselect2;
+}else if(#opt==16){ //【=を!】
+  searchup "^|[=]",regular;
+  if(code==61){
+    delete;insert "!";
+  else
+    moveto #x,#y;
+  }
+}else if(#opt==17){ //【イコール変換】
+  if(#shi==0){
+    replaceup "(?<=《)[-%=]?","=",regular;searchdown "》";
+    if(!result){
+      moveto #x,#y;disabledraw;
+      selectline 1;replaceallfast ",+",",=",inselect2;
+      enabledraw;endmacro;}
+  }
+  searchdown "》";
+  if(getcolormarker(0x0002,findmarker)==""){
+    while(getcolormarker(0x0002,findmarker)==""){
+      #x=x;#y=y;searchdown "》";
+      if((#x==x) && (#y==y)){endmacro;}}}
+  right;left;
+}else if(#opt==18){ //【クリップボードにfield-price】
+  setclipboard "&field-price=1-9900";
+}else{
+  disabledraw;
+  if(selecting){cut;}
+  #fg=getclipboardinfo(1);
+  #h1=hidemaruhandle(0);
+  runsync2 "rubyw -x "+currentmacrofilename+" "+str(#opt);
+  openfile "/h "+currentmacrodirectory+"\\tmp99gm.txt";
+  #hn=hidemaruhandle(0);
+  if(#fg){gofiletop;beginrect;gofileend;up;golineend;copy2;}
+  else{selectall;copy2;}
+  setactivehidemaru #h1;
+  if(#fg){pasterect;}else{paste;}
+  closehidemaruforced #hn;
+  
+  #px=seltopx;#py=seltopy;#dx=selendx;#dy=selendy;
+  escape;moveto #px,#py;
+  endgroupundo;enabledraw;
+}
+endgroupundo;endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+opt=ARGV[0]
+
+require 'clipboard'
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText.gsub(/\R/,"\n")
+
+#st=open(__dir__+"/tmp99gm.txt").read.chomp
+print "st=";p st
+if /25/=~opt
+  st=st.gsub(/^/,"-")
+elsif /24/=~opt
+  st=st.gsub(/^/,"/")
+elsif /23/=~opt
+  st=st.gsub(/^/,"#")
+elsif /22/=~opt
+  st=st.gsub(/^/,"/-")
+elsif /21/=~opt
+  st=st.gsub(/$/,"’")
+elsif /20/=~opt
+  st=st.gsub(/^/,"’")
+elsif /19/=~opt
+  st=st.gsub(/^/,"”")
+end
+print "st=";p st
+
+t=open(__dir__+"/tmp99gm.txt","w")
+t.print st
+
+__END__
+*/
+
+

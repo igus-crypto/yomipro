@@ -1,0 +1,3 @@
+if(selecting){#x=x;#y=y;copy;escape;
+runsync2 "rubyw "+currentmacrodirectory+"\\collect.rbw t";
+gofileend;insert "\n";paste;moveto #x,#y;}

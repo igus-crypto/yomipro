@@ -1,0 +1,87 @@
+﻿//ルビ抽出
+
+$op=getarg(0);
+// a:ルビ抽出（全て）
+// b:ルビ抽出（ひらがな以外）
+// c:ルビ抽出（ひらがなカタカナのみ）
+// n:ルビ候補抽出
+
+//message filename;
+//message $fl01;
+//message strreplace($fl01,"/","\\");
+//findhidemaru($fl01)
+//selectall;copy;
+//runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw a";
+
+runsync2 "rubyw -x "+currentmacrofilename+" "+$op;
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+require 'fileutils'
+
+opt=ARGV[0]
+
+print "dir=";p __dir__
+p FileTest.file?(__dir__+"/config.ini")
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+gfl1=ini["grep"]["file_1"]
+tfl2=ini["grep"]["file_2"]
+
+#cbd=ClipBoard.new(__ENCODING__)
+#st=cbd.getText
+st=open(gfl1).read
+
+# print "opt=";p opt
+
+if /^a/=~opt #ルビ抽出
+  ofs="tmp_a"
+  r=%r<(｜[^《。\n]+|[\p{Han}]+|.)《([^《》]+)》>
+  p bf=st.scan(r)
+  ar=bf.map{|e| ["#{e[0].gsub('｜','')},#{e[1]}"]}
+elsif /^b/=~opt #ルビ抽出（ひらがな以外）
+  ofs="tmp_a"
+  r=%r<(｜[^《。、\n》]+|[\p{Han}]+)《([^《》]+)》>
+  p bf=st.scan(r).reject{|e| /^[ぁ-ん]+$/=~e[1]}
+  ar=bf.map{|e| ["#{e[0].sub(/^｜/,'')},#{e[1]}"]}
+elsif /^c/=~opt #ルビ抽出（ひらがなのみ）
+  ofs="tmp_a"
+  r=%r<(｜[^《。、\n》]+|[\p{Han}]+)《([^《》]+)》>
+  b1=st.scan(r).select{|e| /^[ぁ-ん]+$/=~e[1]}
+  b2=st.scan(r).select{|e| /^[ァ-ヴー]+$/=~e[1]}
+  b3=st.scan(r).select{|e| /^[ぁ-んァ-ヴー・]+$/=~e[1]}.reject{|e| /^[ぁ-んァ-ヴー]+$/=~e[1]}
+  bf=b1+b2+b3
+  ar=bf.map{|e| ["#{e[0].sub(/^｜/,'')},#{e[1]}"]}
+elsif /^n/=~opt #ルビ候補抽出
+  ofs="tmp_a"
+  r=%r|([\p{Han}]+[(（][ぁ-んァ-ヴー・]+[）)])|
+  p bf=st.scan(r)
+  p ar=bf.map{|e| [e[0],e[0].gsub(/[(（]([ぁ-んァ-ヴー・]+)[）)]/){"《#{$1}》"},"s =>"].join(",")}
+end
+
+num=1
+while FileTest.file?(ofn=ofs + num.to_s + ".txt")
+  num+=1
+end
+ofn=ofs+ num.to_s + ".txt"
+File.write(ofn,ar.join("\n")+"\n")
+mac=File.expand_path("tmp.mac")
+st =%Q|begingroupundo;selectall;cut;\n|
+st+=%Q|runsync2 "rubyw #{__dir__}/sort3.rbw ";\n|
+st+=%Q|paste;endgroupundo;gofiletop;save;endmacro;\n|
+File.write(mac,st)
+spawn(%Q|"#{hide}" /fu8 /x "#{mac}" "#{ofn}"|)
+
+__END__
+*/

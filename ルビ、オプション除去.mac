@@ -1,0 +1,75 @@
+//ルビ、オプション除去
+
+$opt="n";
+if(iskeydown(0x11)){$opt=$opt+"c";}
+if(iskeydown(0x10)){$opt=$opt+"s";}
+
+if(imestate==1)imeswitch;
+begingroupundo;disabledraw;
+if(selecting){}else{beginsel;searchup ",";}
+cut;#fg=getclipboardinfo(1);
+runsync2 "rubyw -x "+currentmacrofilename+" "+$opt;
+if(#fg){pasterect;}else{paste;}
+enabledraw;endgroupundo;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+require 'romkan'
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+opt=ARGV[0]
+
+if %r|cs|=~opt
+    st=st.gsub(%r<｜>,"").gsub(%r|《[^《》]*》|,"").
+      gsub(%r|[《》]|,"").gsub(%r|,[a-z0-9]+|,"")
+elsif %r|c|=~opt
+    st=st.gsub(%r|,[a-z0-9]+|,"")
+else
+  st=st.gsub(%r<｜([^《》]+)《[^》]*》>,'\1').gsub(%r<,[a-z0-9]+>,"")
+  print "st=";p st
+  kg=(/\R$/=~st ? 1 : 0)
+  ar=st.split(/\R/)
+  a1=ar.grep(%r|《[^《》]+》[^《》]+《[^《》]+》|)
+  st=ar.map{|e| e.split(" ").map{|f|
+    if /([^《》]+)?(《[^《》]+》)([^《》]+)(《[^《》]+》)(.*)?/=~f
+       s1,s2,s3,s4,s5=$1.to_s,$2,$3,$4,$5.to_s
+       print "s1=";p s1
+       f=s1+s3+s4+s5.gsub(/《[^》]*》/,"")
+    else
+      if a1==[]
+        f=f.gsub(/《[^》]*》/,"")
+      else
+        f=f
+      end
+    end
+  }.join(" ")}.join("\r\n")
+#  st=st.split(/\R/).map{|e| e.split(" ").map{|f|
+#    if /([^《》]+)?(《[^《》]+》)([^《》]+)(《[^《》]+》)(.*)?/=~f
+#       s1,s2,s3,s4,s5=$1.to_s,$2,$3,$4,$5.to_s
+#       print "s1=";p s1
+#       f=s1+s3+s4+s5.gsub(/《[^》]*》/,"")
+#    else
+#       f=f.gsub(/《[^》]*》/,"")
+#    end
+#  }.join(" ")}.join("\r\n")
+  st=st.gsub("=>"," =>").gsub(%r|[ ]+=>|," =>")
+  st=st+"\r\n" if kg==1
+  st=st.gsub(/》 /,"》,p16 ")
+end
+print "st=";p st
+cbd.setText(st)
+
+__END__
+*/
+

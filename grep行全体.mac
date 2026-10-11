@@ -1,0 +1,9 @@
+﻿//grep行全体
+
+if(selecting && y==selopeny){copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw sa ";}
+else{selectline 1;copy;
+  runsync2 "rubyw "+currentmacrodirectory+"\\grep1.rbw a ";}
+execmacro directory + "\\tmp_g.mac";
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";

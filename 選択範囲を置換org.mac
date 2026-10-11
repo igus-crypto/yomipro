@@ -1,0 +1,66 @@
+﻿//選択範囲を置換
+//alt時には選択文字をクリップボードで
+
+if(!selecting)endmacro;
+$st=getselectedtext();
+#alt=0;
+if(iskeydown(0x12)){#alt=1;}
+if(imestate == 0){imeswitch};
+$dir=directory;
+$ini=currentmacrodirectory + "\\config.ini";
+$uwsc=getinistr($ini,"path","uwsc");
+beginclipboardread;$s0=getclipboard;
+disabledraw;begingroupundo;
+copy2;openfile "/h";paste;
+saveas currentmacrodirectory+"\\tmp99gm.txt";
+#hwnd=hidemaruhandle(0);
+setactivehidemaru 1;closehidemaruforced #hwnd;
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+beginclipboardread;$s=getclipboard;
+forceinselect 2;
+if(#alt){
+  run $uwsc+" "+currentmacrodirectory+"\\alte.uws";
+  setclipboard $s0;
+  replacedialog $st ,$st,word,inselect2,nohilight;
+}else{
+  run $uwsc+" "+currentmacrodirectory+"\\altl.uws";
+  replacedialog $s ,$s,word,inselect2,nohilight;
+}
+enabledraw;endgroupundo;
+
+/*
+#/
+#! ruby
+
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+a,b="","\uFEFF"
+st=open(__dir__+"/tmp99gm.txt").read
+print "st=";p st
+if %r|([\p{Han}]+[ぁ-ん]+[\p{Han}]+)|=~st
+  a=$1
+  cbd.setText(a)
+elsif %r|([\p{Han}]+)|=~st
+  a=$1
+  cbd.setText(a)
+elsif %r|^(《[^《》]+(《[^《》]+》)[^《》]*》)$|=~st
+  c,d=$1,$2
+  b+=%Q|#x=seltopx;#y=seltopy;\n|
+  b+=%Q|replaceallfast "#{c}","#{d}";\n|
+  b+=%Q|moveto #x,#y;endmacroall;\n|
+end
+b+=%Q|endmacro;|
+
+File.write("tmp.mac",b)
+
+
+__END__
+*/
+

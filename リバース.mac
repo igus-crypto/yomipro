@@ -1,0 +1,25 @@
+﻿//リバース
+
+disabledraw;begingroupundo;
+if(!selecting)endmacro;
+selectline 1;
+copy2;
+runsync2 "rubyw -x "+currentmacrofilename;
+delete;paste;
+endgroupundo;enabledraw;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99m.txt","w")
+$stderr=open("tmp_errm.txt","w")
+
+include Math
+require 'clipboard'
+cbd = ClipBoard.new(__ENCODING__)
+
+ar=cbd.getText.split(/\R/).reverse
+cbd.setText(ar.join("\n"))
+__END__
+*/

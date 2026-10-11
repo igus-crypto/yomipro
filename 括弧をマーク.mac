@@ -1,0 +1,96 @@
+﻿//括弧をマーク
+
+disableerrormsg
+disabledraw;
+if(selecting){copy;}else{selectall;copy;}
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp.mac";
+enabledraw;
+
+/*
+#/
+#! ruby
+
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'clipboard'
+
+$stdout=open("tmpc.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+class String
+  def gsub2
+    self.gsub(/\R/,"\\n").
+      gsub(%Q|\\|,%Q|\\\\\\|).
+      gsub("(","\\\\\\(").gsub(")","\\\\\\)").
+      gsub("{","\\\\\\{").gsub("}","\\\\\\}").
+      gsub(%Q|"|,%Q|\\\\"|).gsub(%Q|/|,%Q|\\\\\\/|)
+  end
+end
+
+color=["6267F5","72F531","FFCB1F","29FF77",
+  "FF82E6","4080FF","A8A8F9","FF80FF",
+  "FF97B1","944DFF","F9953E","957AFF",
+  "FF9354","7AAFFF","FFE645","C786F9"]
+
+cbd=ClipBoard.new(__ENCODING__)
+st=cbd.getText
+
+a0=st.scan(%r/(\((?:\g<0>|[^()])*\))/m).
+    flatten.map{|e| e[1..-2]}
+a1=a0
+until a0==[]
+  a0=a0.select{|e| %r|\([^()]+\)|=~e}
+  a0=a0.map{|e| e.scan(/(\((?:\g<0>|[^()])*\))/m)}.
+    flatten.map{|e| e[1..-2]}
+  a1+=a0
+end
+a1=a1.map{|e| e.gsub2}
+a1=a1.map.with_index{|e,i|
+  n=0
+  while /\([^()]+\)/=~e
+    e=e.gsub(/\([^()]+\)/,"")
+    n+=1
+  end
+  [a1[i],n]}
+a1=a1.sort_by{|e| e[1]}
+
+b0=st.scan(%r/(\{(?:\g<0>|[^{}])*\})/m).
+    flatten.map{|e| e[1..-2]}
+b1=b0
+until b0==[]
+  b0=b0.select{|e| %r|\{[^{}]+\}|=~e}
+  b0=b0.map{|e| e.scan(/(\{(?:\g<0>|[^{}])*\})/m)}.
+    flatten.map{|e| e[1..-2]}
+  b1+=b0
+end
+b1=b1.map{|e| e.gsub2}
+b1=b1.map.with_index{|e,i|
+  n=0
+  while /\{[^{}]+\}/=~e
+    e=e.gsub(/\{[^{}]+\}/,"")
+    n+=1
+  end
+  [b1[i],n]}
+b1=b1.sort_by{|e| e[1]}
+
+print "a1=";p a1
+print "b1=";p b1
+
+
+mac=open("tmp.mac","w:utf-8")
+mac.print("\uFEFF")
+a1.each_with_index{|e,i|
+  mac.puts %Q|setsearch "\\\\((?=#{e[0]})" , 0x4003819;|
+  mac.puts %Q|colormarkerallfound 0x000000, 0x#{color[e[1]%16]}, 11, 1;\n|
+  mac.puts %Q|setsearch "(?<=#{e[0]})\\\\)" , 0x4003819;|
+  mac.puts %Q|colormarkerallfound 0x000000, 0x#{color[e[1]%16]}, 11, 1;\n|}
+b1.each_with_index{|e,i|
+  mac.puts %Q|setsearch "\\\\{(?=#{e[0]})" , 0x4003819;|
+  mac.puts %Q|colormarkerallfound 0x000000, 0x#{color[(e[1]+8)%16]}, 11, 1;\n|
+  mac.puts %Q|setsearch "(?<=#{e[0]})\\\\}" , 0x4003819;|
+  mac.puts %Q|colormarkerallfound 0x000000, 0x#{color[(e[1]+8)%16]}, 11, 1;\n|}
+__END__
+*/
+

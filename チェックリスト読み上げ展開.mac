@@ -1,0 +1,3 @@
+﻿selectline 1;copy;
+runsync2 "rubyw "+currentmacrodirectory+"\\grep7.rbw t";
+execmacro directory + "\\tmp.mac";

@@ -1,0 +1,26 @@
+﻿//重複ルビ除去
+
+runsync2 "rubyw -x "+currentmacrofilename+" "+ basename;
+execmacro directory + "\\tmpj.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+
+$stdout=open("tmp99j.txt","w")
+$stderr=open("tmp_errj.txt","w")
+
+f=ARGV[0].encode(Encoding::UTF_8)
+a=open(f).read.scan(%r|《[^《》]*[《][^《》]*》[^《》]*》|)
+a.map!{|e| %Q|"#{e}","《#{e[1,e.size-2].gsub(%r|｜|,"").gsub(%r|《[^《》]*》|,"")}》"|}
+p a
+m=open("tmpj.mac","w")
+m.puts %Q|begingroupundo;disabledraw;|
+a.each{|e| m.puts %Q|replaceallfast #{e};|}
+m.puts %Q|endgroupundo;enabledraw;|
+__END__
+*/
+
+

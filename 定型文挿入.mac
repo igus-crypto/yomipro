@@ -1,0 +1,98 @@
+//定型文挿入
+
+$s[0]="｜";
+$s[1]="-いだ";
+$s[2]="-だ";
+$s[3]="いだ";
+$s[4]="だく";
+$s[5]="-いだ";
+$s[6]="-いだ/-da";
+$s[7]="-いだ/-ida";
+$s[8]="-だ/-ida";
+$s[9]="-だ/-da";
+$s[10]="-ひ";
+$s[11]="-";
+$s[12]="-い";
+$s[13]="ハイ";
+$s[14]="-えが";
+$s[15]="-か";
+$s[16]="~";
+
+begingroupundo;
+#fg=getclipboardinfo(1);
+setmenudelay 50;
+mousemenu
+"&E 定型文編集",          // 1
+"&D 日付挿入",            // 2
+"&P 購入品",              // 3
+"&M 間を取る",            // 4
+"&\\ "+$s[0],             // 5
+"&1 "+$s[1],              // 6
+"&2 "+$s[2],              // 7
+"&3 "+$s[3],              // 8
+"&4 "+$s[4],              // 9
+"&5 "+$s[5],              //10
+"&6 "+$s[6],              //11
+"&7 "+$s[7],              //12
+"&8 "+$s[8],              //13
+"&9 "+$s[9],              //14
+"&0 "+$s[10],             //15
+"&- "+$s[11],             //16
+"&I "+$s[12],             //17
+"&H "+$s[13],             //18
+"&G "+$s[14],             //19
+"&K "+$s[15],             //20
+"&^ "+$s[16];             //21
+
+#r=result;
+#x=x;#y=y;#r=result;
+#shi=0;#alt=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x12)){#alt=1;}
+if(#r==0){endmacro;
+}else if(#r==1){ //【E】 定型文編集
+  $fl=currentmacrodirectory+"\\定型文挿入.mac";
+  if(findhidemaru($fl)==-1){openfile $fl;}
+  setactivehidemaru findhidemaru($fl);
+}else if(#r==2){ //【D】 日付挿入
+  $n=getselectedtext();
+  runsync2 "rubyw -x "+currentmacrofilename+" "+$n;
+  paste;
+}else if(#r==3){ //【K】 購入品
+  insert "***購入品\n-本\n--";
+}else if(#r==4){ //【M】 間を取る
+  golineend2;insert "間を取る";
+}else{
+  insert $s[#r-5];
+}
+endgroupundo;endmacro;
+
+/*/
+#! ruby
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+require 'date'
+opt=ARGV[0].to_i
+t=Date.today-opt
+p t.year
+you=["日","月","火","水","木","金","土"]
+cbd=ClipBoard.new(__ENCODING__)
+
+y=t.year
+m=sprintf("%02d",t.mon)
+d=sprintf("%02d",t.mday)
+w=you[t.wday]
+
+st=%Q|*#{y}年#{m}月#{d}日（#{w}）\n**\n-\n\n|
+st+=%|***今日の数値\n-体重:\n-体脂肪率:\n-体年齢:\n|
+#*2024年06月01日（土）
+cbd.setText(st)
+
+__END__
+*/
+

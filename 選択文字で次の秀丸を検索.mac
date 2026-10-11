@@ -1,0 +1,29 @@
+//選択文字で次の秀丸を検索
+
+setcompatiblemode 0x00000200;
+
+//0x10:shift
+//0x11:ctrl
+//0x12:alt
+#shi=0;#ctr=0;#alt=0;
+if(iskeydown(0x10)){#shi=1;}
+if(iskeydown(0x11)){#ctr=1;}
+if(iskeydown(0x12)){#alt=1;}
+
+if(#ctr && #shi){
+  if(selecting){
+    $sel = gettext(seltopx,seltopy,selendx,selendy);
+    setactivehidemaru 1,-1;
+    while(1){
+      searchdown $sel ,linknext,hilight,loop;
+      if(result)break;setactivehidemaru 1,-1;}
+  }
+  else{endmacro;}
+
+}else{
+  if(selecting){
+    $seltext = gettext(seltopx,seltopy,selendx,selendy);
+    setactivehidemaru 1;setsearch $seltext ,0x35003800;finddown;
+    colormarkerallfound;escape;}
+  else{endmacro;}
+}

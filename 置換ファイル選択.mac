@@ -1,0 +1,129 @@
+﻿//置換ファイル選択
+
+begingroupundo;
+setmenudelay 300;
+mousemenu
+"&H 【ルビ抽出（ひらがな以外）】",              // 1
+"&J 【事前チェック】",                          // 2
+"&N 【ルビ抽出（ひらがなカタカナのみ）】",      // 3
+"&A 【ルビ抽出（全て）】",                      // 4
+"&C 【チェック項目】",                          // 5
+"&Y 【読み上げ】",                              // 6
+"&S 【最終チェック】",                          // 7
+"&K 【仕上げ（要注意の漢字検索）】",            // 8
+"&E 【仕上げ（英数字チェック）】";              // 9
+
+if(result==0){endmacro;
+}else if(result==1){  //【（ひらがな以外）】
+  runsync2 "rubyw -x "+currentmacrofilename+" b";
+}else if(result==2){  //【事前チェック】
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト00【事前チェック】.txt";
+  call tikan;
+}else if(result==3){  //【ルビ抽出（ひらがなカタカナのみ）】
+  runsync2 "rubyw -x "+currentmacrofilename+" c";
+}else if(result==4){  //【ルビ抽出（全て）】
+  runsync2 "rubyw -x "+currentmacrofilename+" a";
+}else if(result==5){  //【チェック項目】
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト10【チェック項目】.txt";
+  call tikan;
+}else if(result==6){  //【読み上げ】
+  //openfile currentmacrodirectory+"\\置換リスト\\置換リスト11【読み上げ】.txt";
+  //call tikan;
+  execmacro currentmacrodirectory+"\\読み上げリストチェック.mac";
+}else if(result==7){  //【最終チェック】
+  openfile currentmacrodirectory+"\\置換リスト\\置換リスト12【最終チェック】.txt";
+  call tikan;
+}else if(result==8){  //【仕上げ（要注意の漢字検索）】
+  runsync2 "rubyw -x "+currentmacrofilename+" k";
+}else if(result==9){  //【仕上げ（英数字チェック）】
+  execmacro currentmacrodirectory+"\\英数字チェック.mac";
+}
+endmacro;
+
+tikan:
+#hwnd_f= hidemaruhandle(0);
+if(leftstr(basename,10)!="置換リスト"){endmacro;}
+selectall;copy;escape;setactivehidemaru 1;
+closehidemaruforced #hwnd_f;
+runsync2 "rubyw "+currentmacrodirectory+"\\ruby_count.rbw s";
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99x.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'inifile'
+require 'win32ole'
+require 'clipboard'
+require 'fileutils'
+
+opt=ARGV[0]
+
+print "dir=";p __dir__
+p FileTest.file?(__dir__+"/config.ini")
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+gfl1=ini["grep"]["file_1"]
+tfl2=ini["grep"]["file_2"]
+
+cbd=ClipBoard.new(__ENCODING__)
+#st=cbd.getText
+st=open(gfl1).read
+
+print "opt=";p opt
+ofs="tmp_a"
+if /^a/=~opt #ルビ抽出
+  r=%r<(｜[^｜《。\n]+|[\p{Han}]+|.)《([^《》]+)》>
+  r2=%r<([\p{Han}]+|[^\p{Han}])《([^《》]*《[^《》]*》[^《》]*)》>
+  bf=st.scan(r)
+  bg=st.scan(r2)
+  ar=bf.map{|e| ["#{e[0].gsub('｜','')},#{e[1]}"]}+
+    bg.uniq.map{|e| ["#{e[0]},#{e[1]}"]}
+  print "ar=";p ar
+elsif /^b/=~opt #ルビ抽出（ひらがな以外）
+  r=%r<(｜[^｜《。、\n》]+|[\p{Han}]+)《([^《》]+)》>
+  p bf=st.scan(r).reject{|e| /^[ぁ-ん]+$/=~e[1]}
+  ar=bf.map{|e| ["#{e[0].sub(/^｜/,'')},#{e[1]}"]}
+elsif /^c/=~opt #ルビ抽出（ひらがなのみ）
+  r=%r<(｜[^｜《。、\n》]+|[\p{Han}]+)《([^《》]+)》>
+  b1=st.scan(r).select{|e| /^[ぁ-ん]+$/=~e[1]}
+  b2=st.scan(r).select{|e| /^[ァ-ヴー]+$/=~e[1]}
+  b3=st.scan(r).select{|e| /^[ぁ-んァ-ヴー・]+$/=~e[1]}.reject{|e| /^[ぁ-んァ-ヴー]+$/=~e[1]}
+  #print "b1=";p b1
+  #print "b2=";p b2
+  #print "b3=";p b3
+  bf=b1+b2+b3
+  ar=bf.map{|e| ["#{e[0].sub(/^｜/,'')},#{e[1]}"]}
+elsif /^n/=~opt #ルビ候補抽出
+  r=%r|([\p{Han}]+[(（][ぁ-んァ-ヴー・]+[）)])|
+  p bf=st.scan(r)
+  p ar=bf.map{|e| [e[0],e[0].gsub(/[(（]([ぁ-んァ-ヴー・]+)[）)]/){"《#{$1}》"},"s =>"].join(",")}
+elsif /^k/=~opt #仕上げ（要注意の漢字検索）
+  cbd.setText(st)
+  spawn(%Q|rubyw #{__dir__}/grep6.rbw n #{gfl1}|)
+  exit
+end
+
+num=1
+while FileTest.file?(ofn=ofs + num.to_s + ".txt")
+  num+=1
+end
+ofn=ofs+ num.to_s + ".txt"
+File.write(ofn,ar.join("\n")+"\n")
+mac=File.expand_path("tmp.mac")
+st =%Q|begingroupundo;selectall;cut;\n|
+st+=%Q|runsync2 "rubyw #{__dir__}/sort3.rbw ";\n|
+st+=%Q|paste;endgroupundo;gofiletop;save;endmacro;\n|
+File.write(mac,st)
+spawn(%Q|"#{hide}" /fu8 /x "#{mac}" "#{ofn}"|)
+
+__END__
+*/
+

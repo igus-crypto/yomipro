@@ -1,0 +1,92 @@
+﻿//マイナス移動コピー
+
+//標準:マイナスを移動コピー
+//alt :「’」を移動コピー
+
+disabledraw;
+$s="s";$a="n";
+if(iskeydown(0x12))$a="a"; //ALT
+if(selecting){selectline 1;cut;}
+else{insert "\n";golineend2;beginsel;up_nowrap;golinetop2;cut;$s="n";}
+runsync2 "rubyw -x "+currentmacrofilename+" "+$s+" "+$a;
+paste;
+if($s=="n"){backspace;down_nowrap;golinetop2;}
+enabledraw;endmacro;
+
+/*
+#/
+#! ruby
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+
+#opt1=s:選択あり
+#opt1=n:選択なし
+#opt2=a:alt
+#opt2=n:標準
+
+opt1=ARGV[0]
+opt2=ARGV[1]
+
+cbd = ClipBoard.new(__ENCODING__)
+st=cbd.getText
+print "st=";puts st
+if %r|n|=~opt2
+  if %r|n|=~opt1
+    if /[-]/=~st
+      st=st.split(%r|\n+|).join.gsub(%r|\R|,"") +"\n"
+    else
+      st=st.split(%r|\n+|).join("-").gsub(%r|\R|,"")+"\n"
+    end
+  end
+  print "st=";puts st
+  a=[st.gsub("-","")]
+  a << st
+  while 1
+    s=st.gsub(%r|\-([ぁ-んァ-ヴー・])|,'\1-')
+    puts s
+    if s==st
+      break
+    else
+      a << s
+      st=s
+    end
+  end
+else
+  if %r|n|=~opt1
+  a=[st.split(%r|\R|).join.gsub(%r|\R|,"")+"\n"]
+    if /’/=~st
+      st=st.split(%r|\R|).join.gsub(%r|\R|,"")+"\n"
+    else
+      ar=st.split(%r|\R|)
+      print "ar=";p ar
+      ar[1]=ar[1].to_s.sub(%r|^([^\p{Han}]*)([\p{Han}])|){$1+"’"+$2}
+      st=ar.join.gsub(%r|\R|,"") +"\n"
+    end
+  end
+  print "st=";puts st
+  a << st
+  while 1
+    ar=st.split("’")
+    if %r|^[\p{Han}]|=~ar[1]
+      ar[1]=ar[1].to_s.sub(%r|^([\p{Han}]+)([^\p{Han}])|){$1+"’"+$2}
+    else
+      ar[1]=ar[1].to_s.sub(%r|^([^\p{Han}]+)([\p{Han}])|){$1+"’"+$2}
+    end
+    s=ar.join.gsub(%r|\R|,"")+"\n"
+    puts s
+    if %r|’|!~s
+      break
+    else
+      a << s
+      st=s
+    end
+  end
+end
+print "a=";p a
+puts a.join
+cbd.setText(a.join)
+__END__
+*/

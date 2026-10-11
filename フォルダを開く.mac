@@ -1,0 +1,3 @@
+﻿//フォルダを開く
+
+run "explorer.exe" + " \"" + directory + "\"";

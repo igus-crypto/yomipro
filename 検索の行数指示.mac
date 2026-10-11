@@ -1,0 +1,34 @@
+//検索の行数指示
+
+
+if(imestate==1)imeswitch;
+
+#ctl=0;
+if(iskeydown(0x11)){#ctl=1;}
+if(#ctl==1){
+  $n=input("行数入力（行数+50）","100");
+}else{
+  $n=input("行数入力","100");
+}
+// movetolineno 1,val($n);
+runsync2 "rubyw -x "+currentmacrofilename+" "+$n+" "+str(#ctl);
+execmacro directory + "\\tmp.mac";
+endmacro;
+
+/*
+#/
+#! ruby
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99k.txt","w")
+$stderr=open("tmp_errk.txt","w")
+
+s=ARGV[0]
+c=ARGV[1].to_i
+n=eval(s)-c*50
+
+st="movetolineno 1,#{n};\n"
+
+File.write("tmp.mac",st)
+__END__
+*/

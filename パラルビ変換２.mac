@@ -1,0 +1,149 @@
+﻿//パラルビ変換２
+
+$op=getarg(0);
+//p1:パラルビ
+//p2:パラルビ・親文字削除
+//p3:パラルビ・ルビ振り
+
+run "rubyw -x "+currentmacrofilename+" "+$op;
+endmacro;
+
+/*/
+#! ruby
+# encoding: utf-8
+
+Encoding.default_external = 'UTF-8'
+
+$stdout=open("tmp99.txt","w")
+$stderr=open("tmp_err.txt","w")
+
+require 'clipboard'
+require 'win32ole'
+require 'inifile'
+require 'diff/lcs'
+
+class String
+  def tr2
+    self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')
+  end
+end
+
+opt=ARGV[0] 
+#p1:パラルビ
+#p2:パラルビ・親文字削除
+#p3:パラルビ・ルビ振り
+
+print "opt=";p opt
+
+ini = IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+cbd=ClipBoard.new(__ENCODING__)
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(filename))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+filename
+File.dirname(URI.encode filename)
+
+print "dir=";puts Dir.pwd.encode(Encoding::UTF_8)
+
+arr=cbd.getText.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"").
+  split("\r\n").grep_v(/^[―]*$/)
+
+arr=arr.map{|e|
+  if /!*([^, ]*),([^, ]*),?([^, ]*)?/=~e
+    oya,rb1,rb2=$1,$2,$3
+    rb1=rb1.gsub(/\\/){'\\\\'}
+    [oya,rb1,rb2]
+  elsif /([^,]*)$/=~e
+    oya,rb1=$1,""
+    [oya,rb1,rb2]
+  end
+  }
+# arr=[[oya,ruby],‥…]
+arr=arr.compact.map{|e| [e[0].gsub(/^[!+]/,""),e[1],e[2]]}
+
+print "opt=";p opt
+# マッチ評価時に対応する項目
+# /[\p{Han}]/で始まる場合、直前の文字が /[\p{Han}]/なら "｜"を付ける
+
+print "arr=";p arr
+st=open(filename).read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"")
+arr.map!{|e|
+  s1=e[1].tr2
+  if /p3/=~opt #ルビ振り
+    ar=[]
+    #a=%r|(#{e[0]}(?:《[^》]*》)?)|
+    a=%r|(#{e[0]})|
+    s2=st.scan(a).uniq
+    e0=e[0]
+    e0="｜"+e0 if /[^\p{Han}]/=~e0
+    s2.each{|s| ar<<[s[0]+"(?!《)",e0+"《#{e[1]}》"]}
+    #print "ar=";p ar
+    ar
+  else
+    a=%r|｜?#{e[0].split("").join("(?:《[^》]*》)?")+"(?:《[^》]*》)?"}|
+    a1=st.scan(a).grep(/《([^》]*)》/)
+    s2=a1.find{|f| f.gsub(/[^《》]*《([^《》]*)》/,'\1').tr2===s1.tr2}
+    #print "s1=";p s1
+    #print "a1=";p a1
+    #print "s2=";p s2
+    #print "e=";p e
+    s3=(e[2]=="" ? e[1] : e[2].gsub(%r|^[+-]|,""))
+    ar=[s2,s3  +"（#{e[0]}）"] if /p1/=~opt
+    ar=[s2,e[0]+"《#{e[1]}》"] if /p2/=~opt
+    ar=[s2,e[0]+"《#{e[1]}》"] if /y/=~opt
+    ar=[s2,e[0]+"《#{e[1].tr('ぁ-ん','ァ-ン')}》"] if /k/=~opt
+    #print "ar=";p ar
+    ar
+  end
+}
+
+arr=arr.flatten.each_slice(2).to_a if /p3/=~opt
+print "arr=";p arr
+
+
+##マクロ作成
+#スタンダード,ルビを含めて,ルビ付き・単語,ルビ付き・正規表現以外
+mac=File.expand_path("tmp.mac")
+macro=open(mac,"w")
+macro.print("\uFEFF")
+macro.puts %|
+setcompatiblemode 0x20030;
+#hwnd = hidemaruhandle(0);
+if( findhidemaru("#{filename}")==-1){openfile "#{filename}";}
+setactivehidemaru findhidemaru("#{filename}");
+closehidemaruforced #hwnd;selectall;
+disabledraw;selectall;
+colormarker 0x000000, 0xc2c79e, 11, 1;
+escape;begingroupundo;
+|
+arr.each{|e|
+  if /p3/=~opt #ルビ振り
+    macro.puts %|replaceallfast "｜?#{e[0]}","#{e[1]}" ,regular;| unless e[0]==""
+  else
+    macro.puts %|replaceallfast "｜?#{e[0]}","#{e[1]}" ,regular;| unless e[0]==""
+  end
+}
+macro.puts %|
+endgroupundo;gofiletop;goupdatedown;endmacro;
+|
+macro.close
+spawn(%Q|"#{hide}" /fu8 /x "#{mac}"|)
+
+__END__
+*/

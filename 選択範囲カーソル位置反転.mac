@@ -1,0 +1,4 @@
+if(selecting){#x=x;#y=y;#ox=selopenx;#oy=selopeny;
+  if (rectselecting){escape;moveto #x,#y;beginrect;moveto #ox,#oy;}
+  else{escape;moveto #x,#y;beginsel;moveto #ox,#oy;}
+}else{deletewordfront;}

@@ -1,0 +1,2 @@
+﻿if(selecting){#x=seltopx;#y=seltopy;moveto #x,#y;escape;}
+save;

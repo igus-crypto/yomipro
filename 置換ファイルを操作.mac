@@ -1,0 +1,61 @@
+﻿//置換ファイルを操作
+
+#hwnd_a= hidemaruhandle(0);
+#c= hidemarucount;
+#i=0;$fl="";$fa="";
+
+while(#i<#c){
+  if(leftstr(basename[#i],10)=="置換リスト"){
+    if($fl=="")setactivehidemaru findhidemaru(filename[#i]);
+    $fl=$fl+basename+"\n";
+  }else{
+    if($fa==""){$fa=basename;}
+  }
+  #i=#i+1;
+}
+if($fa=="")endmacro;
+if($fl==""){
+  execmacro currentmacrodirectory+"\\\\全ての置換リストをソート.mac";
+  runsync2 "rubyw "+currentmacrodirectory+"\\list_check.rbw";
+  endmacro;
+}
+
+openfile "/h ";insert $fa+"\n";insert $fl;
+saveas currentmacrodirectory+"\\tmp_f.txt";#hwnd_t= hidemaruhandle(0);
+setactivehidemaru #hwnd_a;closehidemaruforced #hwnd_t;
+runsync2 "rubyw -x "+currentmacrofilename;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+require 'inifile'
+require 'win32ole'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+uwsc=ini["path"]["uwsc"]
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+list=open(__dir__+"/tmp_f.txt").read.split(/\R/)
+f0=list[0]
+fs=list[1..-1].sort
+print "fs=";p fs
+macro=File.expand_path("..", __FILE__)+"/tmp.mac"
+print "macro=";p macro
+
+mac=open(macro,"w")
+mac.print("\uFEFF")
+
+uws=__dir__+"/ファイルを閉じる.uws"
+uw=open(uws).read
+uw=uw.gsub(/^list=.*$/,%Q|list="#{fs.join("<\#CR>")+"<\#CR>"}"|)
+File.write(uws,uw)
+spawn(%Q|"#{uwsc}" "#{uws}"|)
+__END__
+*/
+
