@@ -107,6 +107,8 @@ st=st.split("\r\n").map{|e| e.gsub(%r|^。/|,"。")}.map{|e|
     print "q=";p q
     print "c=";p c
     r=o if r==""
+    print "o=";p o
+    print "q=";p q
     if /,[spr]/!~e
       n=0
       if /《.*》/!~r
@@ -147,6 +149,11 @@ st=st.split("\r\n").map{|e| e.gsub(%r|^。/|,"。")}.map{|e|
       ns=b+o+r+q+c1+" //"+r.sub(%r|^,|,"")+c2
     else
       ns=b+o+r+q+c
+    end
+    if /^[　。「」『』（）【】─※◇・‥]/=~ns
+      ns=ns.sub(/^[　。「」『』（）【】─※◇・‥]/,"").
+        sub(/,[　。「」『』（）【】─※◇・‥]/,",").
+        sub(/(,p[0-9]+)? =>/,",p12 =>")
     end
     print "ns=" ;p ns
     print "e=" ;p e

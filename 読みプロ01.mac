@@ -253,61 +253,62 @@ $a[242]="バッチ処理（改）";                          // #s=290
 $a[243]="";#num=48;
 $a[244]="\x01ファイル操作関連";                      // #s=300
 $a[245]="アップ用の置換リストを準備";                // #s=301
-$a[246]="青空文庫まとめ読み";                        // #s=302
-$a[247]="moon+ 変換";                                // #s=303
-$a[248]="moon+ リストチェック";                      // #s=304
-$a[249]="選択を send.txt";                           // #s=305
-$a[250]="選択を send.txt（ルビ無し）";               // #s=306
-$a[251]="ファイル転送";                              // #s=307
-$a[252]="フォルダを開く";                            // #s=308
-$a[253]="置換リストファイルを操作";                  // #s=309
-$a[254]="tmpファイルを閉じて削除";                   // #s=310
-$a[255]="grep結果の編集を置換";                      // #s=311
-$a[256]="フォルダ名のファイル準備";                  // #s=312
-$a[257]="ファイル結合";                              // #s=313
-$a[258]="対象ファイル編集";                          // #s=314
-$a[259]="更新日時を操作";                            // #s=315
-$a[260]="マッチの位置揃え変更";                      // #s=316
-$a[261]="マクロ編集";                                // #s=317
-$a[262]="";#num=56;
-$a[263]="\x01その他";                                // #s=320
-$a[264]="秀丸マクロメニュー";                        // #s=321
-$a[265]="クリップボードにファイル名";                // #s=322
-$a[266]="クリップボードにフォルダ名";                // #s=323
-$a[267]="cmd";                                       // #s=324
-$a[268]="google検索";                                // #s=325
-$a[269]="\x01 マーカー";                             // #s=326
-$a[270]="検索マーカー";                              // #s=327
-$a[271]="分割マーカー";                              // #s=328
-$a[272]="拗音をマーク";                              // #s=329
-$a[273]="括弧をマーク";                              // #s=330
-$a[274]="";                                          // #s=331
-$a[275]="自動送り";                                  // #s=332
-$a[276]="棒読み文庫";                                // #s=333
-$a[277]="割合表示";                                  // #s=334
-$a[278]="文字数カウント";                            // #s=335
-$a[279]="タグジャンプサーチ";                        // #s=336
-$a[280]="選択部を次行の末尾にコピー";                // #s=337
-$a[281]="挿入して戻って下へ";                        // #s=338
-$a[282]="選択文字の上候補";                          // #s=339
-$a[283]="選択文字の下候補";                          // #s=340
-$a[284]="選択文字で次の秀丸を検索";                  // #s=341
-$a[285]="選択文字で対象ファイルを検索";              // #s=342
-$a[286]="ファイルを開いて選択文字検索";              // #s=343
-$a[287]="差分チェック";                              // #s=344
-$a[288]="読みプロ01のNoチェック";                    // #s=345
-$a[289]="青空変換（改）";                            // #s=346
-$a[290]="\x01ウィンドウ操作";                        // #s=347
-$a[291]="縦に並べて表示";                            // #s=348
-$a[292]="横に並べて表示";                            // #s=349
-$a[293]="分割";                                      // #s=350
-$a[294]="サイズ 100×30";                            // #s=351
-$a[295]="サイズ  60×20";                            // #s=352
-$a[296]="全て最小化";                                // #s=353
-$a[297]="全て 100×30";                              // #s=354
-$a[298]="";#num=57;
+$a[246]="青空エディタ用のデータを準備";              // #s=302
+$a[247]="青空文庫まとめ読み";                        // #s=303
+$a[248]="moon+ 変換";                                // #s=304
+$a[249]="moon+ リストチェック";                      // #s=305
+$a[250]="選択を send.txt";                           // #s=306
+$a[251]="選択を send.txt（ルビ無し）";               // #s=307
+$a[252]="ファイル転送";                              // #s=308
+$a[253]="フォルダを開く";                            // #s=309
+$a[254]="置換リストファイルを操作";                  // #s=310
+$a[255]="tmpファイルを閉じて削除";                   // #s=311
+$a[256]="grep結果の編集を置換";                      // #s=312
+$a[257]="フォルダ名のファイル準備";                  // #s=313
+$a[258]="ファイル結合";                              // #s=314
+$a[259]="対象ファイル編集";                          // #s=315
+$a[260]="更新日時を操作";                            // #s=316
+$a[261]="マッチの位置揃え変更";                      // #s=317
+$a[262]="マクロ編集";                                // #s=318
+$a[263]="";#num=56;
+$a[264]="\x01その他";                                // #s=320
+$a[265]="秀丸マクロメニュー";                        // #s=321
+$a[266]="クリップボードにファイル名";                // #s=322
+$a[267]="クリップボードにフォルダ名";                // #s=323
+$a[268]="cmd";                                       // #s=324
+$a[269]="google検索";                                // #s=325
+$a[270]="\x01 マーカー";                             // #s=326
+$a[271]="検索マーカー";                              // #s=327
+$a[272]="分割マーカー";                              // #s=328
+$a[273]="拗音をマーク";                              // #s=329
+$a[274]="括弧をマーク";                              // #s=330
+$a[275]="";                                          // #s=331
+$a[276]="自動送り";                                  // #s=332
+$a[277]="棒読み文庫";                                // #s=333
+$a[278]="割合表示";                                  // #s=334
+$a[279]="文字数カウント";                            // #s=335
+$a[280]="タグジャンプサーチ";                        // #s=336
+$a[281]="選択部を次行の末尾にコピー";                // #s=337
+$a[282]="挿入して戻って下へ";                        // #s=338
+$a[283]="選択文字の上候補";                          // #s=339
+$a[284]="選択文字の下候補";                          // #s=340
+$a[285]="選択文字で次の秀丸を検索";                  // #s=341
+$a[286]="選択文字で対象ファイルを検索";              // #s=342
+$a[287]="ファイルを開いて選択文字検索";              // #s=343
+$a[288]="差分チェック";                              // #s=344
+$a[289]="読みプロ01のNoチェック";                    // #s=345
+$a[290]="青空変換（改）";                            // #s=346
+$a[291]="\x01ウィンドウ操作";                        // #s=347
+$a[292]="縦に並べて表示";                            // #s=348
+$a[293]="横に並べて表示";                            // #s=349
+$a[294]="分割";                                      // #s=350
+$a[295]="サイズ 100×30";                            // #s=351
+$a[296]="サイズ  60×20";                            // #s=352
+$a[297]="全て最小化";                                // #s=353
+$a[298]="全て 100×30";                              // #s=354
+$a[299]="";#num=56;
 
-mousemenuarray $a,296;
+mousemenuarray $a,299;
 #r=result-1;
 if(#r<1){endmacro;}
 else if(#r< 24) {#s=#r+ 0;}  //テキスト作成
@@ -323,8 +324,8 @@ else if(#r<187) {#s=#r+33;}  //仕上げ
 else if(#r<217) {#s=#r+42;}  //文字を変換
 else if(#r<231) {#s=#r+42;}  //サンドイッチ
 else if(#r<243) {#s=#r+48;}  //バッチ処理
-else if(#r<262) {#s=#r+56;}  //ファイル操作関連
-else if(#r<298) {#s=#r+57;}  //その他
+else if(#r<263) {#s=#r+56;}  //ファイル操作関連
+else if(#r<299) {#s=#r+56;}  //その他
 }
 
 $dir=directory;
@@ -1156,31 +1157,33 @@ begingroupundo;beginclipboardread;
 }else if(#s==301){ //アップ用の置換リストを準備
   execmacro currentmacrodirectory + "\\アップ用の置換リストを準備.mac";
   //run "rubyw "+currentmacrodirectory+"\\copy_list.rbw";
-}else if(#s==302){ //青空文庫まとめ読み
+}else if(#s==302){ //青空エディタ用のデータを準備
+  execmacro currentmacrodirectory + "\\青空エディタ用のデータを準備.mac";
+}else if(#s==303){ //青空文庫まとめ読み
   execmacro currentmacrodirectory + "\\青空文庫まとめ読み.mac";
-}else if(#s==303){ //moon+変換
+}else if(#s==304){ //moon+変換
   selectall;copy;
   runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw "+filename;
-}else if(#s==304){ //moon+リストチェック
+}else if(#s==305){ //moon+リストチェック
   if(selecting){selectline 1;copy;}
   else{selectall;copy;}
   setactivehidemaru 1;
   runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw l "+filename;
   execmacro directory + "\\tmp.mac";
-}else if(#s==305){ //選択を send.txt
+}else if(#s==306){ //選択を send.txt
   if(selecting){copy2;}else{selectline 1;copy;}
   runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw s";
-}else if(#s==306){ //選択を send.txt（ルビ無し）
+}else if(#s==307){ //選択を send.txt（ルビ無し）
   if(selecting){copy2;}else{selectline 1;copy;}
   runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw n";
-}else if(#s==307){ //ファイル転送
+}else if(#s==308){ //ファイル転送
   if(selecting){copy2;}else{selectline 1;copy;}
   runsync2 "rubyw "+currentmacrodirectory+"\\send.rbw f "+filename;
-}else if(#s==308){ //フォルダを開く
+}else if(#s==309){ //フォルダを開く
   run "explorer.exe" + " \"" + directory + "\"";
-}else if(#s==309){ //置換リストファイルを操作
+}else if(#s==310){ //置換リストファイルを操作
   execmacro currentmacrodirectory + "\\置換ファイルを操作.mac";
-}else if(#s==310){ //tmpファイルを閉じて削除
+}else if(#s==311){ //tmpファイルを閉じて削除
   #c= hidemarucount;#i=0;#j=0;#k=0;#n=0;
   while(#i<#c){
     //message str(#i)+"："+basename;
@@ -1192,23 +1195,23 @@ begingroupundo;beginclipboardread;
   while(#k<#j){closehidemaruforced findhidemaru($files[#k]);#k=#k+1;}
   question "tmpファイルを削除しますか？";
   if(result==yes){runsync2 "rubyw "+currentmacrodirectory+"\\del_tmp.rbw";}
-}else if(#s==311){ //grep結果の編集を置換
+}else if(#s==312){ //grep結果の編集を置換
   selectall;copy;
   //runsync2 "rubyw "+currentmacrodirectory+"\\replace4.rbw "+ filename ; //標準速度
   runsync2 "rubyw "+currentmacrodirectory+"\\replace4.rbw "+ filename +" k"; //高速
   execmacro directory + "\\tmp.mac";
-}else if(#s==312){ //フォルダ名のファイル準備
+}else if(#s==313){ //フォルダ名のファイル準備
   execmacro currentmacrodirectory + "\\フォルダ名のファイル準備.mac";
-}else if(#s==313){ //ファイル結合
+}else if(#s==314){ //ファイル結合
   execmacro currentmacrodirectory + "\\ファイル結合.mac";
-}else if(#s==314){ //対象ファイル編集
+}else if(#s==315){ //対象ファイル編集
   runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw e";
   execmacro directory + "\\tmp.mac";
-}else if(#s==315){ //更新日時を操作
+}else if(#s==316){ //更新日時を操作
   execmacro currentmacrodirectory + "\\更新日時を操作.mac";
-}else if(#s==316){ //マッチの位置揃え変更
+}else if(#s==317){ //マッチの位置揃え変更
   run $uwsc+" "+currentmacrodirectory+"\\マッチの位置揃え変更.uws";
-}else if(#s==317){ //マクロ編集
+}else if(#s==318){ //マクロ編集
   $fl=currentmacrodirectory+"\\読みプロ01.mac";
   if(findhidemaru($fl)==-1){openfile $fl;}
   setactivehidemaru findhidemaru($fl);

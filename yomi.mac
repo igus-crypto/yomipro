@@ -1,1 +1,1 @@
-﻿execmacro currentmacrodirectory+"\\ルビ追加.mac";
+﻿execmacro currentmacrodirectory+"\\文字変換.mac","r1";

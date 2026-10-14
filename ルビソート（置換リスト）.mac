@@ -37,6 +37,7 @@ s2=a2.group_by{|x| x.split(",")[2]}.sort.map{|_,a|
 }.join("\n\n").gsub(",p0","")
 
 st=s1+"\n\n"+s2+"\n\n"
+st=st.sub(/\A(?:\r?\n)+/, "")
 cbd.setText(st)
 
 __END__
