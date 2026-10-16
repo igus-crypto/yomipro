@@ -13,26 +13,30 @@ ini=IniFile.load(__dir__+"/config.ini")
 hide=ini["path"]["hide"]
 
 arr,i,e,m1,m2=[],0,"","",""
+seen={}
+groups={}
+reg=/^([^,]*),(?![^\{\}]*})/
 Dir.glob(__dir__+%Q|/置換リスト/置換リスト*.txt|){|file|
   p File.basename(file)
   next if /ルビチェック|英数字チェック/=~file
-  open(file).readlines.each_with_index{|f,j|
+  File.foreach(file).with_index{|f,j|
     #reg=(/ルビチェック/=~file ? /^[\p{Han}]+,/ : /^([^,]*),/)
-    reg=/^([^,]*),(?![^\{\}]*})/
     if reg=~f
       m2=$1
       if m1==m2
-        arr << File.basename(file)+"(#{i+1}): " + e.chomp
-        arr << File.basename(file)+"(#{j+1}): " + f.chomp
+        [File.basename(file)+"(#{i+1}): " + e.chomp,
+         File.basename(file)+"(#{j+1}): " + f.chomp].each{|entry|
+          next if seen[entry]
+          seen[entry]=true
+          key=entry.match(/(?<=: )([^,]*),/).to_a[0]
+          (groups[key]||=[]) << entry
+        }
       end
       m1,i,e=m2,j,f
     end}}
-arr=arr.uniq
-p arr
-arr=arr.group_by{|e| e.match(/(?<=: )([^,]*),/).to_a[0]}.to_a.transpose[1]
+arr=groups.values
 #arr=arr.group_by{|e| e.match(/(?<=: )([^,]*),(?![^\{\}]*})/).to_a[0]}.to_a.transpose[1]
-p arr
-arr=[["重複はありません"]] unless arr
+arr=[["重複はありません"]] if arr.empty?
 
 i=1
 while FileTest.file?(ofile=__dir__+%Q|/置換リスト/tmp_|+sprintf("%#02d",i)+".txt")
