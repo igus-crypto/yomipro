@@ -7,7 +7,8 @@ $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
 require 'inifile'
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'win32ole'
 
 #s:選択を send.txt

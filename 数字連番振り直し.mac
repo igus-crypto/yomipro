@@ -1,4 +1,4 @@
-﻿//数字連番振り直し
+//数字連番振り直し
 
 if(!selecting)endmacro;
 cut;#fg=getclipboardinfo(1);
@@ -16,7 +16,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 include Math
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd = ClipBoard.new(__ENCODING__)
 

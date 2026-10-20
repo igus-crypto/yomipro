@@ -1,4 +1,4 @@
-﻿//見出し.mac
+//見出し.mac
 
 selectall;copy;setsearch ".*" , 0x4003819;
 colormarkerallfound 0x000000, 0xc2c79e, 11, 1;
@@ -14,7 +14,7 @@ endgroupundo;
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")

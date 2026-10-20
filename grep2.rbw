@@ -5,7 +5,8 @@
 Encoding.default_external = 'UTF-8'
 require 'inifile'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 #デバッグ用
 $stdout=File.open("tmp99.txt","w")
 $stderr=File.open("tmp_err.txt","w")

@@ -75,7 +75,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'date'
 opt=ARGV[0].to_i
 t=Date.today-opt

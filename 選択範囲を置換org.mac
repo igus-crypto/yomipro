@@ -1,4 +1,4 @@
-﻿//選択範囲を置換
+//選択範囲を置換
 //alt時には選択文字をクリップボードで
 
 if(!selecting)endmacro;
@@ -39,7 +39,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 a,b="","\uFEFF"
 st=open(__dir__+"/tmp99gm.txt").read

@@ -1,4 +1,4 @@
-﻿//割合表示.mac
+//割合表示.mac
 
 //shi:文字数カウント
 //alt:ファイルにコピペ
@@ -41,7 +41,7 @@ $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 wsh = WIN32OLE.new('Wscript.Shell')
 cbd=ClipBoard.new(__ENCODING__)
 

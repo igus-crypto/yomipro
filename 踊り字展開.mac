@@ -24,7 +24,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 ar=cbd.getText.lines
 

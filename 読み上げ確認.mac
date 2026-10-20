@@ -1,4 +1,4 @@
-﻿//読み上げ確認
+//読み上げ確認
 
 //selectline 1;copy;
 if(selecting){selectline 1;}else{selectall;}copy;
@@ -24,7 +24,7 @@ $stdout=open("tmp99g.txt","w")
 #require 'open3'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 opt=ARGV[0].to_s
 

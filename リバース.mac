@@ -1,4 +1,4 @@
-﻿//リバース
+//リバース
 
 disabledraw;begingroupundo;
 if(!selecting)endmacro;
@@ -16,7 +16,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 include Math
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 
 ar=cbd.getText.split(/\R/).reverse

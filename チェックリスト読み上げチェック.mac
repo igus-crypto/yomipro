@@ -1,4 +1,4 @@
-﻿//チェックリスト読み上げチェック
+//チェックリスト読み上げチェック
 
 disabledraw;begingroupundo;
 #x=x;#y=y;
@@ -31,7 +31,7 @@ $stdout=open("tmp99c.txt","w")
 require 'open3'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 ini=IniFile.load(__dir__+"/config.ini")
 chek=ini["grep"]["check"]

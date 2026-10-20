@@ -7,7 +7,8 @@ Encoding.default_external = 'UTF-8'
 require 'open3'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 #require 'win32/clipboard'
 
 

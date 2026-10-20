@@ -22,7 +22,7 @@ $stdout=open("tmp99ta.txt","w")
 $stderr=open("tmp_errta.txt","w")
 
 require 'inifile'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 ini=IniFile.load(__dir__+"/config.ini")
 file=ini["grep"]["file_1"].gsub("/","\\\\\\")

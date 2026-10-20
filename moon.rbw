@@ -3,7 +3,8 @@
 Encoding.default_external = 'UTF-8'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'fileutils'
 
 opt=ARGV[0].to_s.encode(Encoding::UTF_8).gsub("\\","/")

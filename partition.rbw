@@ -8,7 +8,8 @@ require "nkf"
 require 'inifile'
 require 'fileutils'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 class String
   def tr2
     self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')

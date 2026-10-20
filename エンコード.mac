@@ -1,4 +1,4 @@
-﻿//エンコード
+//エンコード
 
 //0x10:shift
 #shi=0;
@@ -21,7 +21,7 @@ endgroupundo;enabledraw;
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'uri'
 
 cbd = ClipBoard.new(__ENCODING__)

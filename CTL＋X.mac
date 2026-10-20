@@ -23,7 +23,6 @@ if(#fs){
   "&E メモに書き込み",             // 6
   "&5 「%」削除",                  // 7
   "&S 読み上げファイル作成";       // 8
-
   
   //message str(result);
   if(result==0){endmacro;

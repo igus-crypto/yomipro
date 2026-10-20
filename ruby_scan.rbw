@@ -8,7 +8,8 @@ require 'open3'
 require 'inifile'
 require 'win32ole'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 $stderr=open("tmp_err.txt","w")
 $stdout=open("tmp99.txt","w")
 

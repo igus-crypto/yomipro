@@ -1,4 +1,4 @@
-﻿//ルビソート
+//ルビソート
 
 begingroupundo;disablebreak;
 setmenudelay 700;
@@ -84,7 +84,7 @@ class Array
 end
 
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd=ClipBoard.new(__ENCODING__)
 

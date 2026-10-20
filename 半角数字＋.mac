@@ -1,4 +1,4 @@
-﻿//半角数字＋
+//半角数字＋
 
 if(!selecting)endmacro;
 $a=input("数値入力","1");
@@ -15,7 +15,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 include Math
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 n=ARGV[0].to_i
 b=ARGV[1]

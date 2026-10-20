@@ -17,12 +17,17 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp_s99.txt","w")
 $stderr=open("tmp_serr.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd=ClipBoard.new(__ENCODING__)
 arr=cbd.getText.gsub(%r| =>.*|,"").split(%r|\R|)
 arr=arr.grep_v(/^$|^最終更新日：/)
-a1,a2=arr.uniq.map{|e| %r|,[a-z0-9]+$|=~e ? e : e+",p0"}.partition{|e| %r|,f$|=~e}
+s,a=arr.uniq.map{|e| %r|,[a-z0-9]+$|=~e ? e : e+",p0"}.partition{|e| e.split(",").last=="s"}
+a1,a2=a.partition{|e| e.split(",").last=="f"}
+s0=s.sort_by{|x|
+  b=x.split(",")
+  [-b[0].length,-b[1].length,b[0]]
+}.join("\n")
 s1=a1.group_by{|x| x.count(",")}.map{|_,a| #ルビの除去と置き換え
   a.sort_by{|x|
     b=x.split(",")
@@ -36,7 +41,7 @@ s2=a2.group_by{|x| x.split(",")[2]}.sort.map{|_,a|
   }.join("\n")
 }.join("\n\n").gsub(",p0","")
 
-st=s1+"\n\n"+s2+"\n\n"
+st=s0+"\n\n"+s1+"\n\n"+s2+"\n\n"
 st=st.sub(/\A(?:\r?\n)+/, "")
 cbd.setText(st)
 

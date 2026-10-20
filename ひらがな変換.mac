@@ -1,4 +1,4 @@
-﻿//ひらがな変換.mac
+//ひらがな変換.mac
 
 //shift     :変換後選択
 //ctrl+shift:前方のカッコ内を対象
@@ -61,7 +61,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'romkan'
 
 cbd = ClipBoard.new(__ENCODING__)

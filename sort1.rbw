@@ -6,7 +6,8 @@ Encoding.default_external = 'UTF-8'
 require 'inifile'
 require 'win32ole'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 ini=IniFile.load(__dir__+"/config.ini")
 
 file=ini["grep"]["file_1"]

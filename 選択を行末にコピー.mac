@@ -1,4 +1,4 @@
-﻿//選択を行末にコピー
+//選択を行末にコピー
 
 //標準            :ルビチェック用
 //alt             :＋に括弧
@@ -72,7 +72,7 @@ return;
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")

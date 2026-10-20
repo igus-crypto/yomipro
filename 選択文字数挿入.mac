@@ -1,4 +1,4 @@
-﻿//選択文字数挿入
+//選択文字数挿入
 
 setcompatiblemode 0x00100000;
 begingroupundo;disabledraw;
@@ -32,7 +32,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 opt=ARGV[0]
 
 print "opt=";p opt

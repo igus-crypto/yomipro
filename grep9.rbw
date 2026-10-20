@@ -14,7 +14,8 @@ $stdout=open("tmp99g.txt","w")
 require 'inifile'
 require 'win32ole'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 opt=ARGV[0].to_s
 
 ini=IniFile.load(__dir__+"/config.ini")

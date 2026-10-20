@@ -24,7 +24,7 @@ Encoding.default_internal = Encoding::UTF_8
 unless RUBY_PLATFORM =~%r|wasm|
   $stderr=open("tmp_ea.txt","w")
   $stdout=open("tmp99a.txt","w")
-  require 'clipboard'
+  require_relative 'clipboard_compat'
   cbd=ClipBoard.new(__ENCODING__)
   text=cbd.getText
   # ⛑️📿💄💍💎

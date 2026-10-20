@@ -8,7 +8,8 @@ require 'inifile'
 require 'diff/lcs'
 require 'win32ole'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 ini=IniFile.load(__dir__+"/config.ini")
 hide=ini["path"]["hide"]
 cbd=ClipBoard.new(__ENCODING__)
@@ -66,11 +67,11 @@ arr,ar1=[],[]
 diffs=Diff::LCS.diff(bf,af)
 
 #p diffs.methods
-diffs.flatten.each{|diff|
+diffs.each{|hunk| hunk.each{|diff|
   arr << diff.position if diff.adding? && /^[ 　]*$/!~diff.element
   #print "diff.element=";p diff.element if diff.adding?
   ar1 << diff.element if diff.adding? && /^[ 　]*$/!~diff.element
-  }
+  }}
 puts "arr=";p arr
 puts "ar1=";p ar1
 #ar1=ar1.grep(/,/)

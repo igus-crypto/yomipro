@@ -1,4 +1,4 @@
-﻿//上へ移動.mac
+//上へ移動.mac
 
 #alt=0;
 if(iskeydown(0x12)){#alt=1;}
@@ -40,7 +40,7 @@ $stderr=open("tmp_err.txt","w")
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 ar=cbd.getText.split(%r|\R|)
 

@@ -9,6 +9,7 @@ $stdout=open("tmp_s99.txt","w")
 $stderr=open("tmp_serr.txt","w")
 
 require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd=ClipBoard.new(__ENCODING__)
 arr=cbd.getText.split("\r\n")

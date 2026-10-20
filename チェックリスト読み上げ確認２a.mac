@@ -1,4 +1,4 @@
-﻿//grepチェックリスト読み上げ確認２
+//grepチェックリスト読み上げ確認２
 
 disabledraw;
 if(selecting && y!=selopeny){
@@ -122,7 +122,7 @@ $stdout=open("tmp99.txt","w")
 
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 ini=IniFile.load(__dir__+"/config.ini")
 hide=ini["path"]["hide"]

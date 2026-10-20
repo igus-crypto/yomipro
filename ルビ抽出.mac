@@ -1,4 +1,4 @@
-﻿//ルビ抽出
+//ルビ抽出
 
 $op=getarg(0);
 // a:ルビ抽出（全て）
@@ -27,7 +27,7 @@ $stderr=open("tmp_err.txt","w")
 
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'fileutils'
 
 opt=ARGV[0]

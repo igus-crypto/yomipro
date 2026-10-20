@@ -23,7 +23,7 @@ $stderr=open("tmp_err.txt","w")
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 a=["を","が","で","に","も"]
 ar=cbd.getText.split(%r|\R|).

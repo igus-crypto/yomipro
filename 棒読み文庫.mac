@@ -1,4 +1,4 @@
-﻿//棒読み文庫.mac
+//棒読み文庫.mac
 //message str(code);endmacro;
 $ini=currentmacrodirectory + "\\棒読み文庫.ini";
 #bfr  =val("0x"+getinistr($ini,"color","bfr"));
@@ -95,7 +95,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'inifile'
 
 class String

@@ -1,4 +1,4 @@
-﻿//外字変換リスト準備
+//外字変換リスト準備
 
 if(!selecting)selectall;
 copy;
@@ -15,7 +15,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmpl.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'inifile'
 
 cbd = ClipBoard.new(__ENCODING__)

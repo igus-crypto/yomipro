@@ -102,7 +102,7 @@ endmacro;
 
 Encoding.default_external = 'UTF-8'
 require 'inifile'
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'win32ole'
 
 $stdout=open("tmp99.txt","w")
@@ -159,7 +159,7 @@ if /[nt]/=~opt
 elsif /asc/=~opt
   ar=st.split(/\R/).reject{|e| e==""}
 elsif /s/=~opt
-  ar=st.split(/\R/).uniq.reject{|e| e==""}
+  ar=st.split(/\R/).reject{|e| e==""}
 elsif /1/=~opt
   ar=st.split(/\R/).map{|e| e.gsub(%r|,.*|,"").gsub(%r|\([^()]*\)|,"").
     gsub(%r|[^:]*: |,"")}.uniq.reject{|e| e==""}

@@ -4,7 +4,8 @@
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'win32ole'
 require 'inifile'
 require 'diff/lcs'

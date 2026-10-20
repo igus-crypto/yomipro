@@ -7,7 +7,8 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'win32ole'
 require 'inifile'
 require 'diff/lcs'

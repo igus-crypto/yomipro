@@ -9,7 +9,8 @@ $stderr=open("tmp_err.txt","w")
 
 require 'diff/lcs'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 
 #オプション k:高速 y:ゆっくり
@@ -27,10 +28,10 @@ diffs=Diff::LCS.diff(bf,af)
 
 #p diffs.methods
 
-diffs.flatten.each{|diff|
+diffs.each{|hunk| hunk.each{|diff|
   ar1 << diff.element if diff.deleting?
   ar2 << diff.element if diff.adding?
-}
+}}
 ar1.each{|e| puts e}
 puts "\n\n"
 #p ar2

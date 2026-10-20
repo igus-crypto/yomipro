@@ -1,4 +1,4 @@
-﻿//クリップボード挿入.mac
+//クリップボード挿入.mac
 
 begingroupundo;
 setmenudelay 50;
@@ -49,7 +49,7 @@ $stderr=open("tmp_errm.txt","w")
 
 opt=ARGV[0]
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 st=cbd.getText.gsub(/\R/,"\n")
 

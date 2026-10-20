@@ -7,7 +7,8 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'romkan'
 
 cbd = ClipBoard.new(__ENCODING__)

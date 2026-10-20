@@ -8,7 +8,8 @@ $stderr=open("tmp_err.txt","w")
 
 require 'inifile'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 ini=IniFile.load(__dir__+"/config.ini")
 hide=ini["path"]["hide"]
 

@@ -7,7 +7,8 @@ $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 st=cbd.getText
 

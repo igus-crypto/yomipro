@@ -1,4 +1,4 @@
-﻿//マイナス移動コピー
+//マイナス移動コピー
 
 //標準:マイナスを移動コピー
 //alt :「’」を移動コピー
@@ -20,7 +20,7 @@ enabledraw;endmacro;
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 #opt1=s:選択あり
 #opt1=n:選択なし

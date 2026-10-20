@@ -1,4 +1,4 @@
-﻿//字下げの処理
+//字下げの処理
 
 disabledraw;begingroupundo;
 #x=x;#y=y;selectall;copy;moveto #x,#y;
@@ -13,7 +13,7 @@ endgroupundo;enabledraw;
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd=ClipBoard.new(__ENCODING__)
 

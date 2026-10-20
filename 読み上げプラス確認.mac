@@ -17,7 +17,7 @@ Encoding.default_external = 'UTF-8'
 $stderr=open("tmp_errp.txt","w")
 $stdout=open("tmp99p.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 
 ar=cbd.getText.split(%r|\R|)

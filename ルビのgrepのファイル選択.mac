@@ -1,4 +1,4 @@
-﻿//ルビのgrep
+//ルビのgrep
 //ファイル選択
 
 setcompatiblemode 0x20020;
@@ -51,7 +51,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99a.txt","w")
 $stderr=open("tmpee.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'inifile'
 require 'win32ole'
 

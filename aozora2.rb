@@ -18,9 +18,20 @@ AR01,AR02,AR03,AR04,AR11,AR12,AR13,AR14,AR15=mar[2]
 RE01,RE02,RE03,RE04,RE05,RE06,RE07,RE08,RE09,RE10=mar[3]
 ST01,ST02,ST03,ST04,ST05,ST06,ST07,ST08,ST09=mar[4]
 
+# Compile the fixed replacement patterns once instead of rebuilding them for
+# every call to convert.
+AR01_RE=AR01.map{|e| [Regexp.new(e[0]),e[1]]}
+AR03_RE=AR03.map{|e| [Regexp.new(e[0]),e[1]]}
+AR11_RE=AR11.map{|e| Regexp.new(e)}
+AR12_RE=AR12.map{|e| [Regexp.new(e[0]),e[1]]}
+AR14_RE=AR14.map{|e| [Regexp.new(e[0]),e[1]]}
+AR15_RE=AR15.map{|e| [Regexp.new(e[0],"m"),e[1]]}
+AR04_RE=Regexp.new(AR04[0])
+
 class String
   def gsub_ex
     text,mes=self,0
+    cleanup_needed=true
     HAS.each{|key,value|
       n=key[0][0]+key[0][2..-1]
       if n=="p1a" && mes==0
@@ -29,12 +40,18 @@ class String
       end
       before=PAT[n][0]+key[1]
       after =PAT[n][1]+key[2]
-      hash=value.map{|k,v| [k,v.gsub(RE01,ST01)]}.to_h
       tkey=TRI[key]
       pattern=Regexp.new(before+"("+tkey+")"+after)
-      text=text.gsub(pattern){|m| ST02+hash[m]}
-      text=text.gsub(RE02,ST02).
-        gsub(RE03,ST03).gsub(ST02,"")
+      hash=nil
+      replaced=text.gsub!(pattern){|m|
+        hash ||= value.map{|k,v| [k,v.gsub(RE01,ST01)]}.to_h
+        ST02+hash[m]
+      }
+      if replaced || cleanup_needed
+        text=text.gsub(RE02,ST02).
+          gsub(RE03,ST03).gsub(ST02,"")
+        cleanup_needed=false
+      end
       }
     text
   end
@@ -96,9 +113,8 @@ def convert(text,priority,output_mode)
   re01b=Regexp.union(rep01b.keys.sort_by{|s|-s.length})
   text=text.gsub(Regexp.union(rep01a.keys)){|m| rep01a[m]}.
     gsub(re01b){|m| rep01b[m]}
-  AR03.each{|e|
-    re=Regexp.new(e[0])
-    text.gsub!(re,e[1])}
+  AR03_RE.each{|re,rep|
+    text.gsub!(re,rep)}
 
   #ルビ除去
   text.gsub!(RE08){|m|
@@ -112,9 +128,8 @@ def convert(text,priority,output_mode)
     end
   }
   
-  AR01.each{|e|
-    re=Regexp.new(e[0])
-    text.gsub!(re,e[1])}
+  AR01_RE.each{|re,rep|
+    text.gsub!(re,rep)}
   
   text.gsub!(RE04){|e|
     if m = e.match(RE09)
@@ -129,18 +144,16 @@ def convert(text,priority,output_mode)
   STDOUT.puts "ルビの除去完了"
   
   text=text.gsub_ex
-  text=text.gsub(Regexp.new(AR04[0])){|e|
+  text=text.gsub(AR04_RE){|e|
     e.tr(AR04[1],AR04[2])}
   STDOUT.puts "正規表現の置換完了"
   
   if priority=="parent"
-    AR11.each{|e|
-      re=Regexp.new(e)
+    AR11_RE.each{|re|
       text.gsub!(re,"")}
   elsif priority=="delete"
-    AR12.each{|e|
-      re=Regexp.new(e[0])
-      text.gsub!(re,e[1])}
+    AR12_RE.each{|re,rep|
+      text.gsub!(re,rep)}
   end
   AR13.each{|e|
     text.gsub!(e[0],e[1])}
@@ -149,9 +162,8 @@ def convert(text,priority,output_mode)
   # 置換後処理（読み上げ用）
   # -----------------------------
   
-  AR14.each{|e|
-    re=Regexp.new(e[0])
-    text.gsub!(re,e[1])
+  AR14_RE.each{|re,rep|
+    text.gsub!(re,rep)
   }
   
   # -----------------------------
@@ -159,9 +171,8 @@ def convert(text,priority,output_mode)
   # -----------------------------
   
   if output_mode=="kindle"
-    AR15.each{|e|
-      re=Regexp.new(e[0],"m")
-      text.gsub!(re,e[1])}
+    AR15_RE.each{|re,rep|
+      text.gsub!(re,rep)}
   end
   
   # -----------------------------
@@ -176,7 +187,7 @@ unless RUBY_PLATFORM =~%r|wasm|
   $stderr=open("tmp_ea.txt","w")
   $stdout=open("tmp99a.txt","w")
   priority="keep"
-  require 'clipboard'
+  require_relative 'clipboard_compat'
   cbd=ClipBoard.new(__ENCODING__)
   text=cbd.getText
   text=convert(text,"moon","keep")

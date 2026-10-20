@@ -15,7 +15,7 @@ Encoding.default_external = 'UTF-8'
 require 'open3'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 ini=IniFile.load(__dir__+"/config.ini")
 hide=ini["path"]["hide"]
@@ -90,15 +90,17 @@ macro.puts %|replaceallfast "(?<=[　。「」『』（）【】─※◇・、]
 macro.puts %|replaceallfast "/$","", regular;|
 macro.puts %|replaceallfast "’’","’";|
 macro.puts %|replaceallfast "、/(?=[ぁ-ん])","、", regular;|
-macro.puts %|replaceallfast "、ジ","、◇ジ";|
-macro.puts %|replaceallfast "ジ、","ジ◇、";|
-macro.puts %|replaceallfast "、彼","、◇彼";|
-macro.puts %|replaceallfast "れ、/彼","れ、◇彼";|
+macro.puts %|replaceallfast "、彼","、❑彼";|
+macro.puts %|replaceallfast "、老","、❑老";|
+macro.puts %|replaceallfast "、少","、❑少";|
+macro.puts %|replaceallfast "、骨","、❑骨";|
+macro.puts %|replaceallfast "、ジ","、❑ジ";|
+macro.puts %|replaceallfast "ジ、","ジ❑、";|
 macro.puts %|replaceallfast "’、","、";|
 macro.puts %|replaceallfast "([^。　:\\n]{75})、([^。　:\\n]{75})","\\\\1:、\\\\2",regular;|
-macro.puts %|replaceallfast "([^。:\\n]{75})◇　([^。:\\n]{75})","\\\\1◇:　、\\\\2",regular;|
-macro.puts %|replaceallfast "◇+","◇",regular;|
-macro.puts %|replaceallfast "◇","▓";|
+macro.puts %|replaceallfast "([^。:\\n]{75})❑　([^。:\\n]{75})","\\\\1◇:　、\\\\2",regular;|
+macro.puts %|replaceallfast "◇+","❑",regular;|
+macro.puts %|replaceallfast "◇","❑";|
 macro.puts %|endgroupundo;gofiletop;save;|
 macro.puts %|endmacro;|
 macro.close

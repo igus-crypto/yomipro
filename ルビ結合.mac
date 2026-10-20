@@ -1,4 +1,4 @@
-﻿//ルビ結合
+//ルビ結合
 
 copy2;delete;
 runsync2 "rubyw -x "+currentmacrofilename;
@@ -15,7 +15,7 @@ $stderr=open("tmp_err.txt","w")
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 st=cbd.getText
 s1=st.gsub(%r|《[^《》]*》|,"").gsub("｜","")

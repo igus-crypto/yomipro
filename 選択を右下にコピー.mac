@@ -13,7 +13,7 @@ endgroupundo;enabledraw;endmacro;
 # encoding: utf-8
 
 Encoding.default_external = 'UTF-8'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 opt=ARGV[0]
 

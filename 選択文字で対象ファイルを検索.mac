@@ -1,4 +1,4 @@
-﻿//選択文字で対象ファイルを検索
+//選択文字で対象ファイルを検索
 
 //標準 :対象ファイルを検索
 //ctrl :検索ファイル選択
@@ -29,7 +29,7 @@ else{
 
 Encoding.default_external = 'UTF-8'
 require 'inifile'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 opt=ARGV[0]
 

@@ -1,4 +1,4 @@
-﻿//章立て.mac
+//章立て.mac
 
 begingroupundo;selectall;copy
 runsync2 "rubyw -x "+currentmacrofilename;
@@ -13,7 +13,7 @@ endgroupundo;
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")

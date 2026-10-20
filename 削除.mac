@@ -1,4 +1,4 @@
-﻿//削除.mac
+//削除.mac
 
 //0x10:shift
 //0x11:ctrl
@@ -92,7 +92,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 opt=ARGV[0]
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 st=cbd.getText.gsub(/\R/,"\n")
 

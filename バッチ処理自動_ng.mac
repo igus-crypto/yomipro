@@ -1,4 +1,4 @@
-﻿//バッチ処理自動
+//バッチ処理自動
 
 #hwnd= hidemaruhandle(0);
 $f1=filename;
@@ -37,7 +37,6 @@ endmacro;
 # encoding: utf-8
 Encoding.default_external = 'UTF-8'
 require 'inifile'
-require 'clipboard'
 require 'win32ole'
 
 $stdout=open("tmp99.txt","w")

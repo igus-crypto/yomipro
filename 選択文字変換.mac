@@ -1,4 +1,4 @@
-﻿//選択文字変換.mac
+//選択文字変換.mac
 disabledraw;copy2;
 runsync2 "rubyw -x "+currentmacrofilename;
 execmacro directory + "\\tmp.mac";
@@ -13,7 +13,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd = ClipBoard.new(__ENCODING__)
 

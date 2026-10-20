@@ -1,4 +1,4 @@
-﻿//メモに書き込み(Ctrl+X E)
+//メモに書き込み(Ctrl+X E)
 
 setmenudelay 700;
 mousemenu
@@ -61,7 +61,7 @@ $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 op1,op2,op3=ARGV[0],ARGV[1],ARGV[2]
 

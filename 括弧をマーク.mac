@@ -1,4 +1,4 @@
-﻿//括弧をマーク
+//括弧をマーク
 
 disableerrormsg
 disabledraw;
@@ -14,7 +14,7 @@ enabledraw;
 # encoding: utf-8
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 $stdout=open("tmpc.txt","w")
 $stderr=open("tmp_err.txt","w")

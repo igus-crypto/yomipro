@@ -10,7 +10,8 @@ $stderr=File.open("tmp_err.txt","w")
 require 'inifile'
 require 'win32ole'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 wsh= WIN32OLE.new('WScript.Shell')
 cbd=ClipBoard.new(__ENCODING__)
 ini=IniFile.load(__dir__+"/config.ini")

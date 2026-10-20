@@ -89,7 +89,7 @@ class Array
   end
 end
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 
 opt=ARGV[0]

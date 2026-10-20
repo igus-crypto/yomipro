@@ -1,4 +1,4 @@
-﻿//イコール変換
+//イコール変換
 
 copy2;
 runsync2 "rubyw -x "+currentmacrofilename;
@@ -15,7 +15,7 @@ $stderr=open("tmp_erp.txt","w")
 
 Encoding.default_external = 'UTF-8'
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 s1=cbd.getText
 s2=s1.gsub(%r|《[%=#]?|,"《=")

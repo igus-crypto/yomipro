@@ -3,7 +3,8 @@
 
 Encoding.default_external = 'UTF-8'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 

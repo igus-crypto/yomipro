@@ -1,4 +1,4 @@
-﻿//ルビを削除（＋以外）
+//ルビを削除（＋以外）
 
 setcompatiblemode 0x20050;
 begingroupundo;
@@ -14,7 +14,7 @@ paste;endgroupundo;moveto 0,#y;endmacro;
 $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd = ClipBoard.new(__ENCODING__)
 

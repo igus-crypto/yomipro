@@ -1,4 +1,4 @@
-﻿//数値計算
+//数値計算
 
 disabledraw;begingroupundo;
 $opt="";
@@ -22,7 +22,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 include Math
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 opt=ARGV[0]
 

@@ -14,7 +14,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 require 'win32ole'
 require 'inifile'
 
@@ -45,9 +45,25 @@ else
   end
 end
 
+direct_s=[]
 ls=cbd.getText.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,""). #BOM除去
-  split("\r\n").grep(/,/).map{|e| e.gsub(/^!+/,"")}
-  .map{|e| e.match(/^([^,]+),([-]?)([+]?[^,]+)(?:,([^,]+))?/).to_a.pop(4)}
+  split(/\r?\n/).grep(%r|,|).map{|line|
+    line=line.gsub(%r|^!+|,"")
+    option=line[/,(f|s)$/,1]
+    if option=="s"
+      before,after=line.sub(/,s$/ ,"").split(",",2)
+      if before && after
+        after=after.gsub(/｜?([^《》]+)《([^《》]+)》/){$2}
+        direct_s << [before,after]
+      end
+      nil
+    else
+      data=option=="f" ? line.sub(/,f$/ ,"") : line
+      fields=data.match(/^([^,]+),([-]?)([+]?[^,]+)(?:,([^,]+))?/).to_a.pop(4)
+      fields << option
+      fields if fields[0] && fields[2]
+    end
+  }.compact
 print "ls=";p ls
 
 st=open(filename).read.gsub(/\xEF\xBB\xBF|\xEF\xBF\xBE/,"")
@@ -56,22 +72,22 @@ bf=st.scan(/([\p{Han}]+|(?<=｜)[^《》]+)《([^《》]+)》/).uniq
 b2=bf.map{|e| [e[0],e[1].tr2]}
 print "bf=";p bf
 print "b2=";p b2
-hs,hh,bc={},{},[]
+hs,hh,bc=[],{},[]
 ls.each{|e|
-  hs[bf[b2.index([e[0],e[2].tr2])]]=e if b2.include?([e[0],e[2].tr2])}
+  index=b2.index([e[0],e[2].tr2])
+  hs << [bf[index],e] if index}
 #print "hs=";p hs
 bb=st.scan(/((?:[\p{Han}]+《[^《》。\n]+》){2,})/).uniq.flatten
 rb=ls.map{|e| [e[0],e[2]]}
 
-hs.each_value{|v|
+hs.each{|_,v|
   if v[1]=="" && /\p{Han}$/=~v[0]
     bb.each{|e|
       if /(#{v[0]}《([^《》]+)》)([\p{Han}]+《[^《》]+》)/=~e
         d1,d2,d3=$1,$2,$3
-        hh[d1+d3] = d1+"｜"+d3 if d2.tr2==v[2].tr2
+        hh[[v[4],d1+d3]] = d1+"｜"+d3 if d2.tr2==v[2].tr2
       end}
   end}
-hh=hh.uniq
 print "rb=";p rb
 print "bb=";p bb
 print "bc=";p bc
@@ -89,16 +105,24 @@ setactivehidemaru findhidemaru("#{filename}");
 selectall;
 colormarker 0x000000, 0xc2c79e, 11, 1;
 escape;begingroupundo;disabledraw;\n|
-hh.each{|k,v| macro.puts %Q|replaceallfast "#{k}" , "#{v}" ;|}
+commands=[]
+priority=lambda{|option| option=="s" ? 0 : option=="f" ? 1 : 2}
+direct_s.each{|before,after|
+  commands << [priority.call("s"),0,commands.length,%Q|replaceallfast "#{before}" , "#{after}" ;|]}
+hh.each{|(option,k),v|
+  commands << [priority.call(option),0,commands.length,%Q|replaceallfast "#{k}" , "#{v}" ;|]}
 #macro.puts %Q|endgroupundo;begingroupundo;|
 hs.each{|k,v|
   if v[3]
-    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[3]}》" ;|
+    command=%Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[3]}》" ;|
   elsif v[1]==""
-    macro.puts %Q|replaceallfast "｜?#{k[0]}《#{k[1]}》" , "#{v[0]}" ,regular;|
+    command=%Q|replaceallfast "｜?#{k[0]}《#{k[1]}》" , "#{v[0]}" ,regular;|
   else
-    macro.puts %Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[1]+v[2]}》" ;|
-  end}
+    command=%Q|replaceallfast "#{k[0]}《#{k[1]}》" , "#{v[0]}《#{v[1]+v[2]}》" ;|
+  end
+  commands << [priority.call(v[4]),1,commands.length,command]}
+commands.sort_by{|category,stage,index,_| [category,stage,index]}.each{|_,_,_,command|
+  macro.puts command}
 #macro.puts %Q|endgroupundo;begingroupundo;|
 #macro.puts %Q|replaceallfast "》｜(?=[\\\\p{Han}]+《)" , "》" ,regular;|
 macro.puts %|

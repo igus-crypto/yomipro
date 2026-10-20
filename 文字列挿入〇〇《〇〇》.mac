@@ -1,4 +1,4 @@
-﻿//文字列挿入〇〇《〇〇》
+//文字列挿入〇〇《〇〇》
 
 setcompatiblemode 0x00100000;
 
@@ -29,7 +29,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 cbd = ClipBoard.new(__ENCODING__)
 st=cbd.getText

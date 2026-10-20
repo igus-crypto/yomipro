@@ -7,7 +7,8 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp_s99.txt","w")
 $stderr=open("tmp_serr.txt","w")
 
-require 'clipboard'
+require 'clipboard'
+require_relative 'clipboard_compat'
 require 'inifile'
 
 ini=IniFile.load(__dir__+"/config.ini")

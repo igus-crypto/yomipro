@@ -1,4 +1,4 @@
-﻿//文字変換２.mac
+//文字変換２.mac
 
 begingroupundo;
 //setmenudelay 100;
@@ -160,7 +160,7 @@ $stderr=open("tmp_errm.txt","w")
 
 opt=ARGV[0]
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 st=cbd.getText.gsub(/\R/,"\n")
 

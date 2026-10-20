@@ -10,7 +10,8 @@ $stderr=open("tmp_err.txt","w")
 
 require 'diff/lcs'
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 
 #オプション k:高速 y:ゆっくり
@@ -26,9 +27,9 @@ af=cbd.getText.
 ar1,ar2,arr=[],[],[]
 diffs=Diff::LCS.diff(bf,af)
 
-diffs.flatten.each{|diff|
+diffs.each{|hunk| hunk.each{|diff|
   ar1 << diff.element if diff.deleting?
-  ar2 << diff.element if diff.adding?}
+  ar2 << diff.element if diff.adding?}}
 
 # 連想配列に代入
 hs={}

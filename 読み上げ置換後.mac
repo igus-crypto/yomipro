@@ -25,7 +25,7 @@ $stdout=open("tmp_99g.txt","w")
 #require 'open3'
 require 'inifile'
 require 'win32ole'
-require 'clipboard'
+require_relative 'clipboard_compat'
 
 opt=ARGV[0].to_s
 

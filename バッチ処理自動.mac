@@ -20,7 +20,6 @@ endmacro;
 # encoding: utf-8
 Encoding.default_external = 'UTF-8'
 require 'inifile'
-require 'clipboard'
 require 'win32ole'
 
 $stdout=open("tmp99.txt","w")

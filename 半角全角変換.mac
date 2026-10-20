@@ -1,4 +1,4 @@
-﻿//半角全角変換
+//半角全角変換
 
 $op=getarg(0);
 // h:半角化
@@ -19,7 +19,7 @@ $stdout=open("tmp99m.txt","w")
 $stderr=open("tmp_errm.txt","w")
 
 include Math
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 opt=ARGV[0]
 if %r|z|=~opt

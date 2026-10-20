@@ -25,7 +25,8 @@ opt=ARGV[0]
 #b:「!」行を末尾にコピー
 
 require 'clipboard'
-
+
+require_relative 'clipboard_compat'
 cbd=ClipBoard.new(__ENCODING__)
 
 arr=cbd.getText.split(/\R/).reject{|e| e==""}

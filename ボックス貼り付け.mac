@@ -1,4 +1,4 @@
-﻿//ボックス貼り付け
+//ボックス貼り付け
 
 #x0=x;
 begingroupundo;disabledraw;selectline 1;
@@ -16,7 +16,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp99.txt","w")
 $stderr=open("tmp_err.txt","w")
 
-require 'clipboard'
+require_relative 'clipboard_compat'
 cbd = ClipBoard.new(__ENCODING__)
 ar=cbd.getText.split(%r|\R|)
 
