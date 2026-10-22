@@ -123,7 +123,7 @@ end
 
 
 filename
-File.dirname(URI.encode filename)
+File.dirname(filename)
 
 puts Dir.pwd.encode(Encoding::UTF_8)
 

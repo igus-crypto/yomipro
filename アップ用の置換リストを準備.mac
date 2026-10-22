@@ -307,9 +307,7 @@ File.binwrite(__dir__+"/replace/rep.dat",dat)
 
 ar=File.open(__dir__+"/aozora2.rb").read.split("📿📿📿")
 File.write(__dir__+"/replace/aozora2.rb",
-  "\uFEFF"+ar[0]+
-  Base64.encode64(dat)+
-  ar[1]
+  ar[0]+Base64.encode64(dat)+ar[1]
 )
 
 spawn(%Q|explorer.exe "#{(__dir__+"/replace").gsub("/","\\")}"|)

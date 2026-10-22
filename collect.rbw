@@ -1,4 +1,4 @@
-﻿# encoding: utf-8
+# encoding: utf-8
 # collect
 # grepの修正を集める
 
