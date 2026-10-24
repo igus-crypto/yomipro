@@ -297,18 +297,19 @@ $a[286]="選択文字で対象ファイルを検索";              // #s=342
 $a[287]="ファイルを開いて選択文字検索";              // #s=343
 $a[288]="差分チェック";                              // #s=344
 $a[289]="読みプロ01のNoチェック";                    // #s=345
-$a[290]="青空変換（改）";                            // #s=346
-$a[291]="\x01ウィンドウ操作";                        // #s=347
-$a[292]="縦に並べて表示";                            // #s=348
-$a[293]="横に並べて表示";                            // #s=349
-$a[294]="分割";                                      // #s=350
-$a[295]="サイズ 100×30";                            // #s=351
-$a[296]="サイズ  60×20";                            // #s=352
-$a[297]="全て最小化";                                // #s=353
-$a[298]="全て 100×30";                              // #s=354
-$a[299]="";#num=56;
+$a[290]="青空変換（２）";                            // #s=346
+$a[291]="青空変換（改）";                            // #s=347
+$a[292]="\x01ウィンドウ操作";                        // #s=348
+$a[293]="縦に並べて表示";                            // #s=349
+$a[294]="横に並べて表示";                            // #s=350
+$a[295]="分割";                                      // #s=351
+$a[296]="サイズ 100×30";                            // #s=352
+$a[297]="サイズ  60×20";                            // #s=353
+$a[298]="全て最小化";                                // #s=354
+$a[299]="全て 100×30";                              // #s=355
+$a[300]="";#num=56;
 
-mousemenuarray $a,299;
+mousemenuarray $a,300;
 #r=result-1;
 if(#r<1){endmacro;}
 else if(#r< 24) {#s=#r+ 0;}  //テキスト作成
@@ -325,7 +326,7 @@ else if(#r<217) {#s=#r+42;}  //文字を変換
 else if(#r<231) {#s=#r+42;}  //サンドイッチ
 else if(#r<243) {#s=#r+48;}  //バッチ処理
 else if(#r<263) {#s=#r+56;}  //ファイル操作関連
-else if(#r<299) {#s=#r+56;}  //その他
+else if(#r<300) {#s=#r+56;}  //その他
 }
 
 $dir=directory;
@@ -1312,27 +1313,29 @@ begingroupundo;beginclipboardread;
 }else if(#s==345){ //読みプロ01のNoチェックNoチェック
   #x=x;#y=y;selectall;copy;moveto #x,#y;down;
   runsync2 "rubyw "+currentmacrodirectory+"\\moon.rbw m";
-}else if(#s==346){ //青空変換（改）
+}else if(#s==346){ //青空変換（２）
+  execmacro currentmacrodirectory + "\\青空変換（２）.mac";
+}else if(#s==347){ //青空変換（改）
   execmacro currentmacrodirectory + "\\青空変換（改）.mac";
-}else if(#s==348){ //縦に並べて表示
+}else if(#s==349){ //縦に並べて表示
   #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
   iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowvert;
   setwindowsize 100, 14;setwindowpos 80, 0;
   setactivehidemaru #hwnd_f1;setwindowsize 100, 14;setwindowpos 80, 360;
-}else if(#s==349){ //横に並べて表示
+}else if(#s==350){ //横に並べて表示
   #hwnd_f1= hidemaruhandle(0);setactivehidemaru 1;#hwnd_f2= hidemaruhandle(0);
   iconall;setactivehidemaru #hwnd_f1;setactivehidemaru #hwnd_f2;windowhorz;
   setwindowsize 48, 34;setwindowpos 80, 0;
   setactivehidemaru #hwnd_f1;setwindowsize 48, 34;setwindowpos 600, 0;
-}else if(#s==350){ //ウィンドウ分割
+}else if(#s==351){ //ウィンドウ分割
   split;
-}else if(#s==351){ //ウィンドウサイズ
-  setwindowsize 100, 30;
 }else if(#s==352){ //ウィンドウサイズ
+  setwindowsize 100, 30;
+}else if(#s==353){ //ウィンドウサイズ
   setwindowsize 60, 20;
-}else if(#s==353){ //すべて最小化
+}else if(#s==354){ //すべて最小化
   iconall;
-}else if(#s==354){ //すべて 100×30
+}else if(#s==355){ //すべて 100×30
   $file=filename;setwindowsize 100, 30;nexthidemaru;#i=1;
   while(filename!=$file){//message str(80+50*#i);
     setwindowsize 100, 30;

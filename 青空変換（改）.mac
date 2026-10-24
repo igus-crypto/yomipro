@@ -1,7 +1,7 @@
-//青空変換（改）
+//青空変換（４）
 
 selectall;copy;
-runsync2 "ruby "+ currentmacrodirectory+"\\replace\\aozora2.rb";
+runsync2 "ruby "+ currentmacrodirectory+"\\replace\\aozora4.rb";
 execmacro directory+"\\tmp.mac";
 endmacro;
 

@@ -1,0 +1,306 @@
+//grepチェックリスト読み上げ確認２
+
+disabledraw;
+if(selecting && y!=selopeny){
+  selectline 1;copy;
+}else{
+  if(selecting){
+    $s0=getselectedtext();
+    #m=split($sa,$s0,"");
+  }else{
+    #m=0;
+  }
+  //message str(#m);endmacro;
+  if(y==0)down;
+  if(code==13)down;
+  #x=x;#y=y;
+  golinetop2;beginsel;gofileend;$st=getselectedtext();
+  moveto 0,#y;
+  selectline 1;$st=getselectedtext();//endmacro;
+  #n[0]=0;
+  #n[1]=split($s1,$st,",");
+  #n[2]=split($s2,$st,",+");
+  #n[3]=split($s3,$st,",%");
+  #n[4]=split($s4,$st,",-");
+  #n[5]=split($s5,$st,",/");
+  #n[6]=split($s6,$st,"’");
+  #n[7]=split($s7,$st,",#");
+  #n[8]=split($s8,$st,",~");
+  #n[9]=split($s9,$st,",=");
+  moveto 0,#y;beginsel;
+//  message str(#n[1])+"/"+str(#n[2])+"/"+str(#n[3])+"/"+str(#n[4])+"/"+
+//    str(#n[5])+"/"+str(#n[6])+"/"+str(#n[7])+"/"+str(#n[8])+"/"+str(#n[9])+"\n"+str(#m);
+//    endmacro;
+  if(#m>=4){
+    if(#n[2]==2){#n[6]=2;}
+    else if(#n[3]==2){#n[6]=2;}
+    else if(#n[4]==2){#n[6]=2;}
+    else if(#n[5]==2){#n[6]=2;}
+    else if(#n[1]==2){#n[6]=2;}
+    else if(#n[7]==2){#n[7]=3;}
+  }else if(#m==3){
+    if(#n[2]==2){#n[5]=2;}
+    else if(#n[3]==2){#n[6]=2;}
+    else if(#n[4]==2){#n[6]=2;}
+    else if(#n[5]==2){#n[6]=2;}
+    else if(#n[1]==2){#n[6]=2;}
+    else if(#n[7]==2){#n[7]=3;}
+  }else if(#m==2){
+    if(#n[2]==2){#n[4]=2;}
+    else if(#n[3]==2){#n[5]=2;}
+    else if(#n[4]==2){#n[6]=2;}
+    else if(#n[5]==2){#n[6]=2;}
+    else if(#n[1]==2){#n[6]=2;}
+    else if(#n[7]==2){#n[7]=3;}
+  }else if(#m==1){
+    if(#n[2]==2){#n[3]=2;}
+    else if(#n[3]==2){#n[4]=2;}
+    else if(#n[4]==2){#n[5]=2;}
+    else if(#n[5]==2){#n[6]=2;}
+    else if(#n[1]==2){#n[6]=2;}
+    else if(#n[7]==2){#n[7]=3;}
+  }
+  //message str(#n[1])+"/"+str(#n[2])+"/"+str(#n[3])+"/"+str(#n[4])+"/"+
+  //  str(#n[5])+"/"+str(#n[6])+"/"+str(#n[7])+"/"+str(#n[8])+"/"+str(#n[9])+"\n"+str(#m);
+  //endmacro;
+  if(#n[8]>1 || #n[9]>1){
+    gofileend
+  }else if(#n[7]>2){
+    searchdown ",[~=]",regular;golinetop2;left;
+  }else if(#n[7]==2){
+    //selectline 1;#x=x;#y=y;
+    //replaceallfast ",.*[ぁ-ん]","",regular,inselect2;
+    //#r=result;//undo;message str(#r);
+    //if(#r==0){
+    //  moveto 0,#y-1;beginsel;
+    //  searchdown ",.*[ぁ-ん]",regular;golinetop2;left;
+    //}else{
+    //  undo;beginsel;
+    //  searchdown ",[~=]",regular;golinetop2;left;
+    //}
+    beginsel;
+    searchdown ",[~=]",regular;golinetop2;left;
+  }else if(#n[6]>1){
+    searchdown ",[#~=]",regular;golinetop2;left;
+  }else if(#n[5]>1){
+    searchdown ",[’#~=]",regular;golinetop2;left;
+  }else if(#n[4]>1){
+    //searchdown ",[’#~=/]",regular;golinetop2;left;
+    searchdown ",[#]",regular;golinetop2;left;
+  }else if(#n[3]>1){
+    searchdown ",[-’#~=/]",regular;golinetop2;left;
+  }else if(#n[2]>1){
+    searchdown ",[-%’#~=/]",regular;golinetop2;left;
+  }else{
+    searchdown ",[-+%’#~=/]",regular;golinetop2;left;
+  }
+}
+if(y==selopeny){copy;}
+else{selectline 1;copy;}
+//runsync2 "rubyw "+currentmacrodirectory+"\\grep5.rbw r1 ";
+runsync2 "rubyw -x "+currentmacrofilename;
+execmacro directory + "\\tmp_g.mac";
+execmacro directory + "\\tmp.mac";
+execmacro directory + "\\tmp_g.mac";
+moveto 21,0;
+if(getconfig("UnderLine")==0)config "xUnderLine:1";
+
+execmacro currentmacrodirectory+"\\\\ウィンドウ操作.mac","4";
+if(#n[8]>1 || #n[9]>1 || #n[2]>1)endmacro;
+//execmacro currentmacrodirectory+"\\\\矩形選択.mac";
+
+endmacro;
+
+/*
+#/
+#! ruby
+# encoding: utf-8
+Encoding.default_external = 'UTF-8'
+
+$stderr=open("tmp_err.txt","w")
+$stdout=open("tmp99.txt","w")
+
+require 'inifile'
+require 'win32ole'
+require_relative 'clipboard_compat'
+
+ini=IniFile.load(__dir__+"/config.ini")
+hide=ini["path"]["hide"]
+
+cbd=ClipBoard.new(__ENCODING__)
+
+file_1=File.expand_path(ini["grep"]["file_1"])
+if FileTest.file?(file_1)
+  filename=file_1
+else
+  file_2=File.expand_path(ini["grep"]["file_2"])
+  if FileTest.file?(file_2)
+    filename=File.expand_path(file_2)
+    Dir.chdir(File.dirname(file_2))
+  else
+    wsh = WIN32OLE.new('WScript.Shell')
+    a=wsh.Popup("次のファイルがありません\n\n"+
+      "#{file_1}\n#{file_2}",0,"注意",0)
+    exit
+  end
+end
+
+puts Dir.pwd.encode(Encoding::UTF_8)
+#p soro
+
+class String
+  def tr2
+    self.tr('ァ-ン','ぁ-ん').tr('ぁぃぅぇぉっゃゅょ','あいうえおつやゆよ')
+  end
+end
+
+def bsize(txt)
+  txt.to_s.tr("—","-").split("").map{|e| e.bytesize==1 ? 1 : 2}.sum
+  #"—"は３バイト,"-"は１バイトという罠回避
+end
+
+i=1
+tp="tmps_"
+while FileTest.file?(ofile=tp+sprintf("%#02d",i)+".txt")
+  i+=1
+end
+
+ofile=File.expand_path(ofile)
+p ofile
+ofl=open(ofile,"w")
+#ofl.puts "\n"
+
+ls=cbd.getText.split("\r\n").
+  reject{|e| e=="" or /^[―]*$|^最終更新日：/=~e }.
+  map{|e| e.gsub(/^置換リスト[^:]*: /,"")}
+#print "ls=";p ls
+
+st,oya,ruby,com,rp=[],[],[],[],[]
+ls.each_with_index{|line,i|
+  st[i],oya[i],ruby[i]=/^([^,]*),?([^, ]*)?/.match(line.chomp).to_a}
+oya2=oya.map{|e| e.sub(/^!+/,"")+"《([^》]+)》"}
+
+print "oya2=";p oya2
+
+#配列
+#ls:リスト kk:結果 mt:マッチ
+
+kk,mt=[],[]
+fname=File.basename(filename)
+fl=open(filename).readlines
+#p fl
+
+
+#p oya
+#マッチした行を kk に突っ込んでいく
+oya2.each_with_index{|s,i|
+  begin
+    next if s==""
+    re=Regexp.new(s)
+    fl.each_with_index{|line,f|
+      kk << fname+":(#{f+1}):#{line}" if re.match?(line)}
+  rescue
+    print "s=";p s
+  end
+}
+oya2.reject!{|e| e.include?("*")}
+kk=kk.sort_by{|e|
+  e.match(/#{fname}:\(([0-9]+)\):/)[1].to_i}
+
+kk=kk.uniq
+kk_rows=kk.map{|k| m=/\A[^:]*:/.match(k); [m[0],k[m.end(0)..-1]]}
+print "kk=";p kk
+#kk2=kk.join("\n")
+ls.each_with_index{|e,i|
+  tb,n=[],10
+  re=Regexp.new(oya2[i])
+  kk_rows.each{|g,k|
+    if re.match?(k)
+      #p k
+      k.scan(re){|s| 
+        m1,m2,m3=($`[-n,n]||$`),$&,($'[0,n]).to_s.gsub(/([。])(.*)/,"\\1").chomp
+        st=m1+m2+m3
+        tb << [g+st,g+m1,g+m1+m2] if $1==ruby[i] if /《([^》]+)》/=~m2
+      }
+    end}
+  print "tb=";p tb
+  print "e=";p e
+  tb << [e] if tb==[]
+  #ofl.puts (tb.size==0 ? "//"+e : e)
+  max=tb.transpose[1].to_a.map{|f| bsize(f)}.max
+  max=35 if max.to_i<35
+  ofl.puts tb.map{|f| 
+    if %r|:|=~f[0]
+      " "*(max-bsize(f[1]))+f[0]
+    else
+      f[0]
+    end
+  }.join("\n")
+}
+
+ofl.close
+t98a=[]
+print "rp=";p rp
+mac1=File.expand_path("tmp.mac")
+mac2=File.expand_path("tmp_g.mac")
+
+#mac=File.expand_path("tmp.mac")
+p mac1
+t98a=oya.map{|e| e.sub(/^!+/,"")+"(《([^》]+)》)?"}
+t98a=t98a.sort{|e| e[1].to_i*(-1)}
+p t98a
+macro1=open(mac1,"w")
+macro1.print("\uFEFF")
+macro2=open(mac2,"w")
+macro2.print("\uFEFF")
+#macro.puts %|openfile "#{ofile}",utf8;|
+macro2.puts %|
+#color[ 1]=val("0x#{ini['color']['color_1']}");
+#color[ 2]=val("0x#{ini['color']['color_2']}");
+#color[ 3]=val("0x#{ini['color']['color_3']}");
+#color[ 4]=val("0x#{ini['color']['color_4']}");
+#color[ 5]=val("0x#{ini['color']['color_5']}");
+#color[ 6]=val("0x#{ini['color']['color_6']}");
+#color[ 7]=val("0x#{ini['color']['color_7']}");
+#color[ 8]=val("0x#{ini['color']['color_8']}");
+#color[ 9]=val("0x#{ini['color']['color_9']}");
+#color[10]=val("0x#{ini['color']['color_10']}");
+#color[11]=val("0x#{ini['color']['color_11']}");
+#color[12]=val("0x#{ini['color']['color_12']}");
+#color[13]=val("0x#{ini['color']['color_13']}");
+#color[14]=val("0x#{ini['color']['color_14']}");
+#color[15]=val("0x#{ini['color']['color_15']}");
+#color[16]=val("0x#{ini['color']['color_16']}");
+|
+
+macro1.puts %|
+if( findhidemaru("#{ofile}")==-1){
+  setactivehidemaru 1;if( findhidemaru("#{ofile}")==-1)
+{setactivehidemaru 1;openfile "#{ofile}",utf8;}}
+
+setactivehidemaru findhidemaru("#{ofile}");
+|
+
+
+macro2.puts %|
+setsearch ".*=>.*" , 0x4003819;
+colormarkerallfound 0x000000, 0xc2c79e, 11, 1;;
+setsearch "(.*?):(\\\\(.*?\\\\)):" , 0x4003819;
+colormarkerallfound 0, 0xB2B2F5, 0, 0;
+disabledraw;
+|
+
+i=0
+t98a.each{|e|
+  macro2.puts %|setsearch "#{e}" , 0x4003819;|
+  macro2.puts %|colormarkerallfound 0x000000, #color[#{i%16+1}], 11, 1;|
+  i+=1
+}
+
+macro2.puts %|
+enabledraw;save;endmacro;
+|
+
+__END__
+*/
+

@@ -13,6 +13,7 @@ $stderr=open("tmp_err.txt","w")
 $stdout=open("tmp99u.txt","w")
 
 require 'fileutils'
+require 'open3'
 require 'regexp_trie'
 require "base64"
 
@@ -309,6 +310,45 @@ ar=File.open(__dir__+"/aozora2.rb").read.split("📿📿📿")
 File.write(__dir__+"/replace/aozora2.rb",
   ar[0]+Base64.encode64(dat)+ar[1]
 )
+ar=File.open(__dir__+"/aozora4.rb").read.split("📿📿📿")
+File.write(__dir__+"/replace/aozora4.rb",
+  ar[0]+Base64.encode64(dat)+ar[1]
+)
+
+# aozora4.rb が使用する C# 置換プログラムをビルドする。
+compiler="C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe"
+csharp_dir=File.join(__dir__,"replace")
+csharp_source=File.join(csharp_dir,"aozora4_p18a.cs").gsub("/","\\")
+csharp_target=File.join(csharp_dir,"aozora4_p18a.exe").gsub("/","\\")
+csharp_temp=csharp_target+".#{Process.pid}.tmp.exe"
+csharp_backup=csharp_target+".#{Process.pid}.bak"
+raise "C# compiler not found: #{compiler}" unless File.file?(compiler)
+raise "C# source not found: #{csharp_source}" unless File.file?(csharp_source)
+FileUtils.rm(csharp_temp,force:true)
+compiler_stdout,compiler_stderr,compiler_status=Open3.capture3(
+  compiler,"/nologo","/optimize+","/target:exe",
+  "/out:#{csharp_temp}",csharp_source)
+$stdout.write(compiler_stdout) unless compiler_stdout.empty?
+$stderr.write(compiler_stderr) unless compiler_stderr.empty?
+compiled=compiler_status.success?
+unless compiled && File.file?(csharp_temp) && File.size(csharp_temp)>0
+  FileUtils.rm(csharp_temp,force:true)
+  details=[compiler_stdout,compiler_stderr].reject(&:empty?).join("\n")
+  details="No compiler diagnostics were returned." if details.empty?
+  raise "C# replacement program compilation failed (exit #{compiler_status.exitstatus}):\n#{details}"
+end
+had_csharp_target=File.file?(csharp_target)
+FileUtils.cp(csharp_target,csharp_backup) if had_csharp_target
+begin
+  FileUtils.mv(csharp_temp,csharp_target,force:true)
+rescue
+  FileUtils.cp(csharp_backup,csharp_target) if had_csharp_target && File.file?(csharp_backup)
+  raise
+ensure
+  FileUtils.rm(csharp_temp,force:true)
+end
+FileUtils.rm(csharp_backup,force:true) if File.file?(csharp_backup)
+STDOUT.puts "C#置換プログラムの作成完了"
 
 spawn(%Q|explorer.exe "#{(__dir__+"/replace").gsub("/","\\")}"|)
 
