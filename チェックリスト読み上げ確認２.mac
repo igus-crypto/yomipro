@@ -2,7 +2,7 @@
 
 disabledraw;
 if(selecting && y!=selopeny){
-  selectline 1;copy;
+  selectline 1;copy2;
 }else{
   if(selecting){
     $s0=getselectedtext();
@@ -208,7 +208,7 @@ kk=kk.sort_by{|e|
   e.match(/#{fname}:\(([0-9]+)\):/)[1].to_i}
 
 kk=kk.uniq
-kk_rows=kk.map{|k| m=/\A[^:]*:/.match(k); [m[0],k[m.end(0)..-1]]}
+kk_rows=kk.map{|k| m=/\A[^:]*:\([0-9]+\):/.match(k); [m[0],k[m.end(0)..-1]]}
 print "kk=";p kk
 #kk2=kk.join("\n")
 ls.each_with_index{|e,i|
