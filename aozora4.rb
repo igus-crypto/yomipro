@@ -416,8 +416,9 @@ def convert(text,priority,output_mode)
   STDOUT.puts "ルビの除去完了"
   
   text=text.gsub_ex
-  text=text.gsub(AR04_RE){|e|
-    e.tr(AR04[1],AR04[2])}
+  text = text.gsub(Regexp.union(/《[^》]*》/, AR04_RE)) { |e|
+    e.start_with?("《") ? e : e.tr(AR04[1], AR04[2])
+  }
   STDOUT.puts "正規表現の置換完了"
   
   if priority=="parent"

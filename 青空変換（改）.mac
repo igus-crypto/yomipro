@@ -1,4 +1,4 @@
-//青空変換（４）
+//青空変換（改）
 
 selectall;copy;
 runsync2 "ruby "+ currentmacrodirectory+"\\replace\\aozora4.rb";

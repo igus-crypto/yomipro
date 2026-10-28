@@ -19,7 +19,7 @@ Encoding.default_external = 'UTF-8'
 $stdout=open("tmp_s99.txt","w")
 $stderr=open("tmp_serr.txt","w")
 
-#require 'win32ole'
+require 'win32ole'
 
 class String
   def bsize
