@@ -51,8 +51,11 @@ if(result==0){endmacro;
   execmacro $dir + "\\tmp_a.mac";
 }else if(result==7){  //【M】 目次保存
   if(!selecting)endmacro;
-  cut;openfile "";paste;saveas "mokuji.txt";
-  gofiletop;setwindowsize 40,10;
+  cut;
+  setactivehidemaru findhidemaru("mokuji.txt");
+  if(result==0){openfile "mokuji.txt";}
+  gofileend;paste;//saveas "mokuji.txt";gofiletop;
+  setwindowsize 40,10;
 }else if(result==8){  //【C】 クリップボード
   beginclipboardread;
   $s=getclipboard();

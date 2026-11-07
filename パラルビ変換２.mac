@@ -56,8 +56,6 @@ else
   end
 end
 
-filename
-File.dirname(URI.encode filename)
 
 print "dir=";puts Dir.pwd.encode(Encoding::UTF_8)
 
