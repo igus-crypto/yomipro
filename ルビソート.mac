@@ -14,7 +14,8 @@ mousemenu
 "&X テキスト個所のみ残す",  // 9
 "&F ファイル内検索",        //10
 "&L 置換リスト",            //11
-"&G grepの修正を集める";    //12
+"&: 行表示のみ残す",        //12
+"&G grepの修正を集める";    //13
 
 //message str(result);
 
@@ -54,7 +55,13 @@ if(result==0){endmacro;
   execmacro currentmacrodirectory+"\\\\ルビソート（ファイル内検索）.mac";
 }else if(result==11){  //【L】 置換リスト
   execmacro currentmacrodirectory+"\\\\ルビソート（置換リスト）.mac";
-}else if(result==12){  //【G】 grepの修正を集める
+}else if(result==12){  //【:】 行表示のみ残す
+  begingroupundo;#x=x;#y=y;gofiletop;beginsel;gofileend;
+  replaceallfast "^[^:]*$","",regular,inselect2;
+  moveto #x,#y;golinetop2;beginsel;gofileend;
+  replaceallfast "(?#maxlines:10)\n+","\n",regular,inselect2;
+  moveto #x,#y;endgroupundo;save;endmacro;
+}else if(result==13){  //【G】 grepの修正を集める
   selectall;copy;escape;
   runsync2 "rubyw -x "+currentmacrofilename;
   gofileend;insert "\n\n";paste;

@@ -197,7 +197,7 @@ if(#r==0){endmacro;
   }else{
     replaceallfast "$",$c,regular,inselect2;
   }
-}else if(#r==14){ //【 】 先頭にスペース
+}else if(#r==14){ //【 】 先頭にスペース 
   #x=x;#y=y;
   if(selecting){
     if(#x==0 && #ty!=#ey){escape;moveto 0,#ty;beginsel;moveto 0,#ey-1;}
@@ -206,6 +206,7 @@ if(#r==0){endmacro;
     moveto 0,#y;insert " ";
   }
   moveto #x+1,#y;
+  if(#alt==1){down;insertreturn;}
 }else if(#r==15){ //【E】 ======
   escape;right;searchup2 "^[。◇]*$",regular;golinetop2;insert "======\n";
   moveto #x,#y+1;

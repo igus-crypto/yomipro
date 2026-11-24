@@ -161,7 +161,7 @@ st=st.split("\r\n").map{|e| e.gsub(%r|^。/|,"。")}.map{|e|
     ns
   end}.join("\n")#+"\n"
 st+="\n" if /\R$/=~st0
-
+st=st.split("\n").uniq.join("\n")+"\n"
 print "st=";p st
 cbd.setText(st)
 

@@ -1,1 +1,8 @@
-﻿if(selecting){golineend2;cut;}else{beginsel;golineend2;cut;}
+﻿
+if(iskeydown(0x12)){ //alt;
+  if(selecting){searchup "(?<=[:]).|^",regular;cut;}
+  else{beginsel;searchup "(?<=[:]).|^",regular;cut;}
+}else{
+  if(selecting){golineend2;cut;}
+  else{beginsel;golineend2;cut;}
+}
